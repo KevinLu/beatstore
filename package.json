@@ -16,6 +16,7 @@
   "author": "John ahn",
   "license": "ISC",
   "dependencies": {
+    "@yaireo/tagify": "^3.7.1",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
@@ -25,6 +26,8 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.4.20",
+    "multer": "^1.4.2",
+    "react-icons": "^3.10.0",
     "react-redux": "^5.0.7",
     "saslprep": "^1.0.3",
     "supports-color": "^7.1.0"
