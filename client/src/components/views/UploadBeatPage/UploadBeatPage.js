@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Button, Form, message, Input } from 'antd';
-import FileUpload from '../../utils/FileUpload';
+import AudioUpload from '../../utils/AudioUpload';
+import ImageUpload from '../../utils/ImageUpload';
 import Tags from '@yaireo/tagify/dist/react.tagify';
 import Axios from 'axios';
 
@@ -23,10 +24,16 @@ function UploadBeatPage(props) {
         }))
     }
 
-    const [Files, setFiles] = useState([])
+    const [Audios, setAudios] = useState([])
 
-    const updateFiles = (newFiles) => {
-        setFiles(newFiles)
+    const updateAudios = (newAudios) => {
+        setAudios(newAudios)
+    }
+
+    const [Images, setImages] = useState([])
+
+    const updateImages = (newImages) => {
+        setImages(newImages)
     }
 
     // just a name I made up for allowing dynamic changes for tagify settings on this component
@@ -95,7 +102,7 @@ function UploadBeatPage(props) {
     const onSubmit = (event) => {
         event.preventDefault();
 
-        if (!field.title || !field.description || !field.price || !Files || !BeatTags) {
+        if (!field.title || !field.description || !field.price || !Images || !Audios || !BeatTags) {
             return message.error('Fill in everything first.')
         }
 
@@ -104,7 +111,8 @@ function UploadBeatPage(props) {
             title: field.title,
             description: field.description,
             price: field.price,
-            files: Files,
+            audios: Audios,
+            images: Images,
             tags: BeatTags
         }
 
@@ -129,7 +137,10 @@ function UploadBeatPage(props) {
 
                 <Form>
                     <label>Upload MP3/WAV</label>
-                    <FileUpload refreshFunction={updateFiles} />
+                    <AudioUpload refreshFunction={updateAudios} />
+
+                    <label>Upload PNG/JPG/JPEG</label>
+                    <ImageUpload refreshFunction={updateImages} />
 
                     <label>Title</label>
                     <Input style={{ marginBottom: '1em' }} onChange={onChangeHandler} value={field.title} name="title" />

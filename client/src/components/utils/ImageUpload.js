@@ -33,7 +33,7 @@ const rejectStyle = {
     borderColor: '#ff1744'
 };
 
-function FileUpload(props) {
+function ImageUpload(props) {
 
     const [Files, setFiles] = useState([])
     
@@ -43,7 +43,7 @@ function FileUpload(props) {
             header: { 'content-type': 'multipart/form-data' }
         }
         formData.append("file", files[0]);
-        Axios.post('/api/beat/uploadFile', formData, config)
+        Axios.post('/api/beat/uploadImage', formData, config)
             .then(response => {
                 if (response.data.success) {
                     setFiles([...Files, response.data.file])
@@ -63,7 +63,7 @@ function FileUpload(props) {
         isDragActive,
         isDragAccept,
         isDragReject
-    } = useDropzone({ onDrop, accept: 'audio/*' });
+    } = useDropzone({ onDrop, accept: 'image/*' });
 
     const style = useMemo(() => ({
         ...baseStyle,
@@ -90,7 +90,7 @@ function FileUpload(props) {
                 <div className="container">
                     <div {...getRootProps({ style })}>
                         <input {...getInputProps()} />
-                        <p>Drag your files here, or click to select.</p>
+                        <p>Drag your images here, or click to select.</p>
                     </div>
                 </div>
             </Col>
@@ -100,7 +100,7 @@ function FileUpload(props) {
                     {Files.map((file, index) => (
                         <div key={index} style={{ display: 'flex', border: '1px solid lightgray', flexDirection: 'row', float: 'right' }}>
                             <div style={{ marginRight: '1em' }}>
-                                {file.substring(22)}
+                                {file.substring(26)}
                             </div>
                             <FaTrash onClick={onDelete} style={{ marginTop: '0.25em', color: '#ff3b3b', cursor: 'pointer' }} />
                         </div>
@@ -111,4 +111,4 @@ function FileUpload(props) {
     )
 }
 
-export default FileUpload
+export default ImageUpload

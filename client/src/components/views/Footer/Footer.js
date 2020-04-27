@@ -1,15 +1,31 @@
 import React from 'react'
-import {Icon} from 'antd';
+import { Grid, Box, List, ListItem } from "@chakra-ui/core";
 
 function Footer() {
     return (
-        <div style={{
-            height: '80px', display: 'flex',
-            flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', fontSize:'1rem'
-        }}>
-           <p> Happy Coding  <Icon type="smile" /></p>
-        </div>
+        <Box bg="blue.700" p="5em 0 5em 0">
+            <Grid maxWidth="800px" templateColumns="repeat(3, 1fr)" margin="0 auto" bg="blue.700">
+                <Box w="100%" justifyContent="center" display="flex">
+                    <List spacing={3} color="white" fontSize="lg">
+                        <ListItem>Home</ListItem>
+                        <ListItem>Beats</ListItem>
+                    </List>
+                </Box>
+                <Box w="100%" justifyContent="center" display="flex">
+                    <List spacing={3} color="white" fontSize="lg">
+                        <ListItem>About</ListItem>
+                        <ListItem>Contact</ListItem>
+                    </List>
+                </Box>
+                <Box w="100%" justifyContent="center" display="flex">
+                    <List spacing={3} color="white" fontSize="lg">
+                        <ListItem>Licensing Info</ListItem>
+                        <ListItem>Terms of use</ListItem>
+                        <ListItem>Privacy policy</ListItem>
+                    </List>
+                </Box>
+            </Grid>
+        </Box>
     )
 }
 

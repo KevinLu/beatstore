@@ -1,16 +1,28 @@
-import React from 'react'
-import { FaCode } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import Axios from 'axios';
+import { message } from 'antd';
 
 function LandingPage() {
+
+    const [Beats, setBeats] = useState([]);
+
+    useEffect(() => {
+        Axios.post('/api/beat/getBeats')
+            .then(response => {
+                if (response.data.success) {
+                    setBeats(response.data.beats)
+                    console.log(response.data.beats)
+                } else {
+                    message.error('Failed to fetch beats.')
+                }
+            })
+    }, []);
+
     return (
         <>
-        <div className="app">
-            <FaCode style={{ fontSize: '4rem' }} /><br />
-            <span style={{ fontSize: '2rem' }}>Landing Page</span>
-        </div>
-        <div style={{ float:'right' }}>Boiler Plate by John Ahn</div>
+
         </>
-    )
+    );
 }
 
 export default LandingPage

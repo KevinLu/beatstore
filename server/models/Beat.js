@@ -17,7 +17,11 @@ const beatSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    files: {
+    audios: {
+        type: Array,
+        default: []
+    },
+    images: {
         type: Array,
         default: []
     },
