@@ -82,7 +82,7 @@ router.post("/getBeats", (req, res) => { // no need auth
         .limit(limit)
         .exec((err, beats) => {
             if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({ success: true, beats });
+            res.status(200).json({ success: true, beats, count: beats.length });
         })
 });
 
