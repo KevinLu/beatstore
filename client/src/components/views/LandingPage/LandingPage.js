@@ -6,6 +6,7 @@ import {
     Skeleton,
     Grid,
     Box,
+    Stack,
     IconButton,
     Button,
     ButtonGroup,
@@ -25,7 +26,7 @@ const ListHeading = ({ children, width }) => (
     </Box>
 );
 
-const ListText = ({ children, width }) => (
+const ListText = ({ children }) => (
     <Box w="100%" h="10" mt="0.5em">
         <Text fontWeight="600" fontSize="md" color="black">{children}</Text>
     </Box>
@@ -82,7 +83,7 @@ function LandingPage() {
     // Render the beats in a list
     const renderListItems = Beats.map((beat, index) => {
         return (
-            <Box key={index} maxWidth="1166px" margin="auto auto 1em auto">
+            <Box key={index} maxWidth="1166px" margin="auto">
                 <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
                     <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
 
@@ -92,14 +93,14 @@ function LandingPage() {
 
                     <ListText>{beat.bpm}</ListText>
 
-                    <Box mt="0.5em">
+                    <Stack spacing={2} isInline height={10}>
                         {beat.tags.map((tag, i) => (
-                            <Tag size="md" key={i} variantColor="blue" mr={2}>
-                                <TagIcon as={FaHashtag} size="12px" />
-                                <TagLabel>{tag}</TagLabel>
+                            <Tag size="md" key={i} variantColor="blue">
+                                <TagIcon as={FaHashtag} size="13px" />
+                                <TagLabel mt="-0.1em">{tag}</TagLabel>
                             </Tag>
                         ))}
-                    </Box>
+                    </Stack>
 
                     <ButtonGroup spacing={2} ml="auto">
                         <IconButton
