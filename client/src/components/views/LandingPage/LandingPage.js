@@ -40,15 +40,17 @@ const secondsToTime = (e) => {
 function LandingPage() {
 
     const [Beats, setBeats] = useState([]);
+    const [Skip, setSkip] = useState(0);
+    const [Limit, setLimit] = useState(8); // only load first 8 beats
+    const [IsLoading, setIsLoading] = useState(true);
     const toast = useToast();
 
-    // Load the beats
-    useEffect(() => {
-        Axios.post('/api/beat/getBeats')
+    const getBeats = (variables) => {
+        setIsLoading(true);
+        Axios.post('/api/beat/getBeats', variables)
             .then(response => {
                 if (response.data.success) {
-                    setBeats(response.data.beats)
-                    console.log(response.data.beats)
+                    setBeats(Beats.concat(response.data.beats))
                 } else {
                     toast({
                         position: "bottom",
@@ -59,7 +61,17 @@ function LandingPage() {
                         isClosable: true,
                     })
                 }
-            })
+                setIsLoading(false);
+            });
+    };
+
+    // Load the beats
+    useEffect(() => {
+        const variables = {
+            skip: Skip,
+            limit: Limit
+        }
+        getBeats(variables);
     }, []);
 
     // Render the beats in a list
@@ -99,6 +111,28 @@ function LandingPage() {
         );
     });
 
+    const loadMore = () => {
+        let skipItems = Skip + Limit;
+       
+        if (skipItems > Beats.length) {
+            toast({
+                position: "bottom",
+                title: "All beats loaded.",
+                description: "Couldn't find any more beats to load.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+            })
+        } else {
+            const variables = {
+                skip: skipItems,
+                limit: Limit
+            }
+            getBeats(variables);
+            setSkip(skipItems);
+        }
+    }
+
     return (
         <Box p="5em 0 5em 0">
             {Beats.length === 0 ?
@@ -116,7 +150,7 @@ function LandingPage() {
                     </Grid>
                     {renderListItems}
                     <Box display="flex" justifyContent="center">
-                        <Button variantColor="blue">BROWSE ALL</Button>
+                        <Button variantColor="blue" onClick={loadMore} isLoading={IsLoading}>LOAD MORE</Button>
                     </Box>
                 </Box>
             }
