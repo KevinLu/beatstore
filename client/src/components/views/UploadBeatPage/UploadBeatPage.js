@@ -189,7 +189,7 @@ function UploadBeatPage(props) {
 
                     <FormControl isRequired mt={5}>
                         <FormLabel>Price (USD)</FormLabel>
-                        <Input onChange={onChangeHandler} value={field.price} name="price" type="number" />
+                        <Input onChange={onChangeHandler} value={field.price} name="price" type="number" step="0.01" />
                     </FormControl>
 
                     <FormControl isRequired mt={5}>
