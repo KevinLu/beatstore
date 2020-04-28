@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
+    "jshint": "^2.11.0",
     "nodemon": "^1.19.1"
   }
 }
