@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import Dropzone, { useDropzone } from 'react-dropzone';
-import { Icon, message, Row, Col } from 'antd';
-import { FaTrash } from 'react-icons/fa';
+import React, { useState, useMemo } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useToast, Box, Grid, Tag, TagLabel, TagCloseButton } from "@chakra-ui/core";
 import Axios from 'axios';
 
 const baseStyle = {
@@ -34,9 +33,10 @@ const rejectStyle = {
 };
 
 function ImageUpload(props) {
+    const toast = useToast();
 
     const [Files, setFiles] = useState([])
-    
+
     const onDrop = (files) => {
         let formData = new FormData();
         const config = {
@@ -48,11 +48,23 @@ function ImageUpload(props) {
                 if (response.data.success) {
                     setFiles([...Files, response.data.file])
                     props.refreshFunction([...Files, response.data.file])
-                    message
-                        .loading('Uploading...', 1)
-                        .then(() => message.success('File uploaded', 2.5));
+                    toast({
+                        position: "bottom",
+                        title: "Audio file uploaded.",
+                        description: "Beat file successfully uploaded.",
+                        status: "success",
+                        duration: 3000,
+                        isClosable: true,
+                    })
                 } else {
-                    message.error('Ran into an error uploading that file, check the file type.')
+                    toast({
+                        position: "bottom",
+                        title: "Error uploading audio file.",
+                        description: "Check the file type.",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
                 }
             });
     }
@@ -72,6 +84,7 @@ function ImageUpload(props) {
         ...(isDragReject ? rejectStyle : {})
     }), [
         isDragActive,
+        isDragAccept,
         isDragReject
     ]);
 
@@ -81,33 +94,42 @@ function ImageUpload(props) {
         newFiles.splice(currentIndex, 1)
         setFiles(newFiles)
         props.refreshFunction(newFiles)
-        message.success('File removed successfully.')
+        toast({
+            position: "bottom",
+            render: () => (
+                <Box m={3} color="white" p={3} bg="blue.500">
+                    File removed.
+                </Box>
+            )
+        })
     }
 
     return (
-        <Row>
-            <Col span={12}>
+        <Box>
+            <Grid templateColumns="repeat(2, 1fr)">
                 <div className="container">
                     <div {...getRootProps({ style })}>
                         <input {...getInputProps()} />
-                        <p>Drag your images here, or click to select.</p>
+                        <p>Drag your artwork here, or click to select.</p>
                     </div>
                 </div>
-            </Col>
-
-            <Col span={12}>
-                <div style={{ display: 'flex', flexDirection: 'column', float: 'right' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {Files.map((file, index) => (
-                        <div key={index} style={{ display: 'flex', border: '1px solid lightgray', flexDirection: 'row', float: 'right' }}>
-                            <div style={{ marginRight: '1em' }}>
-                                {file.substring(26)}
-                            </div>
-                            <FaTrash onClick={onDelete} style={{ marginTop: '0.25em', color: '#ff3b3b', cursor: 'pointer' }} />
+                        <div key={index} style={{ marginLeft: 'auto', marginBottom: '3px' }}>
+                            <Tag
+                                size="md"
+                                key={index}
+                                variant="solid"
+                                variantColor="blue"
+                            >
+                                <TagLabel>{file.substring(26)}</TagLabel>
+                                <TagCloseButton onClick={onDelete} />
+                            </Tag>
                         </div>
                     ))}
                 </div>
-            </Col>
-        </Row>
+            </Grid>
+        </Box>
     )
 }
 

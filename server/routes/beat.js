@@ -21,7 +21,7 @@ var storage = multer.diskStorage({
         if (ext === '.mp3' || ext === '.wav') {
             cb(null, 'uploads/beats/')
         } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
-            cb(null, 'uploads/img/')
+            cb(null, 'uploads/img')
         } else {
             cb(new Error('File type not supported.'));
         }

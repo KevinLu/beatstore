@@ -13,9 +13,20 @@ const beatSchema = mongoose.Schema({
     description: {
         type: String
     },
+    bpm: {
+        type: Number,
+        default: 0
+    },
+    length: {
+        type: Number,
+        default: 0
+    },
     price: {
         type: Number,
         default: 0
+    },
+    date: {
+        type: Date
     },
     audios: {
         type: Array,

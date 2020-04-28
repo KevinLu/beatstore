@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
-import { Typography, Button, Form, message, Input } from 'antd';
+import {
+    FormControl,
+    FormLabel,
+    Heading,
+    FormHelperText,
+    Input,
+    Textarea,
+    Button,
+    useToast
+} from "@chakra-ui/core";
 import AudioUpload from '../../utils/AudioUpload';
 import ImageUpload from '../../utils/ImageUpload';
 import Tags from '@yaireo/tagify/dist/react.tagify';
 import Axios from 'axios';
-
-const { Title } = Typography;
-const { TextArea } = Input;
 
 function UploadBeatPage(props) {
 
     const [field, setField] = useState({
         title: "",
         description: "",
+        bpm: 0,
         price: 0,
+        date: ""
     });
 
     const onChangeHandler = e => {
@@ -36,13 +44,9 @@ function UploadBeatPage(props) {
         setImages(newImages)
     }
 
-    // just a name I made up for allowing dynamic changes for tagify settings on this component
-    const [tagifySettings, setTagifySettings] = useState([])
-    const [tagifyProps, setTagifyProps] = useState([])
-
     // Tagify settings object
     const baseTagifySettings = {
-        maxTags: 12,
+        maxTags: 3,
         backspace: "edit",
         placeholder: "Tag this beat",
     }
@@ -56,8 +60,16 @@ function UploadBeatPage(props) {
     // array to keep track of all the tags on beat
     var beattags = []
 
-    const tagInvalidCallback = e =>
-        message.error('Invalid or duplicate tag!')
+    const tagInvalidCallback = e => {
+        toast({
+            position: "bottom",
+            title: "Invalid tag.",
+            description: "Invalid or duplicate tag.",
+            status: "error",
+            duration: 1000,
+            isClosable: true,
+        })
+    }
 
     const tagAddCallback = e => {
         beattags[e.detail.index] = e.detail.data.value;
@@ -69,96 +81,129 @@ function UploadBeatPage(props) {
         updateTags(beattags)
     }
 
-    const callback = e =>
-        console.log(`%c ${e.type}: `, "background:#222; color:#bada55", e.detail)
-
     // callbacks props
     const tagifyCallbacks = {
         add: tagAddCallback,
         remove: tagRemoveCallback,
-        input: callback,
-        edit: callback,
-        invalid: tagInvalidCallback,
-        click: callback,
-        keydown: callback,
-        focus: callback,
-        blur: callback,
-        "edit:input": callback,
-        "edit:updated": callback,
-        "edit:start": callback,
-        "edit:keydown": callback,
-        "dropdown:show": callback,
-        "dropdown:hide": callback,
-        "dropdown:select": callback
+        invalid: tagInvalidCallback
     }
 
-    // merged tagify settings (static & dynamic)
     const settings = {
         ...baseTagifySettings,
-        ...tagifySettings,
         callbacks: tagifyCallbacks
     }
+
+    const toast = useToast();
 
     const onSubmit = (event) => {
         event.preventDefault();
 
-        if (!field.title || !field.description || !field.price || !Images || !Audios || !BeatTags) {
-            return message.error('Fill in everything first.')
-        }
-
-        const variables = {
-            producer: props.user.userData._id,
-            title: field.title,
-            description: field.description,
-            price: field.price,
-            audios: Audios,
-            images: Images,
-            tags: BeatTags
-        }
-
-        Axios.post('/api/beat/uploadBeat', variables)
-            .then(response => {
-                if (response.data.success) {
-                    message.success('Beat successfully uploaded!')
-                    props.history.push('/')
-                } else {
-                    message.error('Failed to upload this beat.')
-                }
+        if (!field.title || !field.description || !field.price || !field.bpm || !field.date || !Images || !Audios || !BeatTags) {
+            return toast({
+                position: "bottom",
+                title: "Empty fields!",
+                description: "Fill in everything first.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
             });
-        return false;
+        }
+
+        var ad = new Audio();
+        ad.src = `http://localhost:5000/${Audios[0]}`
+        ad.onloadedmetadata = function () {
+            const variables = {
+                producer: props.user.userData._id,
+                title: field.title,
+                description: field.description,
+                bpm: field.bpm,
+                length: ad.duration,
+                price: field.price,
+                date: field.date,
+                audios: Audios,
+                images: Images,
+                tags: BeatTags
+            }
+
+            Axios.post('/api/beat/uploadBeat', variables)
+                .then(response => {
+                    if (response.data.success) {
+                        toast({
+                            position: "bottom",
+                            title: "Beat uploaded.",
+                            description: "Time to get those placements!",
+                            status: "success",
+                            duration: 3000,
+                            isClosable: true,
+                        })
+                        props.history.push('/')
+                    } else {
+                        toast({
+                            position: "bottom",
+                            title: "Error uploading this beat.",
+                            description: "Please try again.",
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                        })
+                    }
+                });
+        };
     }
 
     return (
+
         <div style={{ margin: '2rem' }}>
             <div style={{ maxWidth: '700px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <Title>Upload a Beat</Title>
+                    <Heading>Upload a Beat</Heading>
                 </div>
 
-                <Form>
-                    <label>Upload MP3/WAV</label>
-                    <AudioUpload refreshFunction={updateAudios} />
+                <form>
+                    <FormControl isRequired>
+                        <FormLabel>Upload Beat Preview (tagged)</FormLabel>
+                        <AudioUpload refreshFunction={updateAudios} />
+                        <FormHelperText>MP3/WAV only</FormHelperText>
+                    </FormControl>
 
-                    <label>Upload PNG/JPG/JPEG</label>
-                    <ImageUpload refreshFunction={updateImages} />
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>Upload Artwork</FormLabel>
+                        <ImageUpload refreshFunction={updateImages} />
+                        <FormHelperText>PNG/JPG/JPEG only</FormHelperText>
+                    </FormControl>
 
-                    <label>Title</label>
-                    <Input style={{ marginBottom: '1em' }} onChange={onChangeHandler} value={field.title} name="title" />
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>Title</FormLabel>
+                        <Input placeholder="Name of beat" onChange={onChangeHandler} value={field.title} name="title" />
+                    </FormControl>
 
-                    <label>Description</label>
-                    <TextArea style={{ marginBottom: '1em' }} onChange={onChangeHandler} value={field.description} name="description" />
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>Description</FormLabel>
+                        <Textarea placeholder="Describe this beat" onChange={onChangeHandler} value={field.description} name="description" />
+                    </FormControl>
 
-                    <label>Price (USD)</label>
-                    <Input style={{ marginBottom: '1em' }} onChange={onChangeHandler} value={field.price} name="price" type="number" />
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>BPM</FormLabel>
+                        <Input onChange={onChangeHandler} value={field.bpm} name="bpm" type="number" />
+                    </FormControl>
 
-                    <label>Tags (max 12)</label>
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>Price (USD)</FormLabel>
+                        <Input onChange={onChangeHandler} value={field.price} name="price" type="number" />
+                    </FormControl>
+
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>Release date</FormLabel>
+                        <Input isDisabled={true} onChange={onChangeHandler} value={field.date = Date()} name="date" />
+                    </FormControl>
+
+                    <FormLabel mt={5}>Tags (max. 3)</FormLabel>
                     <Tags
                         settings={settings}
-                        {...tagifyProps}
                     />
 
-                    <Button style={{ marginTop: '1em' }} type="primary" onClick={onSubmit}>Upload</Button>
-                </Form>
+                    <Button mt={5} variantColor="blue" onClick={onSubmit}>Upload</Button>
+                </form>
             </div>
         </div>
     )

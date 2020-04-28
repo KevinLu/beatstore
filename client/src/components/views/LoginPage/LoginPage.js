@@ -1,18 +1,27 @@
 import React, { useState } from "react";
 import { withRouter } from "react-router-dom";
 import { loginUser } from "../../../_actions/user_actions";
-import { Formik } from 'formik';
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
-import { Form, Icon, Input, Button, Checkbox, Typography } from 'antd';
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Button,
+  Checkbox,
+  Box,
+  Heading,
+  useToast
+} from "@chakra-ui/core";
 import { useDispatch } from "react-redux";
-
-const { Title } = Typography;
 
 function LoginPage(props) {
   const dispatch = useDispatch();
   const rememberMeChecked = localStorage.getItem("rememberMe") ? true : false;
 
-  const [formErrorMessage, setFormErrorMessage] = useState('')
+  const toast = useToast();
+
   const [rememberMe, setRememberMe] = useState(rememberMeChecked)
 
   const handleRememberMe = () => {
@@ -23,19 +32,15 @@ function LoginPage(props) {
 
   return (
     <Formik
-      initialValues={{
-        email: initialEmail,
-        password: '',
-      }}
+      initialValues={{ email: initialEmail, password: '' }}
       validationSchema={Yup.object().shape({
         email: Yup.string()
           .email('Email is invalid')
           .required('Email is required'),
         password: Yup.string()
-          .min(6, 'Password must be at least 6 characters')
           .required('Password is required'),
       })}
-      onSubmit={(values, { setSubmitting }) => {
+      onSubmit={(values, actions) => {
         setTimeout(() => {
           let dataToSubmit = {
             email: values.email,
@@ -47,103 +52,77 @@ function LoginPage(props) {
               if (response.payload.loginSuccess) {
                 window.localStorage.setItem('userId', response.payload.userId);
                 if (rememberMe === true) {
-                  window.localStorage.setItem('rememberMe', values.id);
+                  window.localStorage.setItem('rememberMe', values.email);
                 } else {
                   localStorage.removeItem('rememberMe');
                 }
                 props.history.push("/");
               } else {
-                setFormErrorMessage('Check out your Account or Password again')
+                toast({
+                  position: "bottom",
+                  title: "Can't login!",
+                  description: "Incorrect e-mail or password.",
+                  status: "error",
+                  duration: 5000,
+                  isClosable: true,
+                });
               }
             })
             .catch(err => {
-              setFormErrorMessage('Check out your Account or Password again')
-              setTimeout(() => {
-                setFormErrorMessage("")
-              }, 3000);
+              toast({
+                position: "bottom",
+                title: "Can't login!",
+                description: "Server error while logging in. Try again later.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+              });
             });
-          setSubmitting(false);
+          actions.setSubmitting(false);
         }, 500);
       }}
     >
-      {props => {
-        const {
-          values,
-          touched,
-          errors,
-          dirty,
-          isSubmitting,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          handleReset,
-        } = props;
-        return (
-          <div className="app">
-
-            <Title level={2}>Log In</Title>
-            <form onSubmit={handleSubmit} style={{ width: '350px' }}>
-
-              <Form.Item required>
-                <Input
-                  id="email"
-                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Enter your email"
-                  type="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.email && touched.email ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.email && touched.email && (
-                  <div className="input-feedback">{errors.email}</div>
-                )}
-              </Form.Item>
-
-              <Form.Item required>
-                <Input
-                  id="password"
-                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Enter your password"
-                  type="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.password && touched.password ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.password && touched.password && (
-                  <div className="input-feedback">{errors.password}</div>
-                )}
-              </Form.Item>
-
-              {formErrorMessage && (
-                <label ><p style={{ color: '#ff0000bf', fontSize: '0.7rem', border: '1px solid', padding: '1rem', borderRadius: '10px' }}>{formErrorMessage}</p></label>
+      {props => (
+        <Box w="350px" display="flex" margin="auto" flexDirection="column">
+          <Box display="flex" justifyContent="center" mt={200} mb={5}>
+            <Heading>Login</Heading>
+          </Box>
+          <form onSubmit={props.handleSubmit}>
+            <Field name="email">
+              {({ field, form }) => (
+                <FormControl isInvalid={form.errors.email && form.touched.email}>
+                  <FormLabel htmlFor="email">E-mail</FormLabel>
+                  <Input {...field} id="email" placeholder="E-mail address" />
+                  <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+                </FormControl>
               )}
-
-              <Form.Item>
-                <Checkbox id="rememberMe" onChange={handleRememberMe} checked={rememberMe} >Remember me</Checkbox>
-                <a className="login-form-forgot" href="/reset_user" style={{ float: 'right' }}>
-                  forgot password
-                  </a>
-                <div>
-                  <Button type="primary" htmlType="submit" className="login-form-button" style={{ minWidth: '100%' }} disabled={isSubmitting} onSubmit={handleSubmit}>
-                    Log in
-                </Button>
-                </div>
-                Or <a href="/register">register now!</a>
-              </Form.Item>
-            </form>
-          </div>
-        );
-      }}
+            </Field>
+            <Field name="password">
+              {({ field, form }) => (
+                <FormControl isInvalid={form.errors.password && form.touched.password}>
+                  <FormLabel htmlFor="email">Password</FormLabel>
+                  <Input {...field} id="email" placeholder="Password" type="password" />
+                  <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
+            <Box mt={2}>
+              <Checkbox id="rememberMe" onChange={handleRememberMe} checked={rememberMe} >Remember e-mail</Checkbox>
+            </Box>
+            <Box mb={300} mt={3}>
+              <Button
+                variantColor="blue"
+                isLoading={props.isSubmitting}
+                type="submit"
+              >
+                Submit
+          </Button>
+            </Box>
+          </form>
+        </Box>
+      )}
     </Formik>
   );
 };
 
 export default withRouter(LoginPage);
-
-

@@ -1,16 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import { Box, Link } from "@chakra-ui/core";
+import { Box } from "@chakra-ui/core";
 import axios from 'axios';
 import { USER_SERVER } from '../../../Config';
-import { withRouter, Link as RouterLink } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
-
-const MenuItems = ({ children, link }) => (
-  <Link as={RouterLink} to={link} fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-    {children}
-  </Link>
-);
 
 function RightMenu(props) {
   const [show, setShow] = React.useState(false);
@@ -49,8 +43,16 @@ function RightMenu(props) {
           alignItems="center"
           flexGrow={1}
         >
-          <MenuItems link="/beat/upload">Upload</MenuItems>
-          <MenuItems><a onClick={logoutHandler}>Logout</a></MenuItems>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+            <Link to="/beat/upload">
+              UPLOAD
+          </Link>
+          </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+            <Link to="/login" fontSize="lg" onClick={logoutHandler}>
+              LOGOUT
+          </Link>
+          </Box>
         </Box>
       </Box>
     )
@@ -75,8 +77,16 @@ function RightMenu(props) {
           alignItems="center"
           flexGrow={1}
         >
-          <MenuItems link="/login">Log in</MenuItems>
-          <MenuItems link="/register">Sign up</MenuItems>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+            <Link to="/login">
+              SIGN IN
+          </Link>
+          </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+            <Link to="/register">
+              REGISTER
+          </Link>
+          </Box>
         </Box>
       </Box>
     )
