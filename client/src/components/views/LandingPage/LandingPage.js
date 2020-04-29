@@ -15,7 +15,6 @@ import {
     TagLabel,
     TagIcon,
     Image,
-    Heading,
     Divider
 } from "@chakra-ui/core";
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
@@ -147,10 +146,10 @@ function LandingPage() {
     }
 
     return (
-        <Box p="5em 0 5em 0">
+        <Box m="5em 0 5em 0">
             {Beats.length === 0 ?
                 <Box maxWidth="1166px" margin="auto">
-                    <Box maxWidth="700px" margin="auto auto 5em">
+                    <Box maxWidth="700px" margin="auto auto 15em">
                         <Skeleton height="40px" />
                     </Box>
                     <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
@@ -174,8 +173,8 @@ function LandingPage() {
                     </Grid>
                 </Box> :
                 <Box maxWidth="1166px" margin="auto">
-                    <Box maxWidth="700px" margin="auto auto 5em">
-                        <SearchBox placeholder="What type of beats are you looking for?" />
+                    <Box maxWidth="700px" margin="auto auto 15em">
+                        <SearchBox placeholder="What type of beats are you looking for?" width="700px" />
                     </Box>
                     <Box>
                         <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
@@ -187,7 +186,7 @@ function LandingPage() {
                             <div></div>
                         </Grid>
                         {renderListItems}
-                        <Box display="flex" justifyContent="center">
+                        <Box display="flex" justifyContent="center" mt={10}>
                             <Button variantColor="blue" onClick={loadMore} isLoading={IsLoading}>LOAD MORE</Button>
                         </Box>
                     </Box>

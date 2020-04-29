@@ -42,6 +42,19 @@ const beatSchema = mongoose.Schema({
     }
 })
 
+beatSchema.index(
+    { tags: "text", title: "text" },
+    { default_language: "english" },
+    { weights: { tags: 5, title: 4 } },
+    { name: "TagsAndTitle" }
+);
+
+/*beatSchema.index(
+    { tags: "text" },
+    { default_language: "english" },
+    { name: "TagsOnly" }
+);*/
+
 const Beat = mongoose.model('Beat', beatSchema);
 
 module.exports = { Beat }

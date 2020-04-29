@@ -74,16 +74,29 @@ router.post("/getBeats", (req, res) => { // no need auth
     let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
     let limit = req.body.limit ? parseInt(req.body.limit) : 100;
     let skip = parseInt(req.body.skip);
+    let terms = req.body.searchTerm;
 
-    Beat.find()
-        .populate("producer")
-        .sort([[sortBy, order]])
-        .skip(skip)
-        .limit(limit)
-        .exec((err, beats) => {
-            if (err) return res.status(400).json({ success: false, err });
-            res.status(200).json({ success: true, beats, count: beats.length });
-        })
+    if (terms) { // if a search term is specified, only then we look for specific beats
+        Beat.find({ $text: { $search: terms } })
+            .populate("producer")
+            .sort([[sortBy, order]])
+            .skip(skip)
+            .limit(limit)
+            .exec((err, beats) => {
+                if (err) return res.status(400).json({ success: false, err });
+                res.status(200).json({ success: true, beats, count: beats.length });
+            });
+    } else {
+        Beat.find()
+            .populate("producer")
+            .sort([[sortBy, order]])
+            .skip(skip)
+            .limit(limit)
+            .exec((err, beats) => {
+                if (err) return res.status(400).json({ success: false, err });
+                res.status(200).json({ success: true, beats, count: beats.length });
+            });
+    }
 });
 
 module.exports = router;
