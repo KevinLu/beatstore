@@ -19,14 +19,14 @@ import {
 } from "@chakra-ui/core";
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 
-const ListHeading = ({ children, width }) => (
-    <Box w="100%" h="10">
+const ListHeading = ({ children, displayBreakpoints }) => (
+    <Box w="100%" h="10" display={displayBreakpoints}>
         <Text fontWeight="600" fontSize="sm" color="gray.900" letterSpacing="2px">{children}</Text>
     </Box>
 );
 
-const ListText = ({ children }) => (
-    <Box w="100%" h="10" mt="0.5em">
+const ListText = ({ children, displayBreakpoints }) => (
+    <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints}>
         <Text fontWeight="600" fontSize="md" color="black">{children}</Text>
     </Box>
 );
@@ -82,21 +82,21 @@ function LandingPage() {
     // Render the beats in a list
     const renderListItems = Beats.map((beat, index) => {
         return (
-            <Box key={index} maxWidth="1166px" margin="auto">
-                <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
+            <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
+                <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6} pl={2} pr={2}>
                     <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
 
                     <ListText>{beat.title}</ListText>
 
-                    <ListText>{secondsToTime(beat.bpm)}</ListText>
+                    <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{secondsToTime(beat.bpm)}</ListText>
 
-                    <ListText>{beat.bpm}</ListText>
+                    <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{beat.bpm}</ListText>
 
-                    <Stack spacing={2} isInline height={10}>
+                    <Stack spacing={2} isInline height={10} display={{ base: "none", md: "unset" }} mt="0.45em">
                         {beat.tags.map((tag, i) => (
                             <Tag size="md" key={i} variantColor="blue">
                                 <TagIcon as={FaHashtag} size="13px" />
-                                <TagLabel mt="-0.1em">{tag}</TagLabel>
+                                <TagLabel mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
                             </Tag>
                         ))}
                     </Stack>
@@ -148,11 +148,11 @@ function LandingPage() {
     return (
         <Box m="5em 0 5em 0">
             {Beats.length === 0 ?
-                <Box maxWidth="1166px" margin="auto">
-                    <Box maxWidth="700px" margin="auto auto 15em">
+                <Box maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
+                    <Box width={["400px", "450px", "600px", "700px"]} margin="auto auto 15em">
                         <Skeleton height="40px" />
                     </Box>
-                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
+                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6} pl={2} pr={2}>
                         <div></div>
                         <ListHeading>TITLE</ListHeading>
                         <ListHeading>TIME</ListHeading>
@@ -160,7 +160,7 @@ function LandingPage() {
                         <ListHeading>TAGS</ListHeading>
                         <div></div>
                     </Grid>
-                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
+                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6} pl={2} pr={2}>
                         <Skeleton height="44px" width="44px" />
                         <Skeleton height="20px" mt="0.55em" />
                         <Skeleton height="20px" mt="0.55em" />
@@ -172,17 +172,17 @@ function LandingPage() {
                         </Box>
                     </Grid>
                 </Box> :
-                <Box maxWidth="1166px" margin="auto">
-                    <Box maxWidth="700px" margin="auto auto 15em">
-                        <SearchBox placeholder="What type of beats are you looking for?" width="700px" />
+                <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
+                    <Box width={["400px", "450px", "600px", "700px"]} margin="auto auto 15em">
+                        <SearchBox placeholder="Search for a vibe" width={["400px", "450px", "600px", "700px"]} />
                     </Box>
                     <Box>
-                        <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
+                        <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6} pl={2} pr={2}>
                             <div></div>
-                            <ListHeading>TITLE</ListHeading>
-                            <ListHeading>TIME</ListHeading>
-                            <ListHeading>BPM</ListHeading>
-                            <ListHeading>TAGS</ListHeading>
+                            <ListHeading displayBreakpoints={{ base: "none", md: "initial" }}>TITLE</ListHeading>
+                            <ListHeading displayBreakpoints={{ base: "none", lg: "initial" }}>TIME</ListHeading>
+                            <ListHeading displayBreakpoints={{ base: "none", lg: "initial" }}>BPM</ListHeading>
+                            <ListHeading displayBreakpoints={{ base: "none", md: "initial" }}>TAGS</ListHeading>
                             <div></div>
                         </Grid>
                         {renderListItems}
