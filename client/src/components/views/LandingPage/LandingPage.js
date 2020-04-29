@@ -45,7 +45,6 @@ function LandingPage() {
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
     const [IsLoading, setIsLoading] = useState(false);
-    const [SearchTerms, setSearchTerms] = useState("");
     const toast = useToast();
 
     const getBeats = (variables) => {
@@ -146,15 +145,11 @@ function LandingPage() {
         }
     }
 
-    const updateSearch = (newSearchTerms) => {
-        setSearchTerms(newSearchTerms);
-    }
-
     return (
         <Box m="5em 0 5em 0">
             {Beats.length === 0 ?
                 <Box maxWidth="1166px" margin="auto">
-                    <Box maxWidth="700px" margin="auto auto 5em">
+                    <Box maxWidth="700px" margin="auto auto 15em">
                         <Skeleton height="40px" />
                     </Box>
                     <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
@@ -178,8 +173,8 @@ function LandingPage() {
                     </Grid>
                 </Box> :
                 <Box maxWidth="1166px" margin="auto">
-                    <Box maxWidth="700px" margin="auto auto 10em">
-                        <SearchBox refreshFunction={updateSearch} placeholder="What type of beats are you looking for?" />
+                    <Box maxWidth="700px" margin="auto auto 15em">
+                        <SearchBox placeholder="What type of beats are you looking for?" width="700px" />
                     </Box>
                     <Box>
                         <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>

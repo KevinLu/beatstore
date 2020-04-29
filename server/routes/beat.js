@@ -75,7 +75,6 @@ router.post("/getBeats", (req, res) => { // no need auth
     let limit = req.body.limit ? parseInt(req.body.limit) : 100;
     let skip = parseInt(req.body.skip);
     let terms = req.body.searchTerm;
-    let partialTerms = new RegExp(terms, 'i');
 
     if (terms) { // if a search term is specified, only then we look for specific beats
         Beat.find({ $text: { $search: terms } })

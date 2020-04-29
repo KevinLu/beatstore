@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Text,
     List,
@@ -12,20 +12,26 @@ import {
     InputRightElement,
     useToast
 } from "@chakra-ui/core";
-import { IoMdMusicalNote } from 'react-icons/io'
+import { IoMdMusicalNote } from 'react-icons/io';
+import styled from '@emotion/styled';
 import Axios from 'axios';
 
+const SearchResult = styled.div`
+  &:hover {
+    background: #EDF2F7;
+  }
+`
+
 function SearchBox(props) {
-    const ReactDOM = require('react-dom');
     const [Beats, setBeats] = useState([]);
     const [SearchTerms, setSearchTerms] = useState("");
     const [SearchFocused, setSearchFocused] = useState(false);
+    const [ListBorder, setListBorder] = useState("0px solid");
     const toast = useToast();
     const searchInput = React.createRef();
 
     const handleChange = (event) => {
         setSearchTerms(event.currentTarget.value);
-        props.refreshFunction(event.currentTarget.value);
         const variables = {
             skip: 0,
             limit: 3,
@@ -35,11 +41,13 @@ function SearchBox(props) {
     }
 
     const handleFocus = () => {
-        setSearchFocused(false);
+        setSearchFocused(true);
     }
 
     const handleBlur = () => {
-        setSearchFocused(true);
+        setTimeout(() => {
+            setSearchFocused(false);
+        }, 200);
     }
 
     const getBeats = (variables) => {
@@ -49,6 +57,9 @@ function SearchBox(props) {
                     if (response.data.success) {
                         if (response.data.beats.length >= Beats.length || response.data.beats.length === 0) {
                             setBeats(response.data.beats)
+                            setListBorder("1px solid")
+                        } else {
+                            setListBorder("0px solid")
                         }
                     } else {
                         toast({
@@ -60,17 +71,19 @@ function SearchBox(props) {
                             isClosable: true,
                         })
                     }
-                }, 100);
+                }, 1);
             });
     };
 
     const showSearchResults = Beats.map((beat, index) => {
-        if (!SearchFocused) {
+        if (SearchFocused) {
             return (
-                <ListItem display="flex" mt={5} mb={5}>
-                    <ListIcon icon={IoMdMusicalNote} color="blue.500" size="25px" ml={3} />
-                    <Text fontSize="md" fontWeight="600" color="black">{beat.title}</Text>
-                </ListItem>
+                <SearchResult key={index}>
+                    <ListItem display="flex" pt={3} pb={3}>
+                        <ListIcon icon={IoMdMusicalNote} color="blue.500" size="25px" ml={3} />
+                        <Text fontSize="md" fontWeight="600" color="black">{beat.title}</Text>
+                    </ListItem>
+                </SearchResult>
             );
         }
     });
@@ -79,16 +92,21 @@ function SearchBox(props) {
         <div>
             <InputGroup>
                 <InputLeftElement children={<Icon name="search" color="gray.300" />} />
-                <Input onFocus={handleFocus} onBlur={handleBlur} ref={searchInput} color="black" fontWeight="600" size="lg" id="search" placeholder={props.placeholder} onChange={handleChange} />
+                <Input onFocus={handleFocus} onBlur={handleBlur} color="black" fontWeight="600" size="lg" id="search" placeholder={props.placeholder} onChange={handleChange} />
                 <InputRightElement width="4.5rem">
                     <Button variantColor="blue">
                         SEARCH
                     </Button>
                 </InputRightElement>
             </InputGroup>
-            <List mt={5} border="1px solid" borderRadius="0.25rem" borderColor="gray.200">
-                {showSearchResults}
-            </List>
+            {Beats.length !== 0 && SearchFocused ?
+                <List mt={5} border="1px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
+                    {showSearchResults}
+                </List> :
+                <List mt={5} border="0px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
+                    {showSearchResults}
+                </List>
+            }
         </div>
     )
 }
