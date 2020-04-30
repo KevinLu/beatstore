@@ -92,11 +92,11 @@ function LandingPage() {
 
                     <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{beat.bpm}</ListText>
 
-                    <Stack spacing={2} isInline height={10} display={{ base: "none", md: "unset" }} mt="0.45em">
+                    <Stack spacing={2} isInline display={{ base: "none", md: "unset" }} mt="0.45em">
                         {beat.tags.map((tag, i) => (
                             <Tag size="md" key={i} variantColor="blue">
                                 <TagIcon as={FaHashtag} size="13px" />
-                                <TagLabel mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "7ch"}}>{tag}</TagLabel>
                             </Tag>
                         ))}
                     </Stack>
