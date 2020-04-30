@@ -99,4 +99,22 @@ router.post("/getBeats", (req, res) => { // no need auth
     }
 });
 
+router.get("/beats_by_url", (req, res) => { // no need auth
+    let type = req.query.type;
+    let beatUrls = req.query.url;
+
+    if (type === "array") {
+
+    } else if (type === "single") {
+        Beat.find({'url' : { $in: beatUrls }})
+            .populate('producer')
+            .exec((err, beat) => {
+                if (err) return res.status(400).send(err);
+                return res.status(200).send(beat);
+        });
+    } else {
+        return res.status(400).send('Improper type, use single or array.');
+    }
+});
+
 module.exports = router;

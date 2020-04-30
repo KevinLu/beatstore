@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SearchBox from './Sections/SearchBox'
 import Axios from 'axios';
+import { Link } from 'react-router-dom';
 import {
     Text,
     Skeleton,
@@ -19,7 +20,7 @@ import {
 } from "@chakra-ui/core";
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 
-const ListHeading = ({ children, width }) => (
+const ListHeading = ({ children }) => (
     <Box w="100%" h="10">
         <Text fontWeight="600" fontSize="sm" color="gray.900" letterSpacing="2px">{children}</Text>
     </Box>
@@ -86,7 +87,7 @@ function LandingPage() {
                 <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
                     <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
 
-                    <ListText>{beat.title}</ListText>
+                    <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
                     <ListText>{secondsToTime(beat.bpm)}</ListText>
 

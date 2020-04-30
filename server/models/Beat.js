@@ -39,6 +39,9 @@ const beatSchema = mongoose.Schema({
     tags: {
         type: Array,
         default: []
+    },
+    url: {
+        type: String
     }
 })
 
