@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/core";
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 
-const ListHeading = ({ children, width }) => (
+const ListHeading = ({ children }) => (
     <Box w="100%" h="10">
         <Text fontWeight="600" fontSize="sm" color="gray.900" letterSpacing="2px">{children}</Text>
     </Box>
