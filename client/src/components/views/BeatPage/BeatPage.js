@@ -44,50 +44,52 @@ function BeatPage(props) {
 
     return (
         <Box m="5em 0 5em 0">
-            <Grid templateColumns="1fr">
+            <Grid templateColumns={{ base: "1fr", lg: "1fr 10fr 1fr" }}>
                 <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" size="180px">
-                    <Image borderRadius="3px" size="180px" src={`http://localhost:5000/${Beat.images[0]}`}></Image>
+                    <Image borderRadius="3px" size="200px" src={`http://localhost:5000/${Beat.images[0]}`}></Image>
                 </Skeleton>
 
-                <Stack mt={2} textAlign="center">
-                    <Heading as="h2" size="xl">{Beat.title}</Heading>
-                    <div>
-                        <Skeleton size="15px" isLoaded={BeatLoaded} display="inline">
-                            <Icon name="star" color="orange.400" mr={1} />
-                            <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.name}</Text>
+                <div>
+                    <Stack mt={{ base: 8, lg: 3 }} textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
+                        <Heading as="h2" size="xl">{Beat.title}</Heading>
+                        <div>
+                            <Skeleton size="15px" isLoaded={BeatLoaded} display="inline">
+                                <Icon name="star" color="orange.400" mr={1} />
+                                <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.name}</Text>
+                            </Skeleton>
+                        </div>
+                    </Stack>
+
+                    <Stack mt={3} isInline display="block" textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
+                        <Tag size="md" variantColor="gray">
+                            <TagIcon as={MdMusicNote} size="15px" />
+                            <TagLabel mt="-0.1em">{Beat.bpm}</TagLabel>
+                        </Tag>
+                        <Tag size="md" variantColor="gray">
+                            <TagIcon as={MdDateRange} size="16px" />
+                            <TagLabel>{Beat.date}</TagLabel>
+                        </Tag>
+                    </Stack>
+
+                    <Skeleton isLoaded={BeatLoaded} mt={3} ml={{ base: "0", lg: "2em" }}>
+                        <Text textAlign={{ base: "center", lg: "initial" }} fontSize="md" color="black">"{Beat.description}"</Text>
+                    </Skeleton>
+
+                    <ButtonGroup spacing={2} margin={{ base: "1em auto 0 auto", lg: "1em 0 0 2em" }} display="flex" justifyContent={{ base: "center", lg: "left" }}>
+                        <Skeleton isLoaded={BeatLoaded} display="inline-block">
+                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                                ${Beat.price}
+                            </Button>
                         </Skeleton>
-                    </div>
-                </Stack>
+                        <Skeleton isLoaded={BeatLoaded} display="inline-block">
+                            <Button leftIcon="download" variantColor="blue" variant="outline">
+                                DOWNLOAD
+                            </Button>
+                        </Skeleton>
+                    </ButtonGroup>
+                </div>
 
-                <Stack margin="1em auto 0 auto" isInline textAlign="center">
-                    <Tag size="md" variantColor="gray">
-                        <TagIcon as={MdMusicNote} size="15px" />
-                        <TagLabel mt="-0.1em">{Beat.bpm}</TagLabel>
-                    </Tag>
-                    <Tag size="md" variantColor="gray">
-                        <TagIcon as={MdDateRange} size="16px" />
-                        <TagLabel>{Beat.date}</TagLabel>
-                    </Tag>
-                </Stack>
-
-                <Skeleton isLoaded={BeatLoaded} width="10em" height="2em" margin="1em auto 0 auto">
-                    <Text textAlign="center" fontSize="md" color="black">"{Beat.description}"</Text>
-                </Skeleton>
-
-                <ButtonGroup spacing={2} margin="1em auto 0 auto">
-                    <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
-                            ${Beat.price}
-                        </Button>
-                    </Skeleton>
-                    <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                        <Button leftIcon="download" variantColor="blue" variant="outline">
-                            DOWNLOAD
-                    </Button>
-                    </Skeleton>
-                </ButtonGroup>
-
-                <Stack spacing={2} isInline height={10} margin="1em auto 0 auto">
+                <Stack spacing={2} isInline height={10} margin={{ base: "1em auto 0 auto", lg: "auto 0 0 0" }}>
                     {Beat.tags.map((tag, i) => (
                         <Tag size="md" key={i} variantColor="blue">
                             <TagIcon as={FaHashtag} size="13px" />
