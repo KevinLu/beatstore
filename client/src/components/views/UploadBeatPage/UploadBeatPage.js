@@ -21,7 +21,7 @@ function UploadBeatPage(props) {
         description: "",
         bpm: 0,
         price: 0,
-        date: ""
+        date: new Date()
     });
 
     const onChangeHandler = e => {
@@ -109,6 +109,9 @@ function UploadBeatPage(props) {
             });
         }
 
+        var safeTitle = field.title.replace(/\W+/g, '-').toLowerCase();
+        var unixTimestamp = Math.floor(field.date / 1000);
+
         var ad = new Audio();
         ad.src = `http://localhost:5000/${Audios[0]}`
         ad.onloadedmetadata = function () {
@@ -122,7 +125,8 @@ function UploadBeatPage(props) {
                 date: field.date,
                 audios: Audios,
                 images: Images,
-                tags: BeatTags
+                tags: BeatTags,
+                url: `${safeTitle}-${unixTimestamp}`
             }
 
             Axios.post('/api/beat/uploadBeat', variables)
@@ -194,7 +198,7 @@ function UploadBeatPage(props) {
 
                     <FormControl isRequired mt={5}>
                         <FormLabel>Release date</FormLabel>
-                        <Input isDisabled={true} onChange={onChangeHandler} value={field.date = Date()} name="date" />
+                        <Input isDisabled={true} onChange={onChangeHandler} value={field.date} name="date" />
                     </FormControl>
 
                     <FormLabel mt={5}>Tags (max. 3)</FormLabel>

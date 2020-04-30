@@ -44,7 +44,7 @@ function RightMenu(props) {
           flexGrow={1}
         >
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-            <Link to="/beat/upload">
+            <Link to="/upload">
               UPLOAD
           </Link>
           </Box>

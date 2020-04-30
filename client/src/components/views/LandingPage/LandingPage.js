@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SearchBox from './Sections/SearchBox'
 import Axios from 'axios';
+import { Link } from 'react-router-dom';
 import {
     Text,
     Skeleton,
@@ -86,7 +87,7 @@ function LandingPage() {
                 <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6} pl={2} pr={2}>
                     <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
 
-                    <ListText>{beat.title}</ListText>
+                    <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
                     <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{secondsToTime(beat.bpm)}</ListText>
 
