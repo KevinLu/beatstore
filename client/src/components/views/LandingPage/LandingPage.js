@@ -84,7 +84,7 @@ function LandingPage() {
     const renderListItems = Beats.map((beat, index) => {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6} pl={2} pr={2}>
+                <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6}>
                     <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
 
                     <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
@@ -93,11 +93,11 @@ function LandingPage() {
 
                     <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{beat.bpm}</ListText>
 
-                    <Stack spacing={2} isInline display={{ base: "none", md: "unset" }} mt="0.45em">
+                    <Stack spacing={2} isInline display={{ base: "none", md: "initial" }} mt="0.45em">
                         {beat.tags.map((tag, i) => (
                             <Tag size="md" key={i} variantColor="blue">
                                 <TagIcon as={FaHashtag} size="13px" />
-                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "7ch"}}>{tag}</TagLabel>
+                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
                             </Tag>
                         ))}
                     </Stack>
@@ -147,13 +147,13 @@ function LandingPage() {
     }
 
     return (
-        <Box m="5em 0 5em 0">
+        <Box m="5em 1em 5em 1em">
             {Beats.length === 0 ?
                 <Box maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                     <Box width={["400px", "450px", "600px", "700px"]} margin="auto auto 15em">
                         <Skeleton height="40px" />
                     </Box>
-                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6} pl={2} pr={2}>
+                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
                         <div></div>
                         <ListHeading>TITLE</ListHeading>
                         <ListHeading>TIME</ListHeading>
@@ -161,7 +161,7 @@ function LandingPage() {
                         <ListHeading>TAGS</ListHeading>
                         <div></div>
                     </Grid>
-                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6} pl={2} pr={2}>
+                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
                         <Skeleton height="44px" width="44px" />
                         <Skeleton height="20px" mt="0.55em" />
                         <Skeleton height="20px" mt="0.55em" />
@@ -178,7 +178,7 @@ function LandingPage() {
                         <SearchBox placeholder="Search for a vibe" width={["400px", "450px", "600px", "700px"]} />
                     </Box>
                     <Box>
-                        <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6} pl={2} pr={2}>
+                        <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6}>
                             <div></div>
                             <ListHeading displayBreakpoints={{ base: "none", md: "initial" }}>TITLE</ListHeading>
                             <ListHeading displayBreakpoints={{ base: "none", lg: "initial" }}>TIME</ListHeading>

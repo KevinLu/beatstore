@@ -93,7 +93,7 @@ function BeatPage(props) {
                     {Beat.tags.map((tag, i) => (
                         <Tag size="md" key={i} variantColor="blue">
                             <TagIcon as={FaHashtag} size="13px" />
-                            <TagLabel mt="-0.1em" fontWeight="600">{tag}</TagLabel>
+                            <TagLabel mt="-0.1em" fontWeight="600" maxWidth={{base: "10ch", md: "12ch", lg: "15ch"}}>{tag}</TagLabel>
                         </Tag>
                     ))}
                 </Stack>
