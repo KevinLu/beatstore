@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useContext } from 'react';
 import { Route, Switch } from "react-router-dom";
 import Auth from "../hoc/auth";
 // pages for this product
@@ -9,6 +9,8 @@ import NavBar from "./views/NavBar/NavBar";
 import Footer from "./views/Footer/Footer";
 import UploadBeatPage from "./views/UploadBeatPage/UploadBeatPage";
 import BeatPage from "./views/BeatPage/BeatPage";
+import BeatPlayer from "./views/BeatPlayer/BeatPlayer";
+import { AudioContextProvider } from "./utils/AudioContext";
 import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
 //null   Anyone Can go inside
@@ -20,16 +22,19 @@ function App() {
     <ThemeProvider>
       <CSSReset />
       <Suspense fallback={(<div>Loading...</div>)}>
-        <NavBar>
-          <Switch>
-            <Route exact path="/" component={Auth(LandingPage, null)} />
-            <Route exact path="/login" component={Auth(LoginPage, false)} />
-            <Route exact path="/register" component={Auth(RegisterPage, false)} />
-            <Route exact path="/upload" component={Auth(UploadBeatPage, true)} />
-            <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, null)} />
-          </Switch>
-        </NavBar>
-        <Footer />
+        <AudioContextProvider>
+          <NavBar>
+            <Switch>
+              <Route exact path="/" component={Auth(LandingPage, null)} />
+              <Route exact path="/login" component={Auth(LoginPage, false)} />
+              <Route exact path="/register" component={Auth(RegisterPage, false)} />
+              <Route exact path="/upload" component={Auth(UploadBeatPage, true)} />
+              <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, null)} />
+            </Switch>
+          </NavBar>
+          <Footer />
+          <BeatPlayer />
+        </AudioContextProvider>
       </Suspense>
     </ThemeProvider>
   );

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import SearchBox from './Sections/SearchBox'
+import React, { useEffect, useState, useContext } from 'react';
+import SearchBox from './Sections/SearchBox';
+import { AudioContext } from "../../utils/AudioContext";
 import Axios from 'axios';
 import { Link } from 'react-router-dom';
 import {
@@ -46,6 +47,12 @@ function LandingPage() {
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
     const [IsLoading, setIsLoading] = useState(false);
+    const [AudioIsPlaying, setAudioIsPlaying] = useState(false);
+    const [CurrentAudio, setCurrentAudio] = useState(new Audio);
+    const [CurrentAudioUrl, setCurrentAudioUrl] = useState("");
+    const { playlist, index } = useContext(AudioContext);
+    const [Playlist, setPlaylist] = playlist;
+    const [Index, setIndex] = index;
     const toast = useToast();
 
     const getBeats = (variables) => {
@@ -80,12 +87,53 @@ function LandingPage() {
         getBeats(variables);
     }, []);
 
+    /*const playAudio = (beat) => {
+        if (AudioIsPlaying && CurrentAudioUrl === beat.url) { // pause it
+            CurrentAudio.pause();
+            setAudioIsPlaying(false);
+            console.log("pause")
+        } else if (AudioIsPlaying && CurrentAudioUrl !== beat.url) { // play new audio
+            CurrentAudio.pause();
+            CurrentAudio.src = `http://localhost:5000/${beat.audios[0]}`;
+            CurrentAudio.play();
+            setAudioIsPlaying(true);
+            setCurrentAudioUrl(beat.url);
+            console.log("start other audio")
+        } else if (!AudioIsPlaying) {
+            CurrentAudio.src = `http://localhost:5000/${beat.audios[0]}`;
+            CurrentAudio.play();
+            setAudioIsPlaying(true);
+            setCurrentAudioUrl(beat.url);
+            console.log("start first audio")
+        }
+    }*/
+
+    const playAudio = (beat) => {
+        const newAudio = {
+            title: beat.title,
+            producer: beat.producer.name,
+            image: `http://localhost:5000/${beat.images[0]}`,
+            audio: `http://localhost:5000/${beat.audios[0]}`,
+            isPlaying: false,
+            isPaused: false
+        };
+        setPlaylist([...Playlist, newAudio], console.log(Playlist));
+        setIndex(Index + 1);
+    }
+
     // Render the beats in a list
     const renderListItems = Beats.map((beat, index) => {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6}>
-                    <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
+
+                    <Image
+                        borderRadius="3px"
+                        size="44px"
+                        src={`http://localhost:5000/${beat.images[0]}`}
+                        fallbackSrc="https://via.placeholder.com/44"
+                        cursor="pointer"
+                        onClick={() => playAudio(beat)} />
 
                     <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
@@ -97,7 +145,7 @@ function LandingPage() {
                         {beat.tags.map((tag, i) => (
                             <Tag size="md" key={i} variantColor="blue">
                                 <TagIcon as={FaHashtag} size="13px" />
-                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{ base: "5ch", md: "6ch", lg: "8ch" }}>{tag}</TagLabel>
                             </Tag>
                         ))}
                     </Stack>

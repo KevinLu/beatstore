@@ -12,6 +12,7 @@
     "react-app-polyfill": "^1.0.6",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.2.2",
+    "react-h5-audio-player": "^3.0.6",
     "react-icons": "^3.7.0",
     "react-redux": "^7.1.0-rc.1",
     "react-router-dom": "^5.0.1",
