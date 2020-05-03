@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import { Box } from "@chakra-ui/core";
+import { Box, Badge } from "@chakra-ui/core";
 import axios from 'axios';
 import { USER_SERVER } from '../../../Config';
 import { withRouter, Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import { FaShoppingCart } from "react-icons/fa";
 
 function RightMenu(props) {
   const [show, setShow] = React.useState(false);
@@ -58,7 +59,7 @@ function RightMenu(props) {
     )
   } else {
     return (
-      <Box>
+      <div>
         <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
           <svg
             fill="white"
@@ -77,18 +78,24 @@ function RightMenu(props) {
           alignItems="center"
           flexGrow={1}
         >
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
             <Link to="/login">
               SIGN IN
           </Link>
           </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
             <Link to="/register">
               REGISTER
           </Link>
           </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
+            <Link to="/cart">
+              <Box as={FaShoppingCart} />
+            </Link>
+            <Badge ml="1" variantColor="green">3</Badge>
+          </Box>
         </Box>
-      </Box>
+      </div>
     )
   }
 }
