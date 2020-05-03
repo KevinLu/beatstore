@@ -47,12 +47,13 @@ function LandingPage() {
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
     const [IsLoading, setIsLoading] = useState(false);
-    const [AudioIsPlaying, setAudioIsPlaying] = useState(false);
+    /*const [AudioIsPlaying, setAudioIsPlaying] = useState(false);
     const [CurrentAudio, setCurrentAudio] = useState(new Audio);
-    const [CurrentAudioUrl, setCurrentAudioUrl] = useState("");
-    const { playlist, index } = useContext(AudioContext);
+    const [CurrentAudioUrl, setCurrentAudioUrl] = useState("");*/
+    const { playlist, index, audio } = useContext(AudioContext);
     const [Playlist, setPlaylist] = playlist;
     const [Index, setIndex] = index;
+    const [CurrentAudio, setCurrentAudio] = audio;
     const toast = useToast();
 
     const getBeats = (variables) => {
@@ -109,16 +110,41 @@ function LandingPage() {
     }*/
 
     const playAudio = (beat) => {
-        const newAudio = {
+        const newAudioObject = {
             title: beat.title,
             producer: beat.producer.name,
+            url: beat.url,
             image: `http://localhost:5000/${beat.images[0]}`,
             audio: `http://localhost:5000/${beat.audios[0]}`,
-            isPlaying: false,
+            isPlaying: true,
             isPaused: false
         };
-        setPlaylist([...Playlist, newAudio], console.log(Playlist));
-        setIndex(Index + 1);
+        if (Playlist[Index].isPlaying && beat.url === Playlist[Index].url) {
+            CurrentAudio.pause();
+            Playlist[Index].isPlaying = false;
+            Playlist[Index].isPaused = true;
+            console.log("pausing the same beat that's currently playing")
+        } else if (Playlist[Index].isPlaying && beat.url !== Playlist[Index].url) {
+            CurrentAudio.pause();
+            Playlist[Index].isPlaying = false;
+            Playlist[Index].isPaused = true;
+            setPlaylist(prevPlaylist => [...prevPlaylist, newAudioObject]);
+            setIndex(Index + 1);
+            CurrentAudio.src = newAudioObject.audio;
+            CurrentAudio.play();
+            console.log("pausing the beat that's currently playing and starting a new one u just clicked on")
+        } else if (Playlist[Index].isPaused) {
+            CurrentAudio.play();
+            Playlist[Index].isPlaying = true;
+            Playlist[Index].isPaused = false;
+            console.log("a beat is paused... now playing")
+        } else {
+            setPlaylist(prevPlaylist => [...prevPlaylist, newAudioObject]);
+            setIndex(Index + 1);
+            CurrentAudio.src = newAudioObject.audio;
+            CurrentAudio.play();
+            console.log("no beats are playing rn... now playing the one u clicked on")
+        }
     }
 
     // Render the beats in a list

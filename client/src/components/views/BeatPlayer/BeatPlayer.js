@@ -1,13 +1,64 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button } from '@chakra-ui/core';
 import { AudioContext } from "../../utils/AudioContext";
-import { FaCartPlus } from 'react-icons/fa';
+import { FaPlay, FaCartPlus } from 'react-icons/fa';
+import styled from "@emotion/styled/macro";
+
+const ProgressBarHolder = styled.div`
+`
+
+const SongLengthBar = styled.div`
+  position: fixed;
+  bottom: 70px;
+  width: 100%;
+  height: 5px;
+  background: #3182ce;
+  opacity: 0.5;
+  transition: height 0.3s, opacity 0.5s ease-in-out;
+  ${ProgressBarHolder}:hover & {
+    height: 10px;
+    opacity: 1;
+  } 
+`
+
+const SongProgressBar = styled.div`
+  position: fixed;
+  bottom: 70px;
+  width: 0%;
+  height: 5px;
+  background: #1e4e8c;
+  opacity: 0.5;
+  transition: height 0.3s, opacity 0.5s ease-in-out;
+  ${ProgressBarHolder}:hover & {
+    height: 10px;
+    opacity: 1;
+  } 
+`
+
+const ProgressDot = styled.div`
+  position: fixed;
+  bottom: 70px;
+  left: 0px;
+  height: 10px;
+  width: 10px;
+  background-color: #1a365d;
+  border-radius: 50%;
+  border: 2px solid #ebf8ff;
+  opacity: 0;
+  transition: 0.3s ease-in-out;
+  ${ProgressBarHolder}:hover & {
+    opacity: 1;
+    transform: scale(2);
+  }
+`
 
 function BeatPlayer() {
-    const { playlist, index } = useContext(AudioContext);
+    const { playlist, index, audio } = useContext(AudioContext);
     const [Playlist, setPlaylist] = playlist;
     const [Index, setIndex] = index;
-    const CurrentAudio = new Audio();
+    const [CurrentAudio, setCurrentAudio] = audio;
+
+    const [SongProgressOffset, setSongProgressOffset] = useState("0%");
 
     const playAudio = () => {
         if (Playlist[Index].isPlaying) {
@@ -24,26 +75,41 @@ function BeatPlayer() {
             Playlist[Index].isPlaying = true;
             Playlist[Index].isPaused = false;
         }
-        console.log(Playlist)
     }
 
+    const updateSongProgress = () => {
+        var position = CurrentAudio.currentTime / CurrentAudio.duration;
+        setSongProgressOffset((position * 100) + "%");
+    }
+
+    useEffect(() => {
+        CurrentAudio.addEventListener('timeupdate', () => {
+            updateSongProgress();
+        })
+    }, [])
+
     return (
-        <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
-            <Box display="flex">
-                <Image src={Playlist[Index].image} size="70px" />
-                <Stack spacing={0} mt="9px" ml={5}>
-                    <Text color="white" fontSize="md" fontWeight="800">{Playlist[Index].title}</Text>
-                    <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
-                </Stack>
-                <ButtonGroup spacing={4} mt="15px" ml={5}>
-                    <IconButton variantColor="blue" aria-label="Free download" icon="download" />
-                    <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
-                        price
+        <ProgressBarHolder>
+            <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
+                <Box display="flex">
+                    <Image src={Playlist[Index].image} size="70px" />
+                    <Stack spacing={0} mt="9px" ml={5}>
+                        <Text color="white" fontSize="md" fontWeight="800">{Playlist[Index].title}</Text>
+                        <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
+                    </Stack>
+                    <ButtonGroup spacing={4} mt="15px" ml={5}>
+                        <IconButton variantColor="blue" aria-label="Free download" icon="download" />
+                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                            price
                     </Button>
-                </ButtonGroup>
-                <IconButton aria-label="Search database" icon="search" onClick={playAudio} />
+                    </ButtonGroup>
+                </Box>
+                <IconButton position="absolute" left="50%" right="50%" top="15px" isRound aria-label="Play audio" icon={FaPlay} onClick={playAudio} />
             </Box>
-        </Box>
+            <SongLengthBar />
+            <SongProgressBar style={{ width: SongProgressOffset }} />
+            <ProgressDot style={{ left: SongProgressOffset }} />
+        </ProgressBarHolder>
     );
 }
 
