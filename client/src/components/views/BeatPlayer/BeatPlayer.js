@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button } from '@chakra-ui/core';
+import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip } from '@chakra-ui/core';
 import { AudioContext } from "../../utils/AudioContext";
 import { FaPlay, FaCartPlus } from 'react-icons/fa';
 import styled from "@emotion/styled/macro";
@@ -59,6 +59,14 @@ function BeatPlayer() {
     const [CurrentAudio, setCurrentAudio] = audio;
 
     const [SongProgressOffset, setSongProgressOffset] = useState("0%");
+    const [SongProgressTime, setSongProgressTime] = useState("0:00");
+
+    const secondsToTime = (e) => {
+        var m = Math.floor(e % 3600 / 60).toString().padStart(2, '0'),
+            s = Math.floor(e % 60).toString().padStart(2, '0');
+    
+        return m + ':' + s;
+    }
 
     const playAudio = () => {
         if (Playlist[Index].isPlaying) {
@@ -80,13 +88,14 @@ function BeatPlayer() {
     const updateSongProgress = () => {
         var position = CurrentAudio.currentTime / CurrentAudio.duration;
         setSongProgressOffset((position * 100) + "%");
+        setSongProgressTime(secondsToTime(CurrentAudio.currentTime));
     }
 
     useEffect(() => {
         CurrentAudio.addEventListener('timeupdate', () => {
             updateSongProgress();
         })
-    }, [])
+    }, []);
 
     return (
         <ProgressBarHolder>
@@ -108,7 +117,9 @@ function BeatPlayer() {
             </Box>
             <SongLengthBar />
             <SongProgressBar style={{ width: SongProgressOffset }} />
-            <ProgressDot style={{ left: SongProgressOffset }} />
+            <Tooltip hasArrow placement="top" label={SongProgressTime}>
+                <ProgressDot style={{ left: SongProgressOffset }} />
+            </Tooltip>
         </ProgressBarHolder>
     );
 }

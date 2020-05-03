@@ -47,9 +47,6 @@ function LandingPage() {
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
     const [IsLoading, setIsLoading] = useState(false);
-    /*const [AudioIsPlaying, setAudioIsPlaying] = useState(false);
-    const [CurrentAudio, setCurrentAudio] = useState(new Audio);
-    const [CurrentAudioUrl, setCurrentAudioUrl] = useState("");*/
     const { playlist, index, audio } = useContext(AudioContext);
     const [Playlist, setPlaylist] = playlist;
     const [Index, setIndex] = index;
@@ -87,27 +84,6 @@ function LandingPage() {
         }
         getBeats(variables);
     }, []);
-
-    /*const playAudio = (beat) => {
-        if (AudioIsPlaying && CurrentAudioUrl === beat.url) { // pause it
-            CurrentAudio.pause();
-            setAudioIsPlaying(false);
-            console.log("pause")
-        } else if (AudioIsPlaying && CurrentAudioUrl !== beat.url) { // play new audio
-            CurrentAudio.pause();
-            CurrentAudio.src = `http://localhost:5000/${beat.audios[0]}`;
-            CurrentAudio.play();
-            setAudioIsPlaying(true);
-            setCurrentAudioUrl(beat.url);
-            console.log("start other audio")
-        } else if (!AudioIsPlaying) {
-            CurrentAudio.src = `http://localhost:5000/${beat.audios[0]}`;
-            CurrentAudio.play();
-            setAudioIsPlaying(true);
-            setCurrentAudioUrl(beat.url);
-            console.log("start first audio")
-        }
-    }*/
 
     const playAudio = (beat) => {
         const newAudioObject = {
