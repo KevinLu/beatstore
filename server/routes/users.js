@@ -68,7 +68,7 @@ router.get("/logout", auth, (req, res) => {
     });
 });
 
-router.post("/addToCart", auth, (req, res) => {
+router.post("/addToCart", (req, res) => { // doesn't have to be logged in
     User.findOne({ _id: req.user._id }, (err, userInfo) => {
         let duplicateItem = false;
 
