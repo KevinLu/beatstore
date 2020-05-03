@@ -9,6 +9,7 @@ import NavBar from "./views/NavBar/NavBar";
 import Footer from "./views/Footer/Footer";
 import UploadBeatPage from "./views/UploadBeatPage/UploadBeatPage";
 import BeatPage from "./views/BeatPage/BeatPage";
+import CartPage from "./views/CartPage/CartPage";
 import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
 //null   Anyone Can go inside
@@ -27,6 +28,7 @@ function App() {
             <Route exact path="/register" component={Auth(RegisterPage, false)} />
             <Route exact path="/upload" component={Auth(UploadBeatPage, true)} />
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, null)} />
+            <Route exact path="/cart" component={Auth(CartPage, true)} />
           </Switch>
         </NavBar>
         <Footer />
