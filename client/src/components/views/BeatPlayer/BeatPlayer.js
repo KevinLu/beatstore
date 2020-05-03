@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip } from '@chakra-ui/core';
 import { AudioContext } from "../../utils/AudioContext";
-import { FaPlay, FaCartPlus } from 'react-icons/fa';
+import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaCartPlus } from 'react-icons/fa';
 import styled from "@emotion/styled/macro";
 
 const ProgressBarHolder = styled.div`
@@ -64,7 +64,7 @@ function BeatPlayer() {
     const secondsToTime = (e) => {
         var m = Math.floor(e % 3600 / 60).toString().padStart(2, '0'),
             s = Math.floor(e % 60).toString().padStart(2, '0');
-    
+
         return m + ':' + s;
     }
 
@@ -100,20 +100,24 @@ function BeatPlayer() {
     return (
         <ProgressBarHolder>
             <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
-                <Box display="flex">
+                <Box position="absolute" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
+                    <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} />
+                    <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={CurrentAudio.paused ? FaPlay : FaPause} onClick={playAudio} />
+                    <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} />
+                </Box>
+                <Box display="flex" alignItems="center" w="100%" h="100%">
                     <Image src={Playlist[Index].image} size="70px" />
-                    <Stack spacing={0} mt="9px" ml={5}>
+                    <Stack spacing={0} ml={5}>
                         <Text color="white" fontSize="md" fontWeight="800">{Playlist[Index].title}</Text>
                         <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
                     </Stack>
-                    <ButtonGroup spacing={4} mt="15px" ml={5}>
+                    <ButtonGroup spacing={4} ml={5}>
                         <IconButton variantColor="blue" aria-label="Free download" icon="download" />
                         <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
                             price
                     </Button>
                     </ButtonGroup>
                 </Box>
-                <IconButton position="absolute" left="50%" right="50%" top="15px" isRound aria-label="Play audio" icon={FaPlay} onClick={playAudio} />
             </Box>
             <SongLengthBar />
             <SongProgressBar style={{ width: SongProgressOffset }} />
