@@ -18,6 +18,8 @@ router.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+        cart: req.user.cart,
+        history: req.user.history
     });
 });
 
@@ -68,7 +70,7 @@ router.get("/logout", auth, (req, res) => {
     });
 });
 
-router.post("/addToCart", (req, res) => { // doesn't have to be logged in
+router.post("/addToCart", auth, (req, res) => { // doesn't have to be logged in
     User.findOne({ _id: req.user._id }, (err, userInfo) => {
         let duplicateItem = false;
 

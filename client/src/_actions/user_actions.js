@@ -4,7 +4,8 @@ import {
     REGISTER_USER,
     AUTH_USER,
     LOGOUT_USER,
-    ADD_TO_CART_USER
+    ADD_TO_CART_USER,
+    GET_CART_ITEMS_USER
 } from './types';
 import { USER_SERVER } from '../components/Config.js';
 
@@ -54,6 +55,24 @@ export function addToCart(_id) {
 
     return {
         type: ADD_TO_CART_USER,
+        payload: request
+    }
+}
+
+export function getCartItems(cartItems, cartInfo) {
+    const request = axios.get(`/api/beat/beats_by_id?id=${cartItems}&type=array`)
+        .then(response => {
+            cartInfo.forEach(cartItem => {
+                response.data.forEach((beatDetail, index) => {
+                    if (cartItem.id === beatDetail._id) {
+                        response.data[index].quantity = cartItem.quantity;
+                    }
+                })
+            })
+            return response.data;
+        });
+    return {
+        type: GET_CART_ITEMS_USER,
         payload: request
     }
 }

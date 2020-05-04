@@ -28,7 +28,7 @@ function App() {
             <Route exact path="/register" component={Auth(RegisterPage, false)} />
             <Route exact path="/upload" component={Auth(UploadBeatPage, true)} />
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, null)} />
-            <Route exact path="/cart" component={Auth(CartPage, null)} />
+            <Route exact path="/cart" component={Auth(CartPage, true)} />
           </Switch>
         </NavBar>
         <Footer />

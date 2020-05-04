@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import SearchBox from './Sections/SearchBox'
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../../_actions/user_actions';
+import SearchBox from './Sections/SearchBox';
 import Axios from 'axios';
 import { Link } from 'react-router-dom';
 import {
@@ -80,6 +82,12 @@ function LandingPage() {
         getBeats(variables);
     }, []);
 
+    const dispatch = useDispatch();
+
+    const addToCartHandler = (beatId) => {
+        dispatch(addToCart(beatId));
+    }
+
     // Render the beats in a list
     const renderListItems = Beats.map((beat, index) => {
         return (
@@ -97,7 +105,7 @@ function LandingPage() {
                         {beat.tags.map((tag, i) => (
                             <Tag size="md" key={i} variantColor="blue">
                                 <TagIcon as={FaHashtag} size="13px" />
-                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{ base: "5ch", md: "6ch", lg: "8ch" }}>{tag}</TagLabel>
                             </Tag>
                         ))}
                     </Stack>
@@ -110,7 +118,7 @@ function LandingPage() {
                             icon="download"
                         />
 
-                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
                             ${beat.price}
                         </Button>
                     </ButtonGroup>

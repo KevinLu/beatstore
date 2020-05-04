@@ -54,6 +54,12 @@ function RightMenu(props) {
               LOGOUT
           </Link>
           </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
+            <Link to="/cart">
+              <Box as={FaShoppingCart} />
+            </Link>
+            <Badge ml="1" variantColor="green">{user.userData.cart.length}</Badge>
+          </Box>
         </Box>
       </Box>
     )
@@ -87,12 +93,6 @@ function RightMenu(props) {
             <Link to="/register">
               REGISTER
           </Link>
-          </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
-            <Link to="/cart">
-              <Box as={FaShoppingCart} />
-            </Link>
-            <Badge ml="1" variantColor="green">3</Badge>
           </Box>
         </Box>
       </div>
