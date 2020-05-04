@@ -12,7 +12,7 @@
     "backend": "nodemon server/index.js",
     "frontend": "npm run start --prefix client",
     "dev": "concurrently \"npm run backend\" \"npm run start --prefix client\"",
-    "test": "server/index.js"
+    "test": "jshint server/index.js"
   },
   "author": "Kevin Lu",
   "license": "ISC",
