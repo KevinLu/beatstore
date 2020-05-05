@@ -13,11 +13,9 @@ function CartPage(props) {
                     cartItems.push(item.id);
                 });
                 dispatch(getCartItems(cartItems, props.user.userData.cart));
-                console.log(cartItems)
-                console.log(props.user.userData.cart)
             }
         }
-    }, [props.user.userData])
+    }, [props.user.userData]);
 
     /*useEffect(() => {
         console.log(props.user.userData)

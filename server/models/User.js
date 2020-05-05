@@ -34,6 +34,10 @@ const userSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    isAnonymous: {
+        type: Boolean,
+        default: true
+    },
     image: String,
     token: {
         type: String,
@@ -73,7 +77,7 @@ userSchema.methods.comparePassword = function (plainPassword, cb) {
 userSchema.methods.generateToken = function (cb) {
     var user = this;
     var token = jwt.sign(user._id.toHexString(), 'secret')
-    var oneHour = moment().add(1, 'hour').valueOf();
+    var oneHour = moment().add(1, 'day').valueOf();
 
     user.tokenExp = oneHour;
     user.token = token;

@@ -24,7 +24,7 @@ function RightMenu(props) {
     });
   };
 
-  if (user.userData && user.userData.isAuth) {
+  if (user.userData && user.userData.isAuth && user.userData.isAdmin) {
     return (
       <Box>
         <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
@@ -62,6 +62,81 @@ function RightMenu(props) {
           </Box>
         </Box>
       </Box>
+    )
+  } else if (user.userData && user.userData.isAuth && !user.userData.isAnonymous) {
+    return (
+      <div>
+        <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
+          <svg
+            fill="white"
+            width="12px"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title>Menu</title>
+            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+          </svg>
+        </Box>
+
+        <Box
+          display={{ sm: show ? "block" : "none", md: "flex" }}
+          width={{ sm: "full", md: "auto" }}
+          alignItems="center"
+          flexGrow={1}
+        >
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
+            <Link to="/login" fontSize="lg" onClick={logoutHandler}>
+              LOGOUT
+          </Link>
+          </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
+            <Link to="/cart">
+              <Box as={FaShoppingCart} />
+            </Link>
+            <Badge ml="1" variantColor="green">{user.userData.cart.length}</Badge>
+          </Box>
+        </Box>
+      </div>
+    )
+  } else if (user.userData && user.userData.isAuth && user.userData.isAnonymous) {
+    return (
+      <div>
+        <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
+          <svg
+            fill="white"
+            width="12px"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title>Menu</title>
+            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+          </svg>
+        </Box>
+
+        <Box
+          display={{ sm: show ? "block" : "none", md: "flex" }}
+          width={{ sm: "full", md: "auto" }}
+          alignItems="center"
+          flexGrow={1}
+        >
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
+            <Link to="/login">
+              SIGN IN
+          </Link>
+          </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
+            <Link to="/register">
+              REGISTER
+          </Link>
+          </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
+            <Link to="/cart">
+              <Box as={FaShoppingCart} />
+            </Link>
+            <Badge ml="1" variantColor="green">{user.userData.cart.length}</Badge>
+          </Box>
+        </Box>
+      </div>
     )
   } else {
     return (

@@ -13,6 +13,7 @@ router.get("/auth", auth, (req, res) => {
         _id: req.user._id,
         isAdmin: req.user.role === 0 ? false : true,
         isAuth: true,
+        isAnonymous: req.user.isAnonymous,
         email: req.user.email,
         name: req.user.name,
         lastname: req.user.lastname,
@@ -28,10 +29,20 @@ router.post("/register", (req, res) => {
     const user = new User(req.body);
 
     user.save((err, doc) => {
-        if (err) return res.json({ success: false, err });
-        return res.status(200).json({
-            success: true
-        });
+        if (err) {
+            return res.json({ success: false, err });
+        } else {
+            user.generateToken((err, user) => {
+                if (err) { return res.status(400).send(err); }
+                res.cookie("w_authExp", user.tokenExp);
+                res
+                    .cookie("w_auth", user.token)
+                    .status(200)
+                    .json({
+                        success: true, userId: user._id
+                    });
+            });
+        }
     });
 });
 
