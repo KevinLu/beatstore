@@ -1,203 +1,155 @@
 import React from "react";
 import moment from "moment";
-import { Formik } from 'formik';
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import { registerUser } from "../../../_actions/user_actions";
 import { useDispatch } from "react-redux";
-
+import { Link } from "react-router-dom";
 import {
-  Form,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
   Input,
   Button,
-} from 'antd';
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
-    },
-  },
-};
+  Text,
+  Box,
+  Heading,
+  useToast
+} from "@chakra-ui/core";
 
 function RegisterPage(props) {
   const dispatch = useDispatch();
-  return (
+  const toast = useToast();
 
+  return (
     <Formik
       initialValues={{
+        username: '',
         email: '',
-        lastName: '',
-        name: '',
         password: '',
         confirmPassword: ''
       }}
       validationSchema={Yup.object().shape({
-        name: Yup.string()
-          .required('Name is required'),
-        lastName: Yup.string()
-          .required('Last Name is required'),
+        username: Yup.string()
+          .required('Please enter a username'),
         email: Yup.string()
           .email('Email is invalid')
-          .required('Email is required'),
+          .required('Please enter an e-mail'),
         password: Yup.string()
           .min(6, 'Password must be at least 6 characters')
-          .required('Password is required'),
+          .required('Please enter a password'),
         confirmPassword: Yup.string()
           .oneOf([Yup.ref('password'), null], 'Passwords must match')
-          .required('Confirm Password is required')
+          .required('Please type your password again')
       })}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
-
           let dataToSubmit = {
+            username: values.username,
             email: values.email,
             password: values.password,
-            name: values.name,
-            lastname: values.lastname,
             image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
           };
 
           dispatch(registerUser(dataToSubmit)).then(response => {
             if (response.payload.success) {
               props.history.push("/login");
+              toast({
+                position: "bottom",
+                title: "Thanks for signing up!",
+                description: "You can login now :)",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+              });
             } else {
-              alert(response.payload.err.errmsg)
+              toast({
+                position: "bottom",
+                title: "Can't login!",
+                description: "Incorrect e-mail or password.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              });
             }
           })
-
           setSubmitting(false);
         }, 500);
       }}
     >
-      {props => {
-        const {
-          values,
-          touched,
-          errors,
-          dirty,
-          isSubmitting,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          handleReset,
-        } = props;
-        return (
-          <div className="app">
-            <h2>Sign up</h2>
-            <Form style={{ minWidth: '375px' }} {...formItemLayout} onSubmit={handleSubmit} >
-
-              <Form.Item required label="Name">
-                <Input
-                  id="name"
-                  placeholder="Enter your name"
-                  type="text"
-                  value={values.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.name && touched.name ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.name && touched.name && (
-                  <div className="input-feedback">{errors.name}</div>
+      {props => (
+        <Box w="350px" display="flex" margin="auto" flexDirection="column">
+          <Box display="flex" justifyContent="center" mt={10} mb={5}>
+            <Heading>Sign up</Heading>
+          </Box>
+          <form onSubmit={props.handleSubmit}>
+            <Box mt={5}>
+              <Field name="username">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.username && form.touched.username}>
+                    <FormLabel htmlFor="username">Username</FormLabel>
+                    <Input {...field} id="username" placeholder="Set a username for your profile" />
+                    <FormErrorMessage>{form.errors.username}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Last Name">
-                <Input
-                  id="lastName"
-                  placeholder="Enter your Last Name"
-                  type="text"
-                  value={values.lastName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.lastName && touched.lastName ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.lastName && touched.lastName && (
-                  <div className="input-feedback">{errors.lastName}</div>
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Field name="email">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.email && form.touched.email}>
+                    <FormLabel htmlFor="email">E-mail</FormLabel>
+                    <Input {...field} id="email" placeholder="Enter your e-mail" />
+                    <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Email" hasFeedback validateStatus={errors.email && touched.email ? "error" : 'success'}>
-                <Input
-                  id="email"
-                  placeholder="Enter your Email"
-                  type="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.email && touched.email ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.email && touched.email && (
-                  <div className="input-feedback">{errors.email}</div>
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Field name="password">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.password && form.touched.password}>
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <Input {...field} id="password" placeholder="Set your password" type="password" />
+                    <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Password" hasFeedback validateStatus={errors.password && touched.password ? "error" : 'success'}>
-                <Input
-                  id="password"
-                  placeholder="Enter your password"
-                  type="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.password && touched.password ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.password && touched.password && (
-                  <div className="input-feedback">{errors.password}</div>
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Field name="confirmPassword">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.confirmPassword && form.touched.confirmPassword}>
+                    <FormLabel htmlFor="confirmPassword">Confirm password</FormLabel>
+                    <Input {...field} id="confirmPassword" placeholder="Type your password again" type="password" />
+                    <FormErrorMessage>{form.errors.confirmPassword}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Confirm" hasFeedback>
-                <Input
-                  id="confirmPassword"
-                  placeholder="Enter your confirmPassword"
-                  type="password"
-                  value={values.confirmPassword}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.confirmPassword && touched.confirmPassword ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.confirmPassword && touched.confirmPassword && (
-                  <div className="input-feedback">{errors.confirmPassword}</div>
-                )}
-              </Form.Item>
-
-              <Form.Item {...tailFormItemLayout}>
-                <Button onClick={handleSubmit} type="primary" disabled={isSubmitting}>
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        );
-      }}
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Button
+                width="100%"
+                variantColor="blue"
+                isLoading={props.isSubmitting}
+                type="submit"
+              >
+                Sign up
+          </Button>
+            </Box>
+            <Box display="flex" fontSize="md" mt={5} mb={10} justifyContent="center">
+              <Text mr={2}>
+                Have an account?
+              </Text>
+              <Text fontWeight="600">
+                <Link to="/login">Sign in</Link>
+              </Text>
+            </Box>
+          </form>
+        </Box>
+      )}
     </Formik>
   );
 };
-
 
 export default RegisterPage
