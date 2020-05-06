@@ -89,6 +89,7 @@ function LandingPage(props) {
         dispatch(registerUser(dataToSubmit)).then(response => {
             if (response.payload.success) {
                 window.localStorage.setItem('userId', response.payload.userId);
+                window.location.reload();
             } else {
                 toast({
                     position: "bottom",

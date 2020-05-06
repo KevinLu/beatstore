@@ -47,12 +47,12 @@ function RightMenu(props) {
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
             <Link to="/upload">
               UPLOAD
-          </Link>
+        </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
             <Link to="/login" fontSize="lg" onClick={logoutHandler}>
               LOGOUT
-          </Link>
+        </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
             <Link to="/cart">
@@ -87,7 +87,7 @@ function RightMenu(props) {
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
             <Link to="/login" fontSize="lg" onClick={logoutHandler}>
               LOGOUT
-          </Link>
+        </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
             <Link to="/cart">
@@ -122,12 +122,12 @@ function RightMenu(props) {
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
             <Link to="/login">
               SIGN IN
-          </Link>
+        </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
             <Link to="/register">
               REGISTER
-          </Link>
+        </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
             <Link to="/cart">
@@ -162,16 +162,22 @@ function RightMenu(props) {
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
             <Link to="/login">
               SIGN IN
-          </Link>
+        </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
             <Link to="/register">
               REGISTER
-          </Link>
+        </Link>
+          </Box>
+          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
+            <Link to="/cart">
+              <Box as={FaShoppingCart} />
+            </Link>
+            <Badge ml="1" variantColor="green">{0}</Badge>
           </Box>
         </Box>
       </div>
-    )
+    );
   }
 }
 
