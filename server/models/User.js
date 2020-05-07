@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const config = require("../config/key");
 const jwt = require('jsonwebtoken');
 const moment = require("moment");
 
@@ -36,7 +37,7 @@ const userSchema = mongoose.Schema({
     },
     isAnonymous: {
         type: Boolean,
-        default: true
+        default: false
     },
     image: String,
     token: {
@@ -76,10 +77,23 @@ userSchema.methods.comparePassword = function (plainPassword, cb) {
 
 userSchema.methods.generateToken = function (cb) {
     var user = this;
-    var token = jwt.sign(user._id.toHexString(), 'secret')
-    var oneHour = moment().add(1, 'day').valueOf();
+    var token = jwt.sign(user._id.toHexString(), config.jwtSecret)
+    var oneHour = moment().add(1, 'hours').valueOf();
 
     user.tokenExp = oneHour;
+    user.token = token;
+    user.save(function (err, user) {
+        if (err) return cb(err)
+        cb(null, user);
+    })
+}
+
+userSchema.methods.generateAnonToken = function (cb) {
+    var user = this;
+    var token = jwt.sign(user._id.toHexString(), config.jwtSecret)
+    var oneWeek = moment().add(1, 'weeks').valueOf();
+
+    user.tokenExp = oneWeek;
     user.token = token;
     user.save(function (err, user) {
         if (err) return cb(err)
@@ -90,7 +104,7 @@ userSchema.methods.generateToken = function (cb) {
 userSchema.statics.findByToken = function (token, cb) {
     var user = this;
 
-    jwt.verify(token, 'secret', function (err, decode) {
+    jwt.verify(token, config.jwtSecret, function (err, decode) {
         user.findOne({ "_id": decode, "token": token }, function (err, user) {
             if (err) return cb(err);
             cb(null, user);

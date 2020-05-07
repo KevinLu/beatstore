@@ -5,9 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 
 // Auth(SpecificComponent, option, adminRoute)
 // option:
-const PUBLIC_PAGE = 0;
+const PUBLIC_PAGE = 0; // includes anonymous users
 const LOGGED_IN_ONLY = 1;
-const PUBLIC_ONLY = 2;
+const PUBLIC_ONLY = 2; // includes anonymous users
 // adminRoute:
 // true for Admin only
 // false for all users
@@ -21,7 +21,7 @@ export default function (SpecificComponent, option, adminRoute) {
         useEffect(() => {
             //To know my current status, send Auth request 
             dispatch(auth()).then(response => {
-                if (!response.payload.isAuth) { // if not logged in
+                if (!response.payload.isAuth || response.payload.isAnonymous) { // if not logged in
                     if (option === PUBLIC_PAGE) { // if page doesn't need auth to view
                         console.log("no auth required")
                     } else if (option === LOGGED_IN_ONLY) { // if page needs auth to view, redirect to login pag

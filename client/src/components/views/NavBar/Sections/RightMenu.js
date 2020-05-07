@@ -17,7 +17,7 @@ function RightMenu(props) {
     axios.get(`${USER_SERVER}/logout`).then(response => {
       if (response.status === 200) {
         props.history.push("/login");
-        console.log(response)
+        window.localStorage.clear();
       } else {
         alert('Log Out Failed');
       }
@@ -90,9 +90,7 @@ function RightMenu(props) {
         </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
-            <Link to="/cart">
-              <Box as={FaShoppingCart} />
-            </Link>
+            <Link to="/cart"><Box as={FaShoppingCart} /></Link>
             <Badge ml="1" variantColor="green">{user.userData.cart.length}</Badge>
           </Box>
         </Box>

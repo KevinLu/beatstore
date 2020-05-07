@@ -1,7 +1,9 @@
 import axios from 'axios';
 import {
     LOGIN_USER,
+    LOGIN_ANON_USER,
     REGISTER_USER,
+    REGISTER_ANON_USER,
     AUTH_USER,
     LOGOUT_USER,
     ADD_TO_CART_USER,
@@ -19,12 +21,32 @@ export function registerUser(dataToSubmit) {
     }
 }
 
+export function registerAnonUser(dataToSubmit) {
+    const request = axios.post(`${USER_SERVER}/registerAnon`, dataToSubmit)
+        .then(response => response.data);
+
+    return {
+        type: REGISTER_ANON_USER,
+        payload: request
+    }
+}
+
 export function loginUser(dataToSubmit) {
     const request = axios.post(`${USER_SERVER}/login`, dataToSubmit)
         .then(response => response.data);
 
     return {
         type: LOGIN_USER,
+        payload: request
+    }
+}
+
+export function loginAnonUser(dataToSubmit) {
+    const request = axios.post(`${USER_SERVER}/loginAnon`, dataToSubmit)
+        .then(response => response.data);
+
+    return {
+        type: LOGIN_ANON_USER,
         payload: request
     }
 }
