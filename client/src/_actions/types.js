@@ -6,3 +6,4 @@ export const AUTH_USER = 'auth_user';
 export const LOGOUT_USER = 'logout_user';
 export const ADD_TO_CART_USER = 'add_to_cart_user';
 export const GET_CART_ITEMS_USER = 'get_cart_items_user';
+export const REMOVE_FROM_CART_USER = 'remove_from_cart_user';

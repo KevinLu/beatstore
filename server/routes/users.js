@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
+const { Beat } = require("../models/Beat");
 
 const { auth } = require("../middleware/auth");
 
@@ -152,6 +153,35 @@ router.post("/addToCart", auth, (req, res) => { // doesn't have to be logged in
             )
         }
     })
+})
+
+router.get("/removeFromCart", auth, (req, res) => {
+    let itemId = req.query.id;
+
+    User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+            "$pull":
+                { "cart": { "id": itemId } }
+        },
+        { new: true },
+        (err, userInfo) => {
+            let cart = userInfo.cart;
+            let idArray = cart.map(item => {
+                return item.id
+            })
+
+            Beat.find({ '_id': { $in: idArray } })
+                .populate('producer')
+                .exec((err, cartDetail) => {
+                    return res.status(200).json({
+                        cartDetail,
+                        cart
+                    })
+                })
+
+        }
+    )
 })
 
 module.exports = router;

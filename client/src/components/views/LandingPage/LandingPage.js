@@ -146,7 +146,6 @@ function LandingPage(props) {
 
     const addToCartHandler = (beatId) => {
         dispatch(addToCart(beatId));
-        console.log(user)
     }
 
     // Render the beats in a list

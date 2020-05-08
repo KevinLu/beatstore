@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { getCartItems } from '../../../_actions/user_actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCartItems, removeFromCart } from '../../../_actions/user_actions';
 import { Box, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
 import { Link } from "react-router-dom";
 
@@ -16,30 +16,74 @@ const ListText = ({ children, displayBreakpoints, fontSize, fontWeight, float })
     </Box>
 );
 
-function CartPage(props) {
+const CartHeading = () => (
+    <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3}>
+        <div></div>
+        <ListHeading>PRODUCT</ListHeading>
+        <ListHeading float={{ base: "right", lg: "initial" }}>PRICE</ListHeading>
+        <div></div>
+    </Grid>
+);
+
+const EmptyCartView = () => (
+    <div>
+        <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
+            <Heading fontSize="3xl">Your cart is empty</Heading>
+            <Button variantColor="blue" mt={5}>
+                <Link to="/">
+                    BROWSE BEATS
+                </Link>
+            </Button>
+        </Box>
+    </div>
+);
+
+function CartPage() {
     const dispatch = useDispatch();
+    const user = useSelector(state => state.user);
     const [Cart, setCart] = useState([]);
-    var grossAmount = 0;
-    var discountAmount = 0;
+    const [GrossAmount, setGrossAmount] = useState(0);
 
     useEffect(() => {
         let cartItems = [];
-        if (props.user.userData && props.user.userData.cart) { // if userData exists
-            if (props.user.userData.cart.length > 0) { // if the cart is not empty
-                props.user.userData.cart.forEach(item => {
+        if (user.userData && user.userData.cart) { // if userData exists
+            if (user.userData.cart.length > 0) { // if the cart is not empty
+                user.userData.cart.forEach(item => {
                     cartItems.push(item.id);
                 });
-                dispatch(getCartItems(cartItems, props.user.userData.cart)).then(response => {
-                    setCart(response.payload);
-                });
+                dispatch(getCartItems(cartItems, user.userData.cart))
+                    .then(response => {
+                        if (response.payload.length > 0) {
+                            loadCartInfo(response.payload);
+                        }
+                    });
             }
         }
-    }, [props.user.userData]);
+    }, [user.userData]);
+
+    const calculateGross = (cart) => {
+        let gross = 0;
+        cart.map(item => {
+            gross += parseInt(item.price, 10);
+        });
+        setGrossAmount(gross);
+    }
+
+    const loadCartInfo = (cartInfo) => {
+        setCart(cartInfo);
+        calculateGross(cartInfo);
+    }
+
+    const removeItemFromCart = (beatId) => {
+        dispatch(removeFromCart(beatId))
+            .then(response => {
+                loadCartInfo(response.payload.cart);
+            })
+    }
 
     const renderCartItems = Cart.map((item, index) => {
-        grossAmount += item.price;
         return (
-            <div>
+            <div key={index}>
                 <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3} alignItems="center">
                     <Image borderRadius="3px" size={{ base: "44px", lg: "60px" }} src={`http://localhost:5000/${item.images[0]}`}></Image>
 
@@ -50,8 +94,8 @@ function CartPage(props) {
                     <ButtonGroup display={{ base: "none", lg: "flex" }}>
                         <Button>
                             REVIEW LICENSE
-                    </Button>
-                        <CloseButton size="lg" />
+                        </Button>
+                        <CloseButton size="lg" onClick={() => removeItemFromCart(item._id)} />
                     </ButtonGroup>
                 </Grid>
                 <ButtonGroup display={{ base: "flex", lg: "none" }} justifyContent="space-between" mt="0.5em">
@@ -68,36 +112,33 @@ function CartPage(props) {
         <Box m="3em 1em 5em 1em">
             <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
                 <Heading>CART</Heading>
-                <Grid templateColumns={{ base: "1fr", lg: "2.5fr 1fr" }} mt="5em">
-                    <div>
-                        <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3}>
-                            <div></div>
-                            <ListHeading>PRODUCT</ListHeading>
-                            <ListHeading float={{ base: "right", lg: "initial" }}>PRICE</ListHeading>
-                            <div></div>
-                        </Grid>
-                        {renderCartItems}
-                    </div>
-                    <Box mt={{ base: "2em", lg: "0" }}>
-                        <Box display="flex" justifyContent="space-between">
-                            <Text color="black" fontSize="lg" fontWeight="600">Gross</Text>
-                            <Text color="black" fontSize="lg" fontWeight="600">${grossAmount}</Text>
-                        </Box>
-                        <Box display="flex" justifyContent="space-between">
-                            <Text color="black" fontSize="lg" fontWeight="600">Discount</Text>
-                            <Text color="black" fontSize="lg" fontWeight="600">-${discountAmount}</Text>
-                        </Box>
-                        <Divider />
-                        <Box display="flex" justifyContent="space-between">
-                            <Text color="blue.900" fontSize="2xl" fontWeight="800">Total</Text>
-                            <Text color="blue.900" fontSize="2xl" fontWeight="800">${grossAmount - discountAmount}</Text>
-                        </Box>
-                        <Divider />
-                        <Button width="100%" variantColor="blue">
-                            PAYPAL CHECKOUT
+                {Cart.length === 0 ?
+                    <EmptyCartView /> :
+                    <Grid templateColumns={{ base: "1fr", lg: "2.5fr 1fr" }} mt="5em">
+                        <div>
+                            <CartHeading />
+                            {renderCartItems}
+                        </div>
+                        <Box mt={{ base: "2em", lg: "0" }}>
+                            <Box display="flex" justifyContent="space-between">
+                                <Text color="black" fontSize="lg" fontWeight="600">Gross</Text>
+                                <Text color="black" fontSize="lg" fontWeight="600">${GrossAmount}</Text>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between">
+                                <Text color="black" fontSize="lg" fontWeight="600">Discount</Text>
+                                <Text color="black" fontSize="lg" fontWeight="600">-${0}</Text>
+                            </Box>
+                            <Divider />
+                            <Box display="flex" justifyContent="space-between">
+                                <Text color="blue.900" fontSize="2xl" fontWeight="800">Total</Text>
+                                <Text color="blue.900" fontSize="2xl" fontWeight="800">${GrossAmount - 0}</Text>
+                            </Box>
+                            <Divider />
+                            <Button width="100%" variantColor="blue">
+                                PAYPAL CHECKOUT
                         </Button>
-                    </Box>
-                </Grid>
+                        </Box>
+                    </Grid>}
             </Box>
         </Box>
     )
