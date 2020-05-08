@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCartItems, removeFromCart } from '../../../_actions/user_actions';
-import { Box, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
+import { Box, CircularProgress, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
 import { Link } from "react-router-dom";
 
 const ListHeading = ({ children, displayBreakpoints, float }) => (
@@ -41,6 +41,7 @@ const EmptyCartView = () => (
 function CartPage() {
     const dispatch = useDispatch();
     const user = useSelector(state => state.user);
+    const [IsLoading, setIsLoading] = useState(true);
     const [Cart, setCart] = useState([]);
     const [GrossAmount, setGrossAmount] = useState(0);
 
@@ -57,6 +58,8 @@ function CartPage() {
                             loadCartInfo(response.payload);
                         }
                     });
+            } else {
+                setIsLoading(false);
             }
         }
     }, [user.userData]);
@@ -70,7 +73,8 @@ function CartPage() {
     }
 
     const loadCartInfo = (cartInfo) => {
-        setCart(cartInfo);
+        setIsLoading(true);
+        setCart(cartInfo, setIsLoading(false));
         calculateGross(cartInfo);
     }
 
@@ -80,6 +84,48 @@ function CartPage() {
                 loadCartInfo(response.payload.cart);
             })
     }
+
+    const CartLoadingView = () => (
+        <Box display="flex" justifyContent="center" mt={10}>
+            <CircularProgress isIndeterminate={IsLoading} color="blue" />
+        </Box>
+    );
+
+    const CartView = () => {
+        if (IsLoading) {
+            return <CartLoadingView />
+        } else if (Cart.length === 0) {
+            return <EmptyCartView />
+        } else {
+            return (
+                <Grid templateColumns={{ base: "1fr", lg: "2.5fr 1fr" }} mt="5em">
+                    <div>
+                        <CartHeading />
+                        {renderCartItems}
+                    </div>
+                    <Box mt={{ base: "2em", lg: "0" }}>
+                        <Box display="flex" justifyContent="space-between">
+                            <Text color="black" fontSize="lg" fontWeight="600">Gross</Text>
+                            <Text color="black" fontSize="lg" fontWeight="600">${GrossAmount}</Text>
+                        </Box>
+                        <Box display="flex" justifyContent="space-between">
+                            <Text color="black" fontSize="lg" fontWeight="600">Discount</Text>
+                            <Text color="black" fontSize="lg" fontWeight="600">-${0}</Text>
+                        </Box>
+                        <Divider />
+                        <Box display="flex" justifyContent="space-between">
+                            <Text color="blue.900" fontSize="2xl" fontWeight="800">Total</Text>
+                            <Text color="blue.900" fontSize="2xl" fontWeight="800">${GrossAmount - 0}</Text>
+                        </Box>
+                        <Divider />
+                        <Button width="100%" variantColor="blue">
+                            PAYPAL CHECKOUT
+                </Button>
+                    </Box>
+                </Grid>
+            );
+        }
+    };
 
     const renderCartItems = Cart.map((item, index) => {
         return (
@@ -112,33 +158,7 @@ function CartPage() {
         <Box m="3em 1em 5em 1em">
             <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
                 <Heading>CART</Heading>
-                {Cart.length === 0 ?
-                    <EmptyCartView /> :
-                    <Grid templateColumns={{ base: "1fr", lg: "2.5fr 1fr" }} mt="5em">
-                        <div>
-                            <CartHeading />
-                            {renderCartItems}
-                        </div>
-                        <Box mt={{ base: "2em", lg: "0" }}>
-                            <Box display="flex" justifyContent="space-between">
-                                <Text color="black" fontSize="lg" fontWeight="600">Gross</Text>
-                                <Text color="black" fontSize="lg" fontWeight="600">${GrossAmount}</Text>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between">
-                                <Text color="black" fontSize="lg" fontWeight="600">Discount</Text>
-                                <Text color="black" fontSize="lg" fontWeight="600">-${0}</Text>
-                            </Box>
-                            <Divider />
-                            <Box display="flex" justifyContent="space-between">
-                                <Text color="blue.900" fontSize="2xl" fontWeight="800">Total</Text>
-                                <Text color="blue.900" fontSize="2xl" fontWeight="800">${GrossAmount - 0}</Text>
-                            </Box>
-                            <Divider />
-                            <Button width="100%" variantColor="blue">
-                                PAYPAL CHECKOUT
-                        </Button>
-                        </Box>
-                    </Grid>}
+                <CartView />
             </Box>
         </Box>
     )
