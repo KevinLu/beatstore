@@ -34,7 +34,6 @@ const userSchema = mongoose.Schema({
     isAnonymous: {
         type: Boolean,
         default: false
-        minlength: 6
     },
     image: String,
     token: {

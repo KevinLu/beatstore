@@ -103,7 +103,6 @@ export function getCartItems(cartItems, cartInfo) {
 export function removeFromCart(_id) {
     const request = axios.get(`${USER_SERVER}/removeFromCart?id=${_id}`)
         .then(response => {
-            console.log(response)
             response.data.cart.forEach(cartItem => {
                 response.data.cartDetail.forEach((beatDetail, index) => {
                     if (cartItem.id === beatDetail._id) {
