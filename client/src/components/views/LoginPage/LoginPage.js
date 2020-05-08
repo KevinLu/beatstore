@@ -116,7 +116,7 @@ function LoginPage(props) {
                 isLoading={props.isSubmitting}
                 type="submit"
               >
-                Submit
+                Log in
           </Button>
             </Box>
           </form>

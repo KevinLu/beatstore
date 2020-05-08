@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const moment = require("moment");
 
 const userSchema = mongoose.Schema({
-    name: {
+    username: {
         type: String,
         maxlength: 50
     },
@@ -18,10 +18,6 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         minlength: 5
-    },
-    lastname: {
-        type: String,
-        maxlength: 50
     },
     cart: {
         type: Array,
@@ -38,6 +34,7 @@ const userSchema = mongoose.Schema({
     isAnonymous: {
         type: Boolean,
         default: false
+        minlength: 6
     },
     image: String,
     token: {
@@ -103,7 +100,7 @@ userSchema.methods.generateAnonToken = function (cb) {
 
 userSchema.statics.findByToken = function (token, cb) {
     var user = this;
-
+  
     jwt.verify(token, config.jwtSecret, function (err, decode) {
         user.findOne({ "_id": decode, "token": token }, function (err, user) {
             if (err) return cb(err);

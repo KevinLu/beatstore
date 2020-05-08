@@ -1,376 +1,158 @@
 import React from "react";
-import { Formik } from 'formik';
+import moment from "moment";
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import { registerUser } from "../../../_actions/user_actions";
 import { useDispatch } from "react-redux";
-
+import { Link } from "react-router-dom";
 import {
-  Form,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
   Input,
   Button,
-} from 'antd';
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
-    },
-  },
-};
-function md5(str) {
-
-  var RotateLeft = function (lValue, iShiftBits) {
-    return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
-  };
-
-  var AddUnsigned = function (lX, lY) {
-    var lX4, lY4, lX8, lY8, lResult;
-    lX8 = (lX & 0x80000000);
-    lY8 = (lY & 0x80000000);
-    lX4 = (lX & 0x40000000);
-    lY4 = (lY & 0x40000000);
-    lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
-    if (lX4 & lY4) {
-      return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
-    }
-    if (lX4 | lY4) {
-      if (lResult & 0x40000000) {
-        return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
-      } else {
-        return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
-      }
-    } else {
-      return (lResult ^ lX8 ^ lY8);
-    }
-  };
-
-  var F = function (x, y, z) { return (x & y) | ((~x) & z); };
-  var G = function (x, y, z) { return (x & z) | (y & (~z)); };
-  var H = function (x, y, z) { return (x ^ y ^ z); };
-  var I = function (x, y, z) { return (y ^ (x | (~z))); };
-
-  var FF = function (a, b, c, d, x, s, ac) {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
-  };
-
-  var GG = function (a, b, c, d, x, s, ac) {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
-  };
-
-  var HH = function (a, b, c, d, x, s, ac) {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
-  };
-
-  var II = function (a, b, c, d, x, s, ac) {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
-  };
-
-  var ConvertToWordArray = function (str) {
-    var lWordCount;
-    var lMessageLength = str.length;
-    var lNumberOfWords_temp1 = lMessageLength + 8;
-    var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
-    var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
-    var lWordArray = Array(lNumberOfWords - 1);
-    var lBytePosition = 0;
-    var lByteCount = 0;
-    while (lByteCount < lMessageLength) {
-      lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-      lBytePosition = (lByteCount % 4) * 8;
-      lWordArray[lWordCount] = (lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition));
-      lByteCount++;
-    }
-    lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-    lBytePosition = (lByteCount % 4) * 8;
-    lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
-    lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
-    lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
-    return lWordArray;
-  };
-
-  var WordToHex = function (lValue) {
-    var WordToHexValue = "", WordToHexValue_temp = "", lByte, lCount;
-    for (lCount = 0; lCount <= 3; lCount++) {
-      lByte = (lValue >>> (lCount * 8)) & 255;
-      WordToHexValue_temp = "0" + lByte.toString(16);
-      WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2);
-    }
-    return WordToHexValue;
-  };
-
-  var x = Array();
-  var k, AA, BB, CC, DD, a, b, c, d;
-  var S11 = 7, S12 = 12, S13 = 17, S14 = 22;
-  var S21 = 5, S22 = 9, S23 = 14, S24 = 20;
-  var S31 = 4, S32 = 11, S33 = 16, S34 = 23;
-  var S41 = 6, S42 = 10, S43 = 15, S44 = 21;
-
-  x = ConvertToWordArray(str);
-  a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
-
-  for (k = 0; k < x.length; k += 16) {
-    AA = a; BB = b; CC = c; DD = d;
-    a = FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
-    d = FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
-    c = FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
-    b = FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
-    a = FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
-    d = FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
-    c = FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
-    b = FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
-    a = FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
-    d = FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
-    c = FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
-    b = FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
-    a = FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
-    d = FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
-    c = FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
-    b = FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
-    a = GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
-    d = GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
-    c = GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
-    b = GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
-    a = GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
-    d = GG(d, a, b, c, x[k + 10], S22, 0x2441453);
-    c = GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
-    b = GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
-    a = GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
-    d = GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
-    c = GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
-    b = GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
-    a = GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
-    d = GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
-    c = GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
-    b = GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
-    a = HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
-    d = HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
-    c = HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
-    b = HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
-    a = HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
-    d = HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
-    c = HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
-    b = HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
-    a = HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
-    d = HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
-    c = HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
-    b = HH(b, c, d, a, x[k + 6], S34, 0x4881D05);
-    a = HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
-    d = HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
-    c = HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
-    b = HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
-    a = II(a, b, c, d, x[k + 0], S41, 0xF4292244);
-    d = II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
-    c = II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
-    b = II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
-    a = II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
-    d = II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
-    c = II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
-    b = II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
-    a = II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
-    d = II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
-    c = II(c, d, a, b, x[k + 6], S43, 0xA3014314);
-    b = II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
-    a = II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
-    d = II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
-    c = II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
-    b = II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
-    a = AddUnsigned(a, AA);
-    b = AddUnsigned(b, BB);
-    c = AddUnsigned(c, CC);
-    d = AddUnsigned(d, DD);
-  }
-
-  var temp = WordToHex(a) + WordToHex(b) + WordToHex(c) + WordToHex(d);
-
-  return temp.toLowerCase();
-}
+  Text,
+  Box,
+  Heading,
+  useToast
+} from "@chakra-ui/core";
 
 function RegisterPage(props) {
   const dispatch = useDispatch();
-  return (
+  const toast = useToast();
 
+  return (
     <Formik
       initialValues={{
+        username: '',
         email: '',
-        lastName: '',
-        name: '',
         password: '',
         confirmPassword: ''
       }}
       validationSchema={Yup.object().shape({
-        name: Yup.string()
-          .required('Name is required'),
-        lastName: Yup.string()
-          .required('Last Name is required'),
+        username: Yup.string()
+          .required('Please enter a username'),
         email: Yup.string()
           .email('Email is invalid')
-          .required('Email is required'),
+          .required('Please enter an e-mail'),
         password: Yup.string()
           .min(6, 'Password must be at least 6 characters')
-          .required('Password is required'),
+          .required('Please enter a password'),
         confirmPassword: Yup.string()
           .oneOf([Yup.ref('password'), null], 'Passwords must match')
-          .required('Confirm Password is required')
+          .required('Please type your password again')
       })}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
           var cleanEmail = values.email;
           cleanEmail.trim();
           cleanEmail.toLowerCase();
-
           let dataToSubmit = {
+            username: values.username,
             email: values.email,
             password: values.password,
-            name: values.name,
-            lastname: values.lastname,
-            image: `http://gravatar.com/avatar/${md5(cleanEmail)}?d=identicon`
+            image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
           };
 
           dispatch(registerUser(dataToSubmit)).then(response => {
             if (response.payload.success) {
               props.history.push("/login");
+              toast({
+                position: "bottom",
+                title: "Thanks for signing up!",
+                description: "You can login now :)",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+              });
             } else {
-              alert(response.payload.err.errmsg)
+              toast({
+                position: "bottom",
+                title: "Can't login!",
+                description: "Incorrect e-mail or password.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+              });
             }
           })
-
           setSubmitting(false);
         }, 500);
       }}
     >
-      {props => {
-        const {
-          values,
-          touched,
-          errors,
-          dirty,
-          isSubmitting,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          handleReset,
-        } = props;
-        return (
-          <div className="app">
-            <h2>Sign up</h2>
-            <Form style={{ minWidth: '375px' }} {...formItemLayout} onSubmit={handleSubmit} >
-
-              <Form.Item required label="Name">
-                <Input
-                  id="name"
-                  placeholder="Enter your name"
-                  type="text"
-                  value={values.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.name && touched.name ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.name && touched.name && (
-                  <div className="input-feedback">{errors.name}</div>
+      {props => (
+        <Box w="350px" display="flex" margin="auto" flexDirection="column">
+          <Box display="flex" justifyContent="center" mt={10} mb={5}>
+            <Heading>Sign up</Heading>
+          </Box>
+          <form onSubmit={props.handleSubmit}>
+            <Box mt={5}>
+              <Field name="username">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.username && form.touched.username}>
+                    <FormLabel htmlFor="username">Username</FormLabel>
+                    <Input {...field} id="username" placeholder="Set a username for your profile" />
+                    <FormErrorMessage>{form.errors.username}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Last Name">
-                <Input
-                  id="lastName"
-                  placeholder="Enter your Last Name"
-                  type="text"
-                  value={values.lastName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.lastName && touched.lastName ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.lastName && touched.lastName && (
-                  <div className="input-feedback">{errors.lastName}</div>
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Field name="email">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.email && form.touched.email}>
+                    <FormLabel htmlFor="email">E-mail</FormLabel>
+                    <Input {...field} id="email" placeholder="Enter your e-mail" />
+                    <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Email" hasFeedback validateStatus={errors.email && touched.email ? "error" : 'success'}>
-                <Input
-                  id="email"
-                  placeholder="Enter your Email"
-                  type="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.email && touched.email ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.email && touched.email && (
-                  <div className="input-feedback">{errors.email}</div>
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Field name="password">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.password && form.touched.password}>
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <Input {...field} id="password" placeholder="Set your password" type="password" />
+                    <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Password" hasFeedback validateStatus={errors.password && touched.password ? "error" : 'success'}>
-                <Input
-                  id="password"
-                  placeholder="Enter your password"
-                  type="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.password && touched.password ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.password && touched.password && (
-                  <div className="input-feedback">{errors.password}</div>
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Field name="confirmPassword">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.confirmPassword && form.touched.confirmPassword}>
+                    <FormLabel htmlFor="confirmPassword">Confirm password</FormLabel>
+                    <Input {...field} id="confirmPassword" placeholder="Type your password again" type="password" />
+                    <FormErrorMessage>{form.errors.confirmPassword}</FormErrorMessage>
+                  </FormControl>
                 )}
-              </Form.Item>
-
-              <Form.Item required label="Confirm" hasFeedback>
-                <Input
-                  id="confirmPassword"
-                  placeholder="Enter your confirmPassword"
-                  type="password"
-                  value={values.confirmPassword}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.confirmPassword && touched.confirmPassword ? 'text-input error' : 'text-input'
-                  }
-                />
-                {errors.confirmPassword && touched.confirmPassword && (
-                  <div className="input-feedback">{errors.confirmPassword}</div>
-                )}
-              </Form.Item>
-
-              <Form.Item {...tailFormItemLayout}>
-                <Button onClick={handleSubmit} type="primary" disabled={isSubmitting}>
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        );
-      }}
+              </Field>
+            </Box>
+            <Box mt={5}>
+              <Button
+                width="100%"
+                variantColor="blue"
+                isLoading={props.isSubmitting}
+                type="submit"
+              >
+                Sign up
+          </Button>
+            </Box>
+            <Box display="flex" fontSize="md" mt={5} mb={10} justifyContent="center">
+              <Text mr={2}>
+                Have an account?
+              </Text>
+              <Text fontWeight="600">
+                <Link to="/login">Sign in</Link>
+              </Text>
+            </Box>
+          </form>
+        </Box>
+      )}
     </Formik>
   );
 };
-
 
 export default RegisterPage
