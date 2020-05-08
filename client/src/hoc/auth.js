@@ -3,7 +3,16 @@ import React, { useEffect } from 'react';
 import { auth } from '../_actions/user_actions';
 import { useSelector, useDispatch } from "react-redux";
 
-export default function (SpecificComponent, option, adminRoute = null) {
+// Auth(SpecificComponent, option, adminRoute)
+// option:
+const PUBLIC_PAGE = 0; // includes anonymous users
+const LOGGED_IN_ONLY = 1;
+const PUBLIC_ONLY = 2; // includes anonymous users
+// adminRoute:
+// true for Admin only
+// false for all users
+
+export default function (SpecificComponent, option, adminRoute) {
     function AuthenticationCheck(props) {
 
         let user = useSelector(state => state.user);
@@ -12,20 +21,20 @@ export default function (SpecificComponent, option, adminRoute = null) {
         useEffect(() => {
             //To know my current status, send Auth request 
             dispatch(auth()).then(response => {
-                //Not Loggined in Status 
-                if (!response.payload.isAuth) {
-                    if (option) {
+                if (!response.payload.isAuth || response.payload.isAnonymous) { // if not logged in
+                    if (option === PUBLIC_PAGE) { // if page doesn't need auth to view
+                        console.log("no auth required")
+                    } else if (option === LOGGED_IN_ONLY) { // if page needs auth to view, redirect to login pag
                         props.history.push('/login')
+                    } else if (option === PUBLIC_ONLY) { // if page is only for non logged in users
+                        console.log("non logged in users only")
                     }
-                    //Loggined in Status 
-                } else {
-                    //supposed to be Admin page, but not admin person wants to go inside
-                    if (adminRoute && !response.payload.isAdmin) {
+                } else { //Loggined in Status 
+                    if (adminRoute && !response.payload.isAdmin) { // page is admin only, but user is not admin
                         props.history.push('/')
                     }
-                    //Logged in Status, but Try to go into log in page 
                     else {
-                        if (option === false) {
+                        if (option === PUBLIC_ONLY) { // Logged in Status, but Try to go into log in page 
                             props.history.push('/')
                         }
                     }

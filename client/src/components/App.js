@@ -9,11 +9,17 @@ import NavBar from "./views/NavBar/NavBar";
 import Footer from "./views/Footer/Footer";
 import UploadBeatPage from "./views/UploadBeatPage/UploadBeatPage";
 import BeatPage from "./views/BeatPage/BeatPage";
+import CartPage from "./views/CartPage/CartPage";
 import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
-//null   Anyone Can go inside
-//true   only logged in user can go inside
-//false  logged in user can't go inside
+// Auth(SpecificComponent, option, adminRoute)
+// option:
+const PUBLIC_PAGE = 0;
+const LOGGED_IN_ONLY = 1;
+const PUBLIC_ONLY = 2;
+// adminRoute:
+// true for Admin only
+// false for all users
 
 function App() {
   return (
@@ -22,11 +28,12 @@ function App() {
       <Suspense fallback={(<div>Loading...</div>)}>
         <NavBar>
           <Switch>
-            <Route exact path="/" component={Auth(LandingPage, null)} />
-            <Route exact path="/login" component={Auth(LoginPage, false)} />
-            <Route exact path="/register" component={Auth(RegisterPage, false)} />
-            <Route exact path="/upload" component={Auth(UploadBeatPage, true)} />
-            <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, null)} />
+            <Route exact path="/" component={Auth(LandingPage, PUBLIC_PAGE, false)} />
+            <Route exact path="/login" component={Auth(LoginPage, PUBLIC_ONLY, false)} />
+            <Route exact path="/register" component={Auth(RegisterPage, PUBLIC_ONLY, false)} />
+            <Route exact path="/upload" component={Auth(UploadBeatPage, LOGGED_IN_ONLY, true)} />
+            <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, PUBLIC_PAGE, false)} />
+            <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
           </Switch>
         </NavBar>
         <Footer />

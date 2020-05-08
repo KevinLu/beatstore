@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
+const { Beat } = require("../models/Beat");
 
 const { auth } = require("../middleware/auth");
 
@@ -13,11 +14,14 @@ router.get("/auth", auth, (req, res) => {
         _id: req.user._id,
         isAdmin: req.user.role === 0 ? false : true,
         isAuth: true,
+        isAnonymous: req.user.name === "anon" ? true : false,
         email: req.user.email,
         name: req.user.name,
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+        cart: req.user.cart,
+        history: req.user.history
     });
 });
 
@@ -29,6 +33,19 @@ router.post("/register", (req, res) => {
         if (err) return res.json({ success: false, err });
         return res.status(200).json({
             success: true
+        });
+    });
+});
+
+router.post("/registerAnon", (req, res) => {
+
+    const user = new User(req.body);
+
+    user.save((err, doc) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).json({
+            success: true,
+            userId: user._id
         });
     });
 });
@@ -59,6 +76,34 @@ router.post("/login", (req, res) => {
     });
 });
 
+router.post("/loginAnon", (req, res) => {
+    User.findOne({ _id: req.body.id }, (err, user) => {
+        if (!user) {
+            return res.json({
+                loginSuccess: false,
+                message: "Auth failed, id not found"
+            });
+        }
+
+        user.comparePassword(req.body.password, (err, isMatch) => {
+            if (!isMatch) {
+                return res.json({ loginSuccess: false, message: "Wrong password" });
+            }
+
+            user.generateToken((err, user) => {
+                if (err) return res.status(400).send(err);
+                res.cookie("w_authExp", user.tokenExp);
+                res
+                    .cookie("w_auth", user.token)
+                    .status(200)
+                    .json({
+                        loginSuccess: true, userId: user._id
+                    });
+            });
+        });
+    });
+});
+
 router.get("/logout", auth, (req, res) => {
     User.findOneAndUpdate({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
         if (err) return res.json({ success: false, err });
@@ -67,5 +112,76 @@ router.get("/logout", auth, (req, res) => {
         });
     });
 });
+
+router.post("/addToCart", auth, (req, res) => { // doesn't have to be logged in
+    User.findOne({ _id: req.user._id }, (err, userInfo) => {
+        let duplicateItem = false;
+
+        userInfo.cart.forEach((item) => {
+            if (item.id === req.query.beatId) { // beat already in cart
+                duplicateItem = true;
+            }
+        });
+
+        if (duplicateItem) {
+            User.findOneAndUpdate(
+                { _id: req.user._id, "cart.id": req.query.beatId },
+                { $inc: { "cart.$.quantity": 1 } },
+                { new: true },
+                (err, userInfo) => {
+                    if (err) return res.json({ success: false, err });
+                    res.status(200).json(userInfo.cart);
+                }
+            );
+        } else {
+            User.findOneAndUpdate(
+                { _id: req.user._id },
+                {
+                    $push: {
+                        cart: {
+                            id: req.query.beatId,
+                            quantity: 1,
+                            date: Date.now()
+                        }
+                    }
+                },
+                { new: true },
+                (err, userInfo) => {
+                    if (err) return res.json({ success: false, err });
+                    res.status(200).json(userInfo.cart);
+                }
+            )
+        }
+    })
+})
+
+router.get("/removeFromCart", auth, (req, res) => {
+    let itemId = req.query.id;
+
+    User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+            "$pull":
+                { "cart": { "id": itemId } }
+        },
+        { new: true },
+        (err, userInfo) => {
+            let cart = userInfo.cart;
+            let idArray = cart.map(item => {
+                return item.id
+            })
+
+            Beat.find({ '_id': { $in: idArray } })
+                .populate('producer')
+                .exec((err, cartDetail) => {
+                    return res.status(200).json({
+                        cartDetail,
+                        cart
+                    })
+                })
+
+        }
+    )
+})
 
 module.exports = router;

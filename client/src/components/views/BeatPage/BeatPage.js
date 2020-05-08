@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { withRouter } from 'react-router-dom';
+import { addToCart } from '../../../_actions/user_actions';
 import { Box, Grid, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel } from '@chakra-ui/core';
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 import { MdDateRange, MdMusicNote } from 'react-icons/md';
@@ -33,6 +35,7 @@ function BeatPage(props) {
         "__v": 0
     });
     const [BeatLoaded, setBeatLoaded] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
@@ -41,6 +44,10 @@ function BeatPage(props) {
                 setBeatLoaded(true);
             });
     }, []);
+
+    const addToCartHandler = (beatId) => {
+        dispatch(addToCart(beatId));
+    }
 
     return (
         <Box m="5em 1em 5em 1em">
@@ -77,7 +84,7 @@ function BeatPage(props) {
 
                     <ButtonGroup spacing={2} margin={{ base: "1em auto 0 auto", lg: "1em 0 0 2em" }} display="flex" justifyContent={{ base: "center", lg: "left" }}>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid" onClick={() => addToCartHandler(Beat._id)}>
                                 ${Beat.price}
                             </Button>
                         </Skeleton>
@@ -93,7 +100,7 @@ function BeatPage(props) {
                     {Beat.tags.map((tag, i) => (
                         <Tag size="md" key={i} variantColor="blue">
                             <TagIcon as={FaHashtag} size="13px" />
-                            <TagLabel mt="-0.1em" fontWeight="600" maxWidth={{base: "10ch", md: "12ch", lg: "15ch"}}>{tag}</TagLabel>
+                            <TagLabel mt="-0.1em" fontWeight="600" maxWidth={{ base: "10ch", md: "12ch", lg: "15ch" }}>{tag}</TagLabel>
                         </Tag>
                     ))}
                 </Stack>

@@ -44,6 +44,9 @@ function RegisterPage(props) {
       })}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
+          var cleanEmail = values.email;
+          cleanEmail.trim();
+          cleanEmail.toLowerCase();
           let dataToSubmit = {
             username: values.username,
             email: values.email,

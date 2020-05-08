@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import SearchBox from './Sections/SearchBox'
+import { useDispatch, useSelector } from 'react-redux';
+import { registerAnonUser, loginAnonUser } from '../../../_actions/user_actions';
+import { addToCart } from '../../../_actions/user_actions';
+import SearchBox from './Sections/SearchBox';
 import Axios from 'axios';
 import { Link } from 'react-router-dom';
 import {
@@ -40,7 +43,7 @@ const secondsToTime = (e) => {
     return m + ':' + s;
 }
 
-function LandingPage() {
+function LandingPage(props) {
 
     const [Beats, setBeats] = useState([]);
     const [Skip, setSkip] = useState(0);
@@ -70,14 +73,79 @@ function LandingPage() {
             });
     };
 
-    // Load the beats
+    const user = useSelector(state => state.user);
+
+    const createAnonymousUser = () => {
+        let dataToSubmit = {
+            email: Date.now() + "@anonymous.user",
+            password: "anonymous",
+            name: "anon",
+            lastname: "ymous",
+            image: `https://www.gravatar.com/avatar/00000000000000000000000000000000`,
+            isAnonymous: true
+        };
+
+        dispatch(registerAnonUser(dataToSubmit)).then(response => {
+            if (response.payload.success) {
+                window.localStorage.setItem('userId', response.payload.userId);
+                window.localStorage.setItem('isAnonymous', true);
+                loginAnonymousUser(response.payload.userId);
+            } else {
+                toast({
+                    position: "bottom",
+                    title: "An error occurred.",
+                    description: "Unable to generate session id. Please try again or use another browser.",
+                    status: "error",
+                    duration: 10000,
+                    isClosable: true,
+                })
+            }
+        });
+    };
+
+    const loginAnonymousUser = (userId) => {
+        let dataToSubmit = {
+            id: userId,
+            password: "anonymous"
+        };
+
+        dispatch(loginAnonUser(dataToSubmit)).then(response => {
+            if (response.payload.loginSuccess) {
+                window.localStorage.setItem('userId', response.payload.userId);
+                window.localStorage.setItem('isAnonymous', true);
+                window.location.reload();
+            } else {
+                toast({
+                    position: "bottom",
+                    title: "An error occurred.",
+                    description: "Could not auto login.",
+                    status: "error",
+                    duration: 10000,
+                    isClosable: true,
+                })
+            }
+        });
+    };
+
+    // Load the beats & generate anonymous userId
     useEffect(() => {
         const variables = {
             skip: Skip,
             limit: Limit
         }
         getBeats(variables);
+        if (window.localStorage.getItem('userId') === null) { // if local storage doesn't exist
+            createAnonymousUser();
+        } else if (window.localStorage.getItem('isAnonymous') === true) { // login the anonymous user
+            loginAnonymousUser(window.localStorage.getItem('userId'));
+        }
     }, []);
+
+    const dispatch = useDispatch();
+
+    const addToCartHandler = (beatId) => {
+        dispatch(addToCart(beatId));
+    }
 
     // Render the beats in a list
     const renderListItems = Beats.map((beat, index) => {
@@ -109,7 +177,7 @@ function LandingPage() {
                             icon="download"
                         />
 
-                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
                             ${beat.price}
                         </Button>
                     </ButtonGroup>
