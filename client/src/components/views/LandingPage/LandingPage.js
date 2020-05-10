@@ -87,8 +87,6 @@ function LandingPage(props) {
 
         dispatch(registerAnonUser(dataToSubmit)).then(response => {
             if (response.payload.success) {
-                window.localStorage.setItem('userId', response.payload.userId);
-                window.localStorage.setItem('isAnonymous', true);
                 loginAnonymousUser(response.payload.userId);
             } else {
                 toast({
@@ -111,8 +109,6 @@ function LandingPage(props) {
 
         dispatch(loginAnonUser(dataToSubmit)).then(response => {
             if (response.payload.loginSuccess) {
-                window.localStorage.setItem('userId', response.payload.userId);
-                window.localStorage.setItem('isAnonymous', true);
                 window.location.reload();
             } else {
                 toast({
@@ -134,11 +130,11 @@ function LandingPage(props) {
             limit: Limit
         }
         getBeats(variables);
-        if (window.localStorage.getItem('userId') === null) { // if local storage doesn't exist
+        /*if (window.localStorage.getItem('userId') === null) { // if local storage doesn't exist
             createAnonymousUser();
         } else if (window.localStorage.getItem('isAnonymous') === true) { // login the anonymous user
             loginAnonymousUser(window.localStorage.getItem('userId'));
-        }
+        }*/
     }, []);
 
     const dispatch = useDispatch();

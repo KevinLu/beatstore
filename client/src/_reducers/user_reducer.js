@@ -10,7 +10,6 @@ import {
     REMOVE_FROM_CART_USER
 } from '../_actions/types';
 
-
 export default function (state = {}, action) {
     switch (action.type) {
         case REGISTER_USER:

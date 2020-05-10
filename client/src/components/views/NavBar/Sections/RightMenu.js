@@ -7,6 +7,10 @@ import { withRouter, Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import { FaShoppingCart } from "react-icons/fa";
 
+function delete_cookie(name) {
+  document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 function RightMenu(props) {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
@@ -15,11 +19,9 @@ function RightMenu(props) {
 
   const logoutHandler = () => {
     axios.get(`${USER_SERVER}/logout`).then(response => {
-      if (response.status === 200) {
+      if (response.data.success) {
+        delete_cookie("w_auth");
         props.history.push("/login");
-        window.localStorage.clear();
-      } else {
-        alert('Log Out Failed');
       }
     });
   };
@@ -50,7 +52,7 @@ function RightMenu(props) {
         </Link>
           </Box>
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-            <Link to="/login" fontSize="lg" onClick={logoutHandler}>
+            <Link fontSize="lg" onClick={logoutHandler}>
               LOGOUT
         </Link>
           </Box>
@@ -85,7 +87,7 @@ function RightMenu(props) {
           flexGrow={1}
         >
           <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-            <Link to="/login" fontSize="lg" onClick={logoutHandler}>
+            <Link fontSize="lg" onClick={logoutHandler}>
               LOGOUT
         </Link>
           </Box>
