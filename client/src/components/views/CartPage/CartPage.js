@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCartItems, removeFromCart } from '../../../_actions/user_actions';
+import { getCartItems, removeFromCart } from '../../../_actions/cart_actions';
 import { Box, CircularProgress, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
 import { Link } from "react-router-dom";
 

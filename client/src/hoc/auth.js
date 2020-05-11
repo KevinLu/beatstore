@@ -21,8 +21,7 @@ export default function (SpecificComponent, option, adminRoute) {
         useEffect(() => {
             //To know my current status, send Auth request 
             dispatch(auth()).then(response => {
-                console.log(response)
-                if (!response.payload.isAuth || response.payload.isAnonymous) { // if not logged in
+                if (!response.payload.isAuth) { // if not logged in
                     if (option === PUBLIC_PAGE) { // if page doesn't need auth to view
                         console.log("no auth required")
                     } else if (option === LOGGED_IN_ONLY) { // if page needs auth to view, redirect to login pag

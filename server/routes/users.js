@@ -10,23 +10,25 @@ const { auth } = require("../middleware/auth");
 //=================================
 
 router.get("/auth", auth, async (req, res) => {
-    try {
-        var user = await User.findById(req.user._id).select('-password');
-        if (!user) throw Error('User does not exist');
-        res.status(200).json({
-            _id: user._id,
-            isAuth: true,
-            isAnonymous: user.isAnonymous,
-            email: user.email,
-            username: user.username,
-            role: user.role,
-            image: user.image,
-            cart: user.cart,
-            history: user.history
-        });
-    } catch (e) {
-        console.log(e)
-        res.status(400).json({ msg: e.message });
+    if (req.isAuth) {
+        try {
+            var user = await User.findById(req.user._id).select('-password');
+            if (!user) throw Error('User does not exist');
+            res.status(200).json({
+                _id: user._id,
+                isAuth: true,
+                isAnonymous: user.isAnonymous,
+                email: user.email,
+                username: user.username,
+                role: user.role,
+                image: user.image,
+                cart: user.cart,
+                history: user.history
+            });
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({ msg: e.message });
+        }
     }
 });
 
@@ -116,7 +118,7 @@ router.get("/logout", auth, (req, res) => {
 });
 
 router.post("/addToCart", auth, (req, res) => { // doesn't have to be logged in
-    if (res.statusCode === 401) { 
+    if (res.statusCode === 401) {
         // use localstorage
     } else {
         User.findOne({ _id: req.user._id }, (err, userInfo) => {

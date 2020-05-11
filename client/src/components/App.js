@@ -1,5 +1,7 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Route, Switch } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { createCart, getCart } from "../_actions/cart_actions";
 import Auth from "../hoc/auth";
 // pages for this product
 import LandingPage from "./views/LandingPage/LandingPage.js";
@@ -22,6 +24,29 @@ const PUBLIC_ONLY = 2;
 // false for all users
 
 function App() {
+  const dispatch = useDispatch();
+
+  const newCart = () => {
+    dispatch(createCart())
+      .then(response => {
+        if (response.payload.success) {
+          window.localStorage.setItem("cartId", response.payload.cartId);
+        } else {
+          console.log(response)
+        }
+      });
+  }
+
+  const getCartInfo = (cartId) => {
+    dispatch(getCart(cartId));
+  }
+
+  if (!window.localStorage.getItem("cartId")) {
+    newCart();
+  } else {
+    getCartInfo(window.localStorage.getItem("cartId"));
+  }
+
   return (
     <ThemeProvider>
       <CSSReset />

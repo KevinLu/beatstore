@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import { addToCart } from '../../../_actions/user_actions';
+import { addToCart } from '../../../_actions/cart_actions';
 import { Box, Grid, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel } from '@chakra-ui/core';
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 import { MdDateRange, MdMusicNote } from 'react-icons/md';
@@ -40,6 +40,7 @@ function BeatPage(props) {
     useEffect(() => {
         Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
             .then(response => {
+                console.log(response)
                 setBeat(response.data[0]); // only set 1 beat
                 setBeatLoaded(true);
             });

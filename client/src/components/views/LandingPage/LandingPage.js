@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerAnonUser, loginAnonUser } from '../../../_actions/user_actions';
-import { addToCart } from '../../../_actions/user_actions';
+import { addToCart } from '../../../_actions/cart_actions';
 import SearchBox from './Sections/SearchBox';
 import Axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -140,7 +140,7 @@ function LandingPage(props) {
     const dispatch = useDispatch();
 
     const addToCartHandler = (beatId) => {
-        dispatch(addToCart(beatId));
+        dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
     }
 
     // Render the beats in a list
