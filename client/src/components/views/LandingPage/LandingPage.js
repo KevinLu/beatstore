@@ -88,7 +88,7 @@ function LandingPage() {
     const playAudio = (beat) => {
         const newAudioObject = {
             title: beat.title,
-            producer: beat.producer.name,
+            producer: beat.producer.username,
             url: beat.url,
             image: `http://localhost:5000/${beat.images[0]}`,
             audio: `http://localhost:5000/${beat.audios[0]}`,
