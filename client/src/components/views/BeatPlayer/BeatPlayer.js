@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import { useContainerDimensions } from "../../../hooks/custom";
 import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip } from '@chakra-ui/core';
 import { AudioContext } from "../../utils/AudioContext";
 import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaCartPlus } from 'react-icons/fa';
@@ -7,7 +8,7 @@ import styled from "@emotion/styled/macro";
 const ProgressBarHolder = styled.div`
 `
 
-const SongLengthBar = styled.div`
+const SongLengthBar = styled.button`
   position: fixed;
   bottom: 70px;
   width: 100%;
@@ -21,7 +22,7 @@ const SongLengthBar = styled.div`
   } 
 `
 
-const SongProgressBar = styled.div`
+const SongProgressBar = styled.button`
   position: fixed;
   bottom: 70px;
   width: 0%;
@@ -35,7 +36,7 @@ const SongProgressBar = styled.div`
   } 
 `
 
-const ProgressDot = styled.div`
+const ProgressDot = styled.button`
   position: fixed;
   bottom: 70px;
   left: 0px;
@@ -60,6 +61,8 @@ function BeatPlayer() {
 
     const [SongProgressOffset, setSongProgressOffset] = useState("0%");
     const [SongProgressTime, setSongProgressTime] = useState("0:00");
+    const ProgressLengthRef = useRef();
+    const { width } = useContainerDimensions(ProgressLengthRef);
 
     const secondsToTime = (e) => {
         var m = Math.floor(e % 3600 / 60).toString().padStart(2, '0'),
@@ -83,6 +86,7 @@ function BeatPlayer() {
             Playlist[Index].isPlaying = true;
             Playlist[Index].isPaused = false;
         }
+        console.log(Playlist)
     }
 
     const updateSongProgress = () => {
@@ -91,10 +95,21 @@ function BeatPlayer() {
         setSongProgressTime(secondsToTime(CurrentAudio.currentTime));
     }
 
+    const clamp = (min, val, max) => {
+        return Math.min(Math.max(min, val), max);
+    }
+
+    const handleSeek = (e) => {
+        var position = CurrentAudio.currentTime / CurrentAudio.duration;
+        var percent = clamp(0, (e.nativeEvent.clientX - position) / width, 1);
+        CurrentAudio.currentTime = percent * CurrentAudio.duration;
+        updateSongProgress(); 
+    }
+
     useEffect(() => {
         CurrentAudio.addEventListener('timeupdate', () => {
             updateSongProgress();
-        })
+        });
     }, []);
 
     return (
@@ -119,8 +134,8 @@ function BeatPlayer() {
                     </ButtonGroup>
                 </Box>
             </Box>
-            <SongLengthBar />
-            <SongProgressBar style={{ width: SongProgressOffset }} />
+            <SongLengthBar ref={ProgressLengthRef} onClick={handleSeek} />
+            <SongProgressBar style={{ width: SongProgressOffset }} onClick={handleSeek} />
             <Tooltip hasArrow placement="top" label={SongProgressTime}>
                 <ProgressDot style={{ left: SongProgressOffset }} />
             </Tooltip>
