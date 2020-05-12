@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Cart } = require("../models/Cart");
+const { Beat } = require("../models/Beat");
 
 /**
  * @route   GET api/cart/cartById
@@ -76,5 +77,34 @@ router.post("/add", (req, res) => { // doesn't have to be logged in
     })
 })
 
+router.post("/remove", (req, res) => {
+    const beatId = req.query.beatId;
+    const cartId = req.query.cartId;
+
+    Cart.findOneAndUpdate(
+        { _id: cartId },
+        {
+            "$pull":
+                { "array": { "id": beatId } }
+        },
+        { new: true },
+        (err, cartInfo) => {
+            let cart = cartInfo.array;
+            let idArray = cart.map(item => {
+                return item.id;
+            })
+
+            Beat.find({ '_id': { $in: idArray } })
+                .populate('producer')
+                .exec((err, cartDetail) => {
+                    return res.status(200).json({
+                        cartDetail,
+                        cart
+                    })
+                })
+
+        }
+    )
+})
 
 module.exports = router;

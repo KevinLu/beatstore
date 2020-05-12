@@ -56,8 +56,8 @@ export function getCartItems(cartItems, cartInfo) {
     }
 }
 
-export function removeFromCart(_id) {
-    const request = axios.get(`${CART_SERVER}/removeFromCart?id=${_id}`)
+export function removeFromCart(beatId, cartId) {
+    const request = axios.post(`${CART_SERVER}/remove?beatId=${beatId}&cartId=${cartId}`)
         .then(response => {
             response.data.cart.forEach(cartItem => {
                 response.data.cartDetail.forEach((beatDetail, index) => {

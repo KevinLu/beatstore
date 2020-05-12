@@ -40,19 +40,19 @@ const EmptyCartView = () => (
 
 function CartPage() {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.user);
+    const cart = useSelector(state => state.cart);
     const [IsLoading, setIsLoading] = useState(true);
-    const [Cart, setCart] = useState([]);
     const [GrossAmount, setGrossAmount] = useState(0);
 
     useEffect(() => {
         let cartItems = [];
-        if (user.userData && user.userData.cart) { // if userData exists
-            if (user.userData.cart.length > 0) { // if the cart is not empty
-                user.userData.cart.forEach(item => {
+        setIsLoading(true);
+        if (cart.cart && cart.cart.array) { // if userData exists
+            if (cart.cart.array.length > 0) { // if the cart is not empty
+                cart.cart.array.forEach(item => {
                     cartItems.push(item.id);
                 });
-                dispatch(getCartItems(cartItems, user.userData.cart))
+                dispatch(getCartItems(cartItems, cart.cart.array))
                     .then(response => {
                         if (response.payload.length > 0) {
                             loadCartInfo(response.payload);
@@ -62,27 +62,26 @@ function CartPage() {
                 setIsLoading(false);
             }
         }
-    }, [user.userData]);
+    }, [cart.cart.array]);
 
     const calculateGross = (cart) => {
         let gross = 0;
         cart.map(item => {
             gross += parseInt(item.price, 10);
         });
-        setGrossAmount(gross);
+        setGrossAmount(gross, setIsLoading(false));
     }
 
     const loadCartInfo = (cartInfo) => {
         setIsLoading(true);
-        setCart(cartInfo, setIsLoading(false));
         calculateGross(cartInfo);
     }
 
     const removeItemFromCart = (beatId) => {
-        dispatch(removeFromCart(beatId))
+        dispatch(removeFromCart(beatId, window.localStorage.getItem("cartId")))
             .then(response => {
-                loadCartInfo(response.payload.cart);
-            })
+                calculateGross(response.payload.cartDetail);
+            });
     }
 
     const CartLoadingView = () => (
@@ -94,7 +93,7 @@ function CartPage() {
     const CartView = () => {
         if (IsLoading) {
             return <CartLoadingView />
-        } else if (Cart.length === 0) {
+        } else if (cart.cart.array.length === 0) {
             return <EmptyCartView />
         } else {
             return (
@@ -127,7 +126,7 @@ function CartPage() {
         }
     };
 
-    const renderCartItems = Cart.map((item, index) => {
+    const renderCartItems = cart.cartDetail.map((item, index) => {
         return (
             <div key={index}>
                 <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3} alignItems="center">
