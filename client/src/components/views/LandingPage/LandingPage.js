@@ -89,6 +89,7 @@ function LandingPage() {
         const newAudioObject = {
             title: beat.title,
             producer: beat.producer.username,
+            price: beat.price,
             url: beat.url,
             image: `http://localhost:5000/${beat.images[0]}`,
             audio: `http://localhost:5000/${beat.audios[0]}`,

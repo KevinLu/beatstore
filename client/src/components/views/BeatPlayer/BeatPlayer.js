@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useContainerDimensions } from "../../../hooks/custom";
 import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip } from '@chakra-ui/core';
+import { Link } from 'react-router-dom';
 import { AudioContext } from "../../utils/AudioContext";
 import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaCartPlus } from 'react-icons/fa';
 import styled from "@emotion/styled/macro";
@@ -103,7 +104,7 @@ function BeatPlayer() {
         var position = CurrentAudio.currentTime / CurrentAudio.duration;
         var percent = clamp(0, (e.nativeEvent.clientX - position) / width, 1);
         CurrentAudio.currentTime = percent * CurrentAudio.duration;
-        updateSongProgress(); 
+        updateSongProgress();
     }
 
     useEffect(() => {
@@ -115,22 +116,26 @@ function BeatPlayer() {
     return (
         <ProgressBarHolder>
             <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
-                <Box position="absolute" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
+                <Box position="absolute" bottom="0px" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
                     <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} />
                     <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={CurrentAudio.paused ? FaPlay : FaPause} onClick={playAudio} />
                     <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} />
                 </Box>
-                <Box display="flex" alignItems="center" w="100%" h="100%">
+                <Box display="flex" alignItems="center" h="100%">
                     <Image src={Playlist[Index].image} size="70px" />
-                    <Stack spacing={0} ml={5}>
-                        <Text color="white" fontSize="md" fontWeight="800">{Playlist[Index].title}</Text>
+                    <Stack spacing={0} ml={5} zIndex="100">
+                        <Text color="white" fontSize="md" fontWeight="600">
+                            <Link to={`/beat/${Playlist[Index].url}`}>
+                                {Playlist[Index].title}
+                            </Link>
+                        </Text>
                         <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
                     </Stack>
                     <ButtonGroup spacing={4} ml={5}>
                         <IconButton variantColor="blue" aria-label="Free download" icon="download" />
                         <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
-                            price
-                    </Button>
+                            ${Playlist[Index].price}
+                        </Button>
                     </ButtonGroup>
                 </Box>
             </Box>
