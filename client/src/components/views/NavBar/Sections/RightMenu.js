@@ -4,7 +4,7 @@ import { Box, Badge } from "@chakra-ui/core";
 import axios from 'axios';
 import { USER_SERVER } from '../../../Config';
 import { withRouter, Link } from 'react-router-dom';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { FaShoppingCart } from "react-icons/fa";
 
 function delete_cookie(name) {

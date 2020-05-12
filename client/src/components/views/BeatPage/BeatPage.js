@@ -47,7 +47,7 @@ function BeatPage(props) {
     }, []);
 
     const addToCartHandler = (beatId) => {
-        dispatch(addToCart(beatId));
+        dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
     }
 
     return (

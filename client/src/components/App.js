@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { createCart, getCart } from "../_actions/cart_actions";
