@@ -35,13 +35,7 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    image: String,
-    token: {
-        type: String,
-    },
-    tokenExp: {
-        type: Number
-    }
+    image: String
 })
 
 
@@ -73,23 +67,16 @@ userSchema.methods.comparePassword = function (plainPassword, cb) {
 
 userSchema.methods.generateToken = function (cb) {
     var user = this;
-    var token = jwt.sign(user._id.toHexString(), config.jwtSecret)
-    var oneHour = moment().add(1, 'hours').valueOf();
+    var token = jwt.sign(user._id.toHexString(), config.jwtSecret);
 
-    user.tokenExp = oneHour;
     user.token = token;
-    user.save(function (err, user) {
-        if (err) return cb(err)
-        cb(null, user);
-    })
+    cb(null, user);
 }
 
 userSchema.methods.generateAnonToken = function (cb) {
     var user = this;
-    var token = jwt.sign(user._id.toHexString(), config.jwtSecret)
-    var oneWeek = moment().add(1, 'weeks').valueOf();
+    var token = jwt.sign(user._id.toHexString(), config.jwtSecret);
 
-    user.tokenExp = oneWeek;
     user.token = token;
     user.save(function (err, user) {
         if (err) return cb(err)

@@ -21,7 +21,7 @@ export default function (SpecificComponent, option, adminRoute) {
         useEffect(() => {
             //To know my current status, send Auth request 
             dispatch(auth()).then(response => {
-                if (!response.payload.isAuth || response.payload.isAnonymous) { // if not logged in
+                if (!response.payload.isAuth) { // if not logged in
                     if (option === PUBLIC_PAGE) { // if page doesn't need auth to view
                         console.log("no auth required")
                     } else if (option === LOGGED_IN_ONLY) { // if page needs auth to view, redirect to login pag
@@ -29,8 +29,8 @@ export default function (SpecificComponent, option, adminRoute) {
                     } else if (option === PUBLIC_ONLY) { // if page is only for non logged in users
                         console.log("non logged in users only")
                     }
-                } else { //Loggined in Status 
-                    if (adminRoute && !response.payload.isAdmin) { // page is admin only, but user is not admin
+                } else { //Loggined in Status
+                    if (adminRoute && response.payload.role === 0) { // page is admin only, but user is not admin
                         props.history.push('/')
                     }
                     else {
