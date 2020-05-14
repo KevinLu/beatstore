@@ -1,52 +1,55 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const config = require("../config/key");
 const jwt = require('jsonwebtoken');
 const moment = require("moment");
 
 const userSchema = mongoose.Schema({
-    name: {
-        type:String,
-        maxlength:50
+    username: {
+        type: String,
+        maxlength: 50
     },
     email: {
-        type:String,
-        trim:true,
-        unique: 1 
+        type: String,
+        trim: true,
+        unique: 1
     },
     password: {
         type: String,
-        minglength: 5
+        minlength: 5
     },
-    lastname: {
-        type:String,
-        maxlength: 50
+    cart: {
+        type: Array,
+        default: []
     },
-    role : {
-        type:Number,
-        default: 0 
+    history: {
+        type: Array,
+        default: []
     },
-    image: String,
-    token : {
-        type: String,
+    role: {
+        type: Number,
+        default: 0
     },
-    tokenExp :{
-        type: Number
-    }
+    isAnonymous: {
+        type: Boolean,
+        default: false
+    },
+    image: String
 })
 
 
-userSchema.pre('save', function( next ) {
+userSchema.pre('save', function (next) {
     var user = this;
-    
-    if(user.isModified('password')){    
+
+    if (user.isModified('password')) {
         // console.log('password changed')
-        bcrypt.genSalt(saltRounds, function(err, salt){
-            if(err) return next(err);
-    
-            bcrypt.hash(user.password, salt, function(err, hash){
-                if(err) return next(err);
-                user.password = hash 
+        bcrypt.genSalt(saltRounds, function (err, salt) {
+            if (err) return next(err);
+
+            bcrypt.hash(user.password, salt, function (err, hash) {
+                if (err) return next(err);
+                user.password = hash
                 next()
             })
         })
@@ -55,32 +58,38 @@ userSchema.pre('save', function( next ) {
     }
 });
 
-userSchema.methods.comparePassword = function(plainPassword,cb){
-    bcrypt.compare(plainPassword, this.password, function(err, isMatch){
+userSchema.methods.comparePassword = function (plainPassword, cb) {
+    bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch)
     })
 }
 
-userSchema.methods.generateToken = function(cb) {
+userSchema.methods.generateToken = function (cb) {
     var user = this;
-    var token =  jwt.sign(user._id.toHexString(),'secret')
-    var oneHour = moment().add(1, 'hour').valueOf();
+    var token = jwt.sign(user._id.toHexString(), config.jwtSecret);
 
-    user.tokenExp = oneHour;
     user.token = token;
-    user.save(function (err, user){
-        if(err) return cb(err)
+    cb(null, user);
+}
+
+userSchema.methods.generateAnonToken = function (cb) {
+    var user = this;
+    var token = jwt.sign(user._id.toHexString(), config.jwtSecret);
+
+    user.token = token;
+    user.save(function (err, user) {
+        if (err) return cb(err)
         cb(null, user);
     })
 }
 
 userSchema.statics.findByToken = function (token, cb) {
     var user = this;
-
-    jwt.verify(token,'secret',function(err, decode){
-        user.findOne({"_id":decode, "token":token}, function(err, user){
-            if(err) return cb(err);
+  
+    jwt.verify(token, config.jwtSecret, function (err, decode) {
+        user.findOne({ "_id": decode, "token": token }, function (err, user) {
+            if (err) return cb(err);
             cb(null, user);
         })
     })

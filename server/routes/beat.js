@@ -104,17 +104,39 @@ router.get("/beats_by_url", (req, res) => { // no need auth
     let beatUrls = req.query.url;
 
     if (type === "array") {
-
-    } else if (type === "single") {
-        Beat.find({'url' : { $in: beatUrls }})
-            .populate('producer')
-            .exec((err, beat) => {
-                if (err) return res.status(400).send(err);
-                return res.status(200).send(beat);
+        let urls = req.query.url.split(',');
+        beatUrls = [];
+        beatUrls = urls.map(item => {
+            return item;
         });
-    } else {
-        return res.status(400).send('Improper type, use single or array.');
     }
+
+    Beat.find({ 'url': { $in: beatUrls } })
+        .populate('producer')
+        .exec((err, beat) => {
+            if (err) return res.status(400).send(err);
+            return res.status(200).send(beat);
+        });
+});
+
+router.get("/beats_by_id", (req, res) => { // no need auth
+    let type = req.query.type;
+    let beatIds = req.query.id;
+
+    if (type === "array") {
+        let ids = req.query.id.split(',');
+        beatIds = [];
+        beatIds = ids.map(item => {
+            return item;
+        });
+    }
+
+    Beat.find({ '_id': { $in: beatIds } })
+        .populate('producer')
+        .exec((err, beat) => {
+            if (err) return res.status(400).send(err);
+            return res.status(200).send(beat);
+        });
 });
 
 module.exports = router;

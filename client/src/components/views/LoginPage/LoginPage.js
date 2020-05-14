@@ -49,8 +49,8 @@ function LoginPage(props) {
 
           dispatch(loginUser(dataToSubmit))
             .then(response => {
+              console.log(response)
               if (response.payload.loginSuccess) {
-                window.localStorage.setItem('userId', response.payload.userId);
                 if (rememberMe === true) {
                   window.localStorage.setItem('rememberMe', values.email);
                 } else {
@@ -115,7 +115,7 @@ function LoginPage(props) {
                 isLoading={props.isSubmitting}
                 type="submit"
               >
-                Submit
+                Log in
           </Button>
             </Box>
           </form>
