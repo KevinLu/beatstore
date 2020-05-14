@@ -72,7 +72,7 @@ function BeatPlayer() {
         return m + ':' + s;
     }
 
-    const playAudio = () => {
+    const playOrPauseCurrentAudio = () => {
         if (Playlist[Index].isPlaying) {
             CurrentAudio.pause();
             Playlist[Index].isPlaying = false;
@@ -82,12 +82,46 @@ function BeatPlayer() {
             Playlist[Index].isPlaying = true;
             Playlist[Index].isPaused = false;
         } else {
+            CurrentAudio.pause();
+            CurrentAudio.currentTime = 0;
             CurrentAudio.src = Playlist[Index].audio;
             CurrentAudio.play();
             Playlist[Index].isPlaying = true;
-            Playlist[Index].isPaused = false;
         }
         console.log(Playlist)
+    }
+
+    const playAudioInPlaylist = (i) => {
+        CurrentAudio.pause();
+        CurrentAudio.currentTime = 0;
+        CurrentAudio.src = Playlist[i].audio;
+        CurrentAudio.play();
+        Playlist[i].isPlaying = true;
+        Playlist[i].isPaused = false;
+    }
+
+    const prevBeat = () => {
+        CurrentAudio.pause();
+        CurrentAudio.currentTime = 0;
+        Playlist[Index].isPlaying = false;
+        Playlist[Index].isPaused = true;
+        if (Index === 0) { // already the first beat
+            setIndex(Playlist.length - 1, playAudioInPlaylist(Playlist.length - 1));
+        } else {
+            setIndex(Index - 1, playAudioInPlaylist(Index - 1));
+        }
+    }
+
+    const nextBeat = () => {
+        CurrentAudio.pause();
+        CurrentAudio.currentTime = 0;
+        Playlist[Index].isPlaying = false;
+        Playlist[Index].isPaused = true;
+        if (Index + 1 === Playlist.length) { // already the last beat
+            setIndex(0, playAudioInPlaylist(0));
+        } else {
+            setIndex(Index + 1, playAudioInPlaylist(Index + 1));
+        }
     }
 
     const updateSongProgress = () => {
@@ -117,9 +151,9 @@ function BeatPlayer() {
         <ProgressBarHolder>
             <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
                 <Box position="absolute" bottom="0px" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
-                    <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} />
-                    <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={CurrentAudio.paused ? FaPlay : FaPause} onClick={playAudio} />
-                    <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} />
+                    <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} onClick={prevBeat} />
+                    <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={Playlist[Index].isPlaying ? FaPause : FaPlay} onClick={playOrPauseCurrentAudio} />
+                    <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} onClick={nextBeat} />
                 </Box>
                 <Box display="flex" alignItems="center" h="100%">
                     <Image src={Playlist[Index].image} size="70px" />
