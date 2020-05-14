@@ -40,9 +40,12 @@ function BeatPage(props) {
     useEffect(() => {
         Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
             .then(response => {
-                console.log(response)
-                setBeat(response.data[0]); // only set 1 beat
-                setBeatLoaded(true);
+                if (response.data.length !== 0) { // no beats found
+                    setBeat(response.data[0]); // only set 1 beat
+                    setBeatLoaded(true);
+                } else {
+                    props.history.push("../404");
+                }
             });
     }, []);
 
