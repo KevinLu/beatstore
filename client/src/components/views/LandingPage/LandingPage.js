@@ -92,6 +92,7 @@ function LandingPage() {
             setShow(true);
         }
         const newAudioObject = {
+            _id: beat._id,
             title: beat.title,
             producer: beat.producer.username,
             price: beat.price,

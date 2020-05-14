@@ -6,6 +6,7 @@ export const AudioContextProvider = (props) => {
     const [Show, setShow] = useState(false);
     const [Playlist, setPlaylist] = useState([
         {
+            _id: "null",
             title: "null",
             producer: "null",
             price: 0,

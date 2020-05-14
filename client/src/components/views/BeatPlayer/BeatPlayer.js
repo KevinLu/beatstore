@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useContainerDimensions } from "../../../hooks/custom";
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../../_actions/cart_actions';
 import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from '@chakra-ui/core';
 import { Link } from 'react-router-dom';
 import { AudioContext } from "../../utils/AudioContext";
@@ -81,6 +83,12 @@ function BeatPlayer() {
             s = Math.floor(e % 60).toString().padStart(2, '0');
 
         return m + ':' + s;
+    }
+
+    const dispatch = useDispatch();
+
+    const addToCartHandler = (beatId) => {
+        dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
     }
 
     const playOrPauseCurrentAudio = () => {
@@ -204,7 +212,7 @@ function BeatPlayer() {
                         </Stack>
                         <ButtonGroup spacing={4} ml={{ base: "auto", md: 5 }} mr={{ base: 4, md: 0 }}>
                             <IconButton display={{ base: "none", sm: "inline-flex" }} variantColor="blue" aria-label="Free download" icon="download" />
-                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid" onClick={() => addToCartHandler(Playlist[Index]._id)}>
                                 ${Playlist[Index].price}
                             </Button>
                         </ButtonGroup>
