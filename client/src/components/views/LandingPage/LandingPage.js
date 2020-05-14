@@ -96,7 +96,7 @@ function LandingPage() {
 
                     <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
-                    <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{secondsToTime(beat.bpm)}</ListText>
+                    <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{secondsToTime(beat.time)}</ListText>
 
                     <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{beat.bpm}</ListText>
 
