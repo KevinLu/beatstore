@@ -106,7 +106,7 @@ function BeatPlayer() {
         CurrentAudio.currentTime = 0;
         Playlist[Index].isPlaying = false;
         Playlist[Index].isPaused = true;
-        if (Index === 0) { // already the first beat
+        if (Index === 1) { // already the first beat (we want to ignore the placeholder beat)
             setIndex(Playlist.length - 1, playAudioInPlaylist(Playlist.length - 1));
         } else {
             setIndex(Index - 1, playAudioInPlaylist(Index - 1));
@@ -118,8 +118,8 @@ function BeatPlayer() {
         CurrentAudio.currentTime = 0;
         Playlist[Index].isPlaying = false;
         Playlist[Index].isPaused = true;
-        if (Index + 1 === Playlist.length) { // already the last beat
-            setIndex(0, playAudioInPlaylist(0));
+        if (Index + 1 === Playlist.length) { // already the last beat (we want to ignore the placeholder beat)
+            setIndex(1, playAudioInPlaylist(1));
         } else {
             setIndex(Index + 1, playAudioInPlaylist(Index + 1));
         }
@@ -175,7 +175,7 @@ function BeatPlayer() {
                         </ButtonGroup>
                     </Box>
                 </Box>
-                <SongLengthBar ref={ProgressLengthRef} onClick={handleSeek} />
+                <SongLengthBar onClick={handleSeek} />
                 <SongProgressBar style={{ width: SongProgressOffset }} onClick={handleSeek} />
                 <Tooltip hasArrow placement="top" label={SongProgressTime}>
                     <ProgressDot style={{ left: SongProgressOffset }} />
@@ -183,7 +183,7 @@ function BeatPlayer() {
             </ProgressBarHolder>
         );
     } else {
-        return(<div></div>);
+        return(<Box width="100%" ref={ProgressLengthRef}></Box>);
     }
 }
 
