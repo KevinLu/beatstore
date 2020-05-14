@@ -47,7 +47,8 @@ function LandingPage() {
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
     const [IsLoading, setIsLoading] = useState(false);
-    const { playlist, index, audio } = useContext(AudioContext);
+    const { show, playlist, index, audio } = useContext(AudioContext);
+    const [Show, setShow] = show;
     const [Playlist, setPlaylist] = playlist;
     const [Index, setIndex] = index;
     const [CurrentAudio, setCurrentAudio] = audio;
@@ -86,6 +87,9 @@ function LandingPage() {
     }, []);
 
     const playAudio = (beat) => {
+        if (!Show) {
+            setShow(true);
+        }
         const newAudioObject = {
             title: beat.title,
             producer: beat.producer.username,

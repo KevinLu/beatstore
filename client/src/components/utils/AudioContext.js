@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 export const AudioContext = React.createContext();
 
 export const AudioContextProvider = (props) => {
+    const [Show, setShow] = useState(false);
     const [Playlist, setPlaylist] = useState([
         {
-            title: "Despacito",
-            producer: "Luis Fonsi",
-            price: 100,
-            url: "none",
-            image: 'http://res.cloudinary.com/alick/image/upload/v1502689731/Despacito_uvolhp.jpg',
-            audio: 'http://res.cloudinary.com/alick/video/upload/v1502689683/Luis_Fonsi_-_Despacito_ft._Daddy_Yankee_uyvqw9.mp3',
+            title: "null",
+            producer: "null",
+            price: 0,
+            url: "",
+            image: 'https://via.placeholder.com/70',
+            audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
             isPlaying: false,
             isPaused: false
         }]
@@ -19,7 +20,7 @@ export const AudioContextProvider = (props) => {
     const [CurrentAudio, setCurrentAudio] = useState(new Audio());
 
     return (
-        <AudioContext.Provider value={{ playlist: [Playlist, setPlaylist], index: [Index, setIndex], audio: [CurrentAudio, setCurrentAudio] }}>
+        <AudioContext.Provider value={{ show: [Show, setShow], playlist: [Playlist, setPlaylist], index: [Index, setIndex], audio: [CurrentAudio, setCurrentAudio] }}>
             {props.children}
         </AudioContext.Provider>
     );

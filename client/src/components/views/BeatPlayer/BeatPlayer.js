@@ -55,7 +55,8 @@ const ProgressDot = styled.button`
 `
 
 function BeatPlayer() {
-    const { playlist, index, audio } = useContext(AudioContext);
+    const { show, playlist, index, audio } = useContext(AudioContext);
+    const [Show, setShow] = show;
     const [Playlist, setPlaylist] = playlist;
     const [Index, setIndex] = index;
     const [CurrentAudio, setCurrentAudio] = audio;
@@ -147,39 +148,43 @@ function BeatPlayer() {
         });
     }, []);
 
-    return (
-        <ProgressBarHolder>
-            <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
-                <Box position="absolute" bottom="0px" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
-                    <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} onClick={prevBeat} />
-                    <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={Playlist[Index].isPlaying ? FaPause : FaPlay} onClick={playOrPauseCurrentAudio} />
-                    <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} onClick={nextBeat} />
+    if (Show) {
+        return (
+            <ProgressBarHolder>
+                <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
+                    <Box position="absolute" bottom="0px" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
+                        <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} onClick={prevBeat} />
+                        <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={Playlist[Index].isPlaying ? FaPause : FaPlay} onClick={playOrPauseCurrentAudio} />
+                        <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} onClick={nextBeat} />
+                    </Box>
+                    <Box display="flex" alignItems="center" h="100%">
+                        <Image src={Playlist[Index].image} size="70px" />
+                        <Stack spacing={0} ml={5} zIndex="100">
+                            <Text color="white" fontSize="md" fontWeight="600">
+                                <Link to={`/beat/${Playlist[Index].url}`}>
+                                    {Playlist[Index].title}
+                                </Link>
+                            </Text>
+                            <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
+                        </Stack>
+                        <ButtonGroup spacing={4} ml={5}>
+                            <IconButton variantColor="blue" aria-label="Free download" icon="download" />
+                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
+                                ${Playlist[Index].price}
+                            </Button>
+                        </ButtonGroup>
+                    </Box>
                 </Box>
-                <Box display="flex" alignItems="center" h="100%">
-                    <Image src={Playlist[Index].image} size="70px" />
-                    <Stack spacing={0} ml={5} zIndex="100">
-                        <Text color="white" fontSize="md" fontWeight="600">
-                            <Link to={`/beat/${Playlist[Index].url}`}>
-                                {Playlist[Index].title}
-                            </Link>
-                        </Text>
-                        <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
-                    </Stack>
-                    <ButtonGroup spacing={4} ml={5}>
-                        <IconButton variantColor="blue" aria-label="Free download" icon="download" />
-                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
-                            ${Playlist[Index].price}
-                        </Button>
-                    </ButtonGroup>
-                </Box>
-            </Box>
-            <SongLengthBar ref={ProgressLengthRef} onClick={handleSeek} />
-            <SongProgressBar style={{ width: SongProgressOffset }} onClick={handleSeek} />
-            <Tooltip hasArrow placement="top" label={SongProgressTime}>
-                <ProgressDot style={{ left: SongProgressOffset }} />
-            </Tooltip>
-        </ProgressBarHolder>
-    );
+                <SongLengthBar ref={ProgressLengthRef} onClick={handleSeek} />
+                <SongProgressBar style={{ width: SongProgressOffset }} onClick={handleSeek} />
+                <Tooltip hasArrow placement="top" label={SongProgressTime}>
+                    <ProgressDot style={{ left: SongProgressOffset }} />
+                </Tooltip>
+            </ProgressBarHolder>
+        );
+    } else {
+        return(<div></div>);
+    }
 }
 
 export default BeatPlayer
