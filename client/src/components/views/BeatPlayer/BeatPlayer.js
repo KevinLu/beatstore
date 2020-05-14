@@ -6,12 +6,16 @@ import { AudioContext } from "../../utils/AudioContext";
 import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaCartPlus } from 'react-icons/fa';
 import styled from "@emotion/styled/macro";
 
+const bp = ["30em", "48em", "62em", "80em"];
 const ProgressBarHolder = styled.div`
 `
 
 const SongLengthBar = styled.button`
   position: fixed;
-  bottom: 70px;
+  bottom: 60px;
+  @media (min-width: ${bp[1]}) {
+    bottom: 70px;
+  }
   width: 100%;
   height: 5px;
   background: #3182ce;
@@ -25,7 +29,10 @@ const SongLengthBar = styled.button`
 
 const SongProgressBar = styled.button`
   position: fixed;
-  bottom: 70px;
+  bottom: 60px;
+  @media (min-width: ${bp[1]}) {
+    bottom: 70px;
+  }
   width: 0%;
   height: 5px;
   background: #1e4e8c;
@@ -39,7 +46,10 @@ const SongProgressBar = styled.button`
 
 const ProgressDot = styled.button`
   position: fixed;
-  bottom: 70px;
+  bottom: 60px;
+  @media (min-width: ${bp[1]}) {
+    bottom: 70px;
+  }
   left: 0px;
   height: 10px;
   width: 10px;
@@ -150,25 +160,25 @@ function BeatPlayer() {
 
     if (Show) {
         return (
-            <ProgressBarHolder>
-                <Box position="fixed" bottom="0" width="100%" height="70px" bg="blue.900">
+            <ProgressBarHolder ref={ProgressLengthRef}>
+                <Box position="fixed" bottom="0" width="100%" height={{ base: "60px", md: "70px" }} bg="blue.900">
                     <Box position="absolute" bottom="0px" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
                         <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} onClick={prevBeat} />
                         <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={Playlist[Index].isPlaying ? FaPause : FaPlay} onClick={playOrPauseCurrentAudio} />
                         <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} onClick={nextBeat} />
                     </Box>
                     <Box display="flex" alignItems="center" h="100%">
-                        <Image src={Playlist[Index].image} size="70px" />
+                        <Image src={Playlist[Index].image} size={{ base: "0px", sm: "60px", md: "70px" }} />
                         <Stack spacing={0} ml={5} zIndex="100">
-                            <Text color="white" fontSize="md" fontWeight="600">
+                            <Text color="white" fontSize="md" fontWeight={{ base: "700", md: "600" }}>
                                 <Link to={`/beat/${Playlist[Index].url}`}>
                                     {Playlist[Index].title}
                                 </Link>
                             </Text>
-                            <Text color="white" fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
+                            <Text color={{ base: "gray.100", md: "white" }} fontSize="md" fontWeight="600">{Playlist[Index].producer}</Text>
                         </Stack>
-                        <ButtonGroup spacing={4} ml={5}>
-                            <IconButton variantColor="blue" aria-label="Free download" icon="download" />
+                        <ButtonGroup spacing={4} ml={{ base: "auto", md: 5 }} mr={{ base: 4, md: 0 }}>
+                            <IconButton display={{ base: "none", sm: "inline-flex" }} variantColor="blue" aria-label="Free download" icon="download" />
                             <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid">
                                 ${Playlist[Index].price}
                             </Button>
@@ -183,7 +193,7 @@ function BeatPlayer() {
             </ProgressBarHolder>
         );
     } else {
-        return(<Box width="100%" ref={ProgressLengthRef}></Box>);
+        return (<Box width="100%" ref={ProgressLengthRef}></Box>);
     }
 }
 
