@@ -12,6 +12,7 @@ import Footer from "./views/Footer/Footer";
 import UploadBeatPage from "./views/UploadBeatPage/UploadBeatPage";
 import BeatPage from "./views/BeatPage/BeatPage";
 import CartPage from "./views/CartPage/CartPage";
+import ErrorNotFoundPage from "./views/ErrorNotFoundPage/ErrorNotFoundPage";
 import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
 // Auth(SpecificComponent, option, adminRoute)
@@ -59,6 +60,7 @@ function App() {
             <Route exact path="/upload" component={Auth(UploadBeatPage, LOGGED_IN_ONLY, true)} />
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, PUBLIC_PAGE, false)} />
             <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
+            <Route component={Auth(ErrorNotFoundPage, PUBLIC_PAGE, false)} />
           </Switch>
         </NavBar>
         <Footer />
