@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useContainerDimensions } from "../../../hooks/custom";
-import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip } from '@chakra-ui/core';
+import { Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from '@chakra-ui/core';
 import { Link } from 'react-router-dom';
 import { AudioContext } from "../../utils/AudioContext";
-import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaCartPlus } from 'react-icons/fa';
+import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaCartPlus, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 import styled from "@emotion/styled/macro";
 
 const bp = ["30em", "48em", "62em", "80em"];
-const ProgressBarHolder = styled.div`
-`
+const ProgressBarHolder = styled.div``
 
 const SongLengthBar = styled.button`
   position: fixed;
@@ -71,6 +70,7 @@ function BeatPlayer() {
     const [Index, setIndex] = index;
     const [CurrentAudio, setCurrentAudio] = audio;
 
+    const [Volume, setVolume] = useState(1);
     const [SongProgressOffset, setSongProgressOffset] = useState("0%");
     const [SongProgressTime, setSongProgressTime] = useState("0:00");
     const ProgressLengthRef = useRef();
@@ -152,6 +152,21 @@ function BeatPlayer() {
         updateSongProgress();
     }
 
+    const handleVolumeChange = (value) => {
+        CurrentAudio.volume = value;
+        setVolume(value);
+    }
+
+    const muteOrUnmute = () => {
+        if (CurrentAudio.volume !== 0) {
+            CurrentAudio.volume = 0;
+            setVolume(0);
+        } else {
+            CurrentAudio.volume = 1;
+            setVolume(1);
+        }
+    }
+
     useEffect(() => {
         CurrentAudio.addEventListener('timeupdate', () => {
             updateSongProgress();
@@ -162,10 +177,20 @@ function BeatPlayer() {
         return (
             <ProgressBarHolder ref={ProgressLengthRef}>
                 <Box position="fixed" bottom="0" width="100%" height={{ base: "60px", md: "70px" }} bg="blue.900">
-                    <Box position="absolute" bottom="0px" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
+                    <Box position="absolute" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
                         <IconButton size="sm" isRound aria-label="Previous beat" icon={FaStepBackward} onClick={prevBeat} />
                         <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={Playlist[Index].isPlaying ? FaPause : FaPlay} onClick={playOrPauseCurrentAudio} />
                         <IconButton size="sm" isRound aria-label="Next beat" icon={FaStepForward} onClick={nextBeat} />
+                    </Box>
+                    <Box display={{ base: "none", md: "flex" }} position="absolute" right="0px" mr="2.5rem" alignItems="center" h="100%">
+                        <IconButton size="lg" icon={Volume === 0 ? FaVolumeMute : FaVolumeUp} variant="link" color="white" aria-label="Mute or unmute volume" onClick={muteOrUnmute} />
+                        <Box width="80px">
+                            <Slider min={0} max={1} step={0.02} value={Volume} defaultValue={1} onChange={handleVolumeChange}>
+                                <SliderTrack />
+                                <SliderFilledTrack />
+                                <SliderThumb />
+                            </Slider>
+                        </Box>
                     </Box>
                     <Box display="flex" alignItems="center" h="100%">
                         <Image src={Playlist[Index].image} size={{ base: "0px", sm: "60px", md: "70px" }} />
