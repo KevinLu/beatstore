@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addToCart } from '../../../_actions/cart_actions';
+import { setIndex, setShow } from '../../../_actions/playlist_actions';
 import { AudioContext } from "../../utils/AudioContext";
 import SearchBox from './Sections/SearchBox';
 import Axios from 'axios';
@@ -49,11 +50,9 @@ function LandingPage() {
     const [Skip, setSkip] = useState(0);
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
-    const [IsLoading, setIsLoading] = useState(true);
-    const { show, playlist, index, audio } = useContext(AudioContext);
-    const [Show, setShow] = show;
+    const { isLoading, playlist, audio } = useContext(AudioContext);
+    const [IsLoading, setIsLoading] = isLoading;
     const [Playlist, setPlaylist] = playlist;
-    const [Index, setIndex] = index;
     const [CurrentAudio, setCurrentAudio] = audio;
     const toast = useToast();
 
@@ -62,8 +61,8 @@ function LandingPage() {
         Axios.post('/api/beat/getBeats', variables)
             .then(response => {
                 if (response.data.success) {
-                    setCount(response.data.count)
-                    setBeats(Beats.concat(response.data.beats))
+                    setCount(response.data.count);
+                    setBeats(Beats.concat(response.data.beats));
                 } else {
                     toast({
                         position: "bottom",
@@ -72,7 +71,7 @@ function LandingPage() {
                         status: "error",
                         duration: 9000,
                         isClosable: true,
-                    })
+                    });
                 }
                 setIsLoading(false);
             });
@@ -84,60 +83,38 @@ function LandingPage() {
             skip: Skip,
             limit: Limit
         }
-        getBeats(variables);
+        //getBeats(variables);
     }, []);
 
-    const playAudio = (beat) => {
-        if (!Show) {
-            setShow(true);
-        }
-        const newAudioObject = {
-            _id: beat._id,
-            title: beat.title,
-            producer: beat.producer.username,
-            price: beat.price,
-            url: beat.url,
-            image: `http://localhost:5000/${beat.images[0]}`,
-            audio: `http://localhost:5000/${beat.audios[0]}`,
-            isPlaying: true,
-            isPaused: false
-        };
-        if (Playlist[Index].isPlaying && beat.url === Playlist[Index].url) {
-            CurrentAudio.pause();
-            Playlist[Index].isPlaying = false;
-            Playlist[Index].isPaused = true;
-            console.log("pausing the same beat that's currently playing")
-        } else if (Playlist[Index].isPlaying && beat.url !== Playlist[Index].url) {
-            CurrentAudio.pause();
-            Playlist[Index].isPlaying = false;
-            Playlist[Index].isPaused = true;
-            setPlaylist(prevPlaylist => [...prevPlaylist, newAudioObject]);
-            setIndex(Index + 1);
-            CurrentAudio.src = newAudioObject.audio;
-            CurrentAudio.play();
-            console.log("pausing the beat that's currently playing and starting a new one u just clicked on")
-        } else if (Playlist[Index].isPaused) {
-            CurrentAudio.play();
-            Playlist[Index].isPlaying = true;
-            Playlist[Index].isPaused = false;
-            console.log("a beat is paused... now playing")
-        } else {
-            setPlaylist(prevPlaylist => [...prevPlaylist, newAudioObject]);
-            setIndex(Index + 1);
-            CurrentAudio.src = newAudioObject.audio;
-            CurrentAudio.play();
-            console.log("no beats are playing rn... now playing the one u clicked on")
-        }
-    }
-      
+    const show = useSelector(state => state.playlist.show);
+
     const dispatch = useDispatch();
+
+    const setIndexHandler = (i) => {
+        dispatch(setIndex(i));
+    }
+
+    const setShowHandler = (bool) => {
+        dispatch(setShow(bool));
+    }
+
+    const playAudio = (beat) => {
+        if (!show) {
+            setShowHandler(true);
+        }
+        CurrentAudio.pause();
+        CurrentAudio.src = Playlist[beat.index].audio;
+        setIndexHandler(beat.index);
+        CurrentAudio.play();
+        Playlist[beat.index].isPlaying = true;
+    }
 
     const addToCartHandler = (beatId) => {
         dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
     }
 
     // Render the beats in a list
-    const renderListItems = Beats.map((beat, index) => {
+    const renderListItems = Playlist.map((beat, index) => {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6}>
@@ -145,7 +122,7 @@ function LandingPage() {
                     <Image
                         borderRadius="3px"
                         size="44px"
-                        src={`http://localhost:5000/${beat.images[0]}`}
+                        src={beat.image}
                         fallbackSrc="https://via.placeholder.com/44"
                         cursor="pointer"
                         onClick={() => playAudio(beat)} />
@@ -277,7 +254,7 @@ function LandingPage() {
     }
 
     return (
-        Beats.length > 0 ?
+        Playlist.length > 0 ?
             <PageContents />
             : IsLoading ?
                 <PlaceholderContent />
