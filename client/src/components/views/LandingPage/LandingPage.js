@@ -54,37 +54,6 @@ function LandingPage() {
     const [IsLoading, setIsLoading] = isLoading;
     const [Playlist, setPlaylist] = playlist;
     const [CurrentAudio, setCurrentAudio] = audio;
-    const toast = useToast();
-
-    const getBeats = (variables) => {
-        setIsLoading(true);
-        Axios.post('/api/beat/getBeats', variables)
-            .then(response => {
-                if (response.data.success) {
-                    setCount(response.data.count);
-                    setBeats(Beats.concat(response.data.beats));
-                } else {
-                    toast({
-                        position: "bottom",
-                        title: "An error occurred.",
-                        description: "Unable to load beats.",
-                        status: "error",
-                        duration: 9000,
-                        isClosable: true,
-                    });
-                }
-                setIsLoading(false);
-            });
-    };
-
-    // Load the beats
-    useEffect(() => {
-        const variables = {
-            skip: Skip,
-            limit: Limit
-        }
-        //getBeats(variables);
-    }, []);
 
     const show = useSelector(state => state.playlist.show);
 
@@ -156,35 +125,13 @@ function LandingPage() {
                     </ButtonGroup>
 
                 </Grid>
-                {index !== (Beats.length - 1) ? // adds divider between list items
+                {index !== (Playlist.length - 1) ? // adds divider between list items
                     <Divider /> :
                     <></>
                 }
             </Box>
         );
     });
-
-    const loadMore = () => {
-        let skipItems = Skip + Limit;
-
-        if (Count < Limit) {
-            toast({
-                position: "bottom",
-                title: "All beats loaded.",
-                description: "Couldn't find any more beats to load.",
-                status: "warning",
-                duration: 3000,
-                isClosable: true,
-            })
-        } else {
-            const variables = {
-                skip: skipItems,
-                limit: Limit
-            }
-            getBeats(variables);
-            setSkip(skipItems);
-        }
-    }
 
     const PageContents = () => {
         return (
@@ -203,9 +150,9 @@ function LandingPage() {
                             <div></div>
                         </Grid>
                         {renderListItems}
-                        <Box display="flex" justifyContent="center" mt={10}>
-                            <Button variantColor="blue" onClick={loadMore} isLoading={IsLoading}>LOAD MORE</Button>
-                        </Box>
+                        {/*<Box display="flex" justifyContent="center" mt={10}>
+                            <Button variantColor="blue" isLoading={IsLoading}>LOAD MORE</Button>
+                        </Box>*/}
                     </Box>
                 </Box>
             </Box>
