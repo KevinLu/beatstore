@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { createCart, getCart } from "../_actions/cart_actions";
+import { setIndex } from "../_actions/playlist_actions";
 import Auth from "../hoc/auth";
 // pages for this product
 import LandingPage from "./views/LandingPage/LandingPage.js";
@@ -10,9 +11,11 @@ import RegisterPage from "./views/RegisterPage/RegisterPage.js";
 import NavBar from "./views/NavBar/NavBar";
 import Footer from "./views/Footer/Footer";
 import UploadBeatPage from "./views/UploadBeatPage/UploadBeatPage";
-import BeatPage from "./views/BeatPage/BeatPage";
 import CartPage from "./views/CartPage/CartPage";
+import BeatPage from "./views/BeatPage/BeatPage";
+import BeatPlayer from "./views/BeatPlayer/BeatPlayer";
 import ErrorNotFoundPage from "./views/ErrorNotFoundPage/ErrorNotFoundPage";
+import { AudioContextProvider } from "./utils/AudioContext";
 import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
 // Auth(SpecificComponent, option, adminRoute)
@@ -42,16 +45,23 @@ function App() {
     dispatch(getCart(cartId));
   }
 
+  const createIndex = () => {
+    dispatch(setIndex(0));
+  }
+
   if (!window.localStorage.getItem("cartId")) {
     newCart();
+    createIndex();
   } else {
     getCartInfo(window.localStorage.getItem("cartId"));
+    createIndex();
   }
 
   return (
     <ThemeProvider>
       <CSSReset />
       <Suspense fallback={(<div>Loading...</div>)}>
+       <AudioContextProvider>
         <NavBar>
           <Switch>
             <Route exact path="/" component={Auth(LandingPage, PUBLIC_PAGE, false)} />
@@ -64,6 +74,8 @@ function App() {
           </Switch>
         </NavBar>
         <Footer />
+        <BeatPlayer />
+       </AudioContextProvider>
       </Suspense>
     </ThemeProvider>
   );

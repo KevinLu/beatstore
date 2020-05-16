@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { addToCart } from '../../../_actions/cart_actions';
+import { setIndex, setShow } from '../../../_actions/playlist_actions';
+import { AudioContext } from "../../utils/AudioContext";
 import SearchBox from './Sections/SearchBox';
 import Axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -48,55 +50,55 @@ function LandingPage() {
     const [Skip, setSkip] = useState(0);
     const [Limit, setLimit] = useState(8); // only load first 8 beats
     const [Count, setCount] = useState(0); // used to check if we allow load more
-    const [IsLoading, setIsLoading] = useState(true);
-    const toast = useToast();
+    const { isLoading, playlist, audio } = useContext(AudioContext);
+    const [IsLoading, setIsLoading] = isLoading;
+    const [Playlist, setPlaylist] = playlist;
+    const [CurrentAudio, setCurrentAudio] = audio;
 
-    const getBeats = (variables) => {
-        setIsLoading(true);
-        Axios.post('/api/beat/getBeats', variables)
-            .then(response => {
-                if (response.data.success) {
-                    setCount(response.data.count)
-                    setBeats(Beats.concat(response.data.beats))
-                } else {
-                    toast({
-                        position: "bottom",
-                        title: "An error occurred.",
-                        description: "Unable to load beats.",
-                        status: "error",
-                        duration: 9000,
-                        isClosable: true,
-                    })
-                }
-                setIsLoading(false);
-            });
-    };
-
-    // Load the beats
-    useEffect(() => {
-        const variables = {
-            skip: Skip,
-            limit: Limit
-        }
-        getBeats(variables);
-    }, []);
+    const show = useSelector(state => state.playlist.show);
 
     const dispatch = useDispatch();
+
+    const setIndexHandler = (i) => {
+        dispatch(setIndex(i));
+    }
+
+    const setShowHandler = (bool) => {
+        dispatch(setShow(bool));
+    }
+
+    const playAudio = (beat) => {
+        if (!show) {
+            setShowHandler(true);
+        }
+        CurrentAudio.pause();
+        CurrentAudio.src = Playlist[beat.index].audio;
+        setIndexHandler(beat.index);
+        CurrentAudio.play();
+        Playlist[beat.index].isPlaying = true;
+    }
 
     const addToCartHandler = (beatId) => {
         dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
     }
 
     // Render the beats in a list
-    const renderListItems = Beats.map((beat, index) => {
+    const renderListItems = Playlist.map((beat, index) => {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Grid templateColumns={{ base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr" }} gap={6}>
-                    <Image borderRadius="3px" size="44px" src={`http://localhost:5000/${beat.images[0]}`}></Image>
+
+                    <Image
+                        borderRadius="3px"
+                        size="44px"
+                        src={beat.image}
+                        fallbackSrc="https://via.placeholder.com/44"
+                        cursor="pointer"
+                        onClick={() => playAudio(beat)} />
 
                     <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
-                    <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{secondsToTime(beat.time)}</ListText>
+                    <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{secondsToTime(beat.length)}</ListText>
 
                     <ListText displayBreakpoints={{ base: "none", lg: "initial" }}>{beat.bpm}</ListText>
 
@@ -123,35 +125,13 @@ function LandingPage() {
                     </ButtonGroup>
 
                 </Grid>
-                {index !== (Beats.length - 1) ? // adds divider between list items
+                {index !== (Playlist.length - 1) ? // adds divider between list items
                     <Divider /> :
                     <></>
                 }
             </Box>
         );
     });
-
-    const loadMore = () => {
-        let skipItems = Skip + Limit;
-
-        if (Count < Limit) {
-            toast({
-                position: "bottom",
-                title: "All beats loaded.",
-                description: "Couldn't find any more beats to load.",
-                status: "warning",
-                duration: 3000,
-                isClosable: true,
-            })
-        } else {
-            const variables = {
-                skip: skipItems,
-                limit: Limit
-            }
-            getBeats(variables);
-            setSkip(skipItems);
-        }
-    }
 
     const PageContents = () => {
         return (
@@ -170,9 +150,9 @@ function LandingPage() {
                             <div></div>
                         </Grid>
                         {renderListItems}
-                        <Box display="flex" justifyContent="center" mt={10}>
-                            <Button variantColor="blue" onClick={loadMore} isLoading={IsLoading}>LOAD MORE</Button>
-                        </Box>
+                        {/*<Box display="flex" justifyContent="center" mt={10}>
+                            <Button variantColor="blue" isLoading={IsLoading}>LOAD MORE</Button>
+                        </Box>*/}
                     </Box>
                 </Box>
             </Box>
@@ -221,7 +201,7 @@ function LandingPage() {
     }
 
     return (
-        Beats.length > 0 ?
+        Playlist.length > 0 ?
             <PageContents />
             : IsLoading ?
                 <PlaceholderContent />
