@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCartItems, removeFromCart } from '../../../_actions/cart_actions';
 import { Box, CircularProgress, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
 import { Link } from "react-router-dom";
+import Axios from "axios";
+import { loadStripe } from '@stripe/stripe-js';
+import {stripePublicKey} from '../../utils/StripeClient';
+
+const stripePromise = loadStripe(stripePublicKey);
 
 const ListHeading = ({ children, displayBreakpoints, float }) => (
     <Box w="100%" h="10" display={displayBreakpoints}>
@@ -41,8 +46,10 @@ const EmptyCartView = () => (
 function CartPage() {
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart);
+    const user = useSelector(state => state.user);
     const [IsLoading, setIsLoading] = useState(true);
     const [GrossAmount, setGrossAmount] = useState(0);
+    const [PaidFor, setPaidFor] = useState(false);
 
     useEffect(() => {
         let cartItems = [];
@@ -67,7 +74,7 @@ function CartPage() {
     const calculateGross = (cart) => {
         let gross = 0;
         cart.map(item => {
-            gross += parseInt(item.price, 10);
+            gross += item.price;
         });
         setGrossAmount(gross, setIsLoading(false));
     }
@@ -90,11 +97,46 @@ function CartPage() {
         </Box>
     );
 
+    const PaidForView = () => (
+        <Box display="flex" justifyContent="center" mt={10}>
+            <Heading>Thank you for your purchase!</Heading>
+        </Box>
+    );
+
+    const stripeOnClick = async () => {
+        var line_items = [];
+        cart.cartDetail.forEach((item, index) => {
+            line_items[index] = {
+                price: item.stripePriceId,
+                quantity: 1
+            }
+        });
+        const variables = {
+            line_items: line_items
+        }
+        const apiResponse = await Axios.post('api/order/createSession', variables);
+        // When the customer clicks on the button, redirect them to Checkout.
+        if (apiResponse.data.success) {
+            const sessionId = apiResponse.data.sessionId;
+            const stripe = await stripePromise;
+            const { error } = await stripe.redirectToCheckout({
+                sessionId,
+            });
+            // If `redirectToCheckout` fails due to a browser or network
+            // error, display the localized error message to your customer
+            // using `error.message`.
+        } else {
+            console.log(apiResponse);
+        }
+    };
+
     const CartView = () => {
         if (IsLoading) {
             return <CartLoadingView />
         } else if (cart.cart.array.length === 0) {
             return <EmptyCartView />
+        } else if (PaidFor) {
+            return <PaidForView />
         } else {
             return (
                 <Grid templateColumns={{ base: "1fr", lg: "2.5fr 1fr" }} mt="5em">
@@ -113,13 +155,11 @@ function CartPage() {
                         </Box>
                         <Divider />
                         <Box display="flex" justifyContent="space-between">
-                            <Text color="blue.900" fontSize="2xl" fontWeight="800">Total</Text>
-                            <Text color="blue.900" fontSize="2xl" fontWeight="800">${GrossAmount - 0}</Text>
+                            <Text color="blue.900" fontSize="2xl" fontWeight="700">Total</Text>
+                            <Text color="blue.900" fontSize="2xl" fontWeight="700">${GrossAmount - 0}</Text>
                         </Box>
                         <Divider />
-                        <Button width="100%" variantColor="blue">
-                            PAYPAL CHECKOUT
-                </Button>
+                        <Button variantColor="blue" width="100%" onClick={stripeOnClick} size="lg">Pay ${GrossAmount}</Button>
                     </Box>
                 </Grid>
             );
