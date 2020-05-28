@@ -57,7 +57,7 @@ function BeatPage(props) {
         <Box m="5em 1em 5em 1em">
             <Grid templateColumns={{ base: "1fr", lg: "1fr 10fr 1fr" }} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" size="180px">
-                    <Image borderRadius="3px" size="200px" src={`http://localhost:5000/${Beat.images[0]}`}></Image>
+                    <Image borderRadius="3px" size="200px" src={Beat.images[0]}></Image>
                 </Skeleton>
 
                 <div>
