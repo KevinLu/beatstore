@@ -50,6 +50,7 @@ router.post("/uploadBeat", auth, (req, res) => {
             name: req.body.title,
             type: 'good',
             description: req.body.description,
+            images: req.body.images,
             shippable: false
         }, (err, product) => {
             if (err) return res.status(400).json({ success: false, err });
