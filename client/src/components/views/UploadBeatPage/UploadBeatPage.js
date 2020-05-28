@@ -9,8 +9,7 @@ import {
     Button,
     useToast
 } from "@chakra-ui/core";
-import AudioUpload from '../../utils/AudioUpload';
-import ImageUpload from '../../utils/ImageUpload';
+import FileUpload from '../../utils/FileUpload';
 import Tags from '@yaireo/tagify/dist/react.tagify';
 import Axios from 'axios';
 
@@ -113,7 +112,7 @@ function UploadBeatPage(props) {
         var unixTimestamp = Math.floor(field.date / 1000);
 
         var ad = new Audio();
-        ad.src = `http://localhost:5000/${Audios[0]}`
+        ad.src = `${Audios[0]}`
         ad.onloadedmetadata = function () {
             const variables = {
                 producer: props.user.userData._id,
@@ -166,13 +165,13 @@ function UploadBeatPage(props) {
                 <form>
                     <FormControl isRequired>
                         <FormLabel>Upload Beat Preview (tagged)</FormLabel>
-                        <AudioUpload refreshFunction={updateAudios} />
+                        <FileUpload accept="audio/*" refreshFunction={updateAudios} />
                         <FormHelperText>MP3/WAV only</FormHelperText>
                     </FormControl>
 
                     <FormControl isRequired mt={5}>
                         <FormLabel>Upload Artwork</FormLabel>
-                        <ImageUpload refreshFunction={updateImages} />
+                        <FileUpload accept="image/*" refreshFunction={updateImages} />
                         <FormHelperText>PNG/JPG/JPEG only</FormHelperText>
                     </FormControl>
 
