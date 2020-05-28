@@ -42,6 +42,12 @@ const beatSchema = mongoose.Schema({
     },
     url: {
         type: String
+    },
+    stripeProductId: {
+        type: String
+    },
+    stripePriceId: {
+        type: String
     }
 })
 

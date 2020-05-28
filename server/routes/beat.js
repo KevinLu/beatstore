@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { Beat } = require("../models/Beat");
-const { auth } = require("../middleware/auth");
 const upload = require("../services/fileupload");
 const singleUpload = upload.single('file');
+const { Beat } = require("../models/Beat");
+const { auth } = require("../middleware/auth");
+const { stripeSecret } = require("../config/dev");
+const stripe = require('stripe')(stripeSecret);
 
 /*var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -41,12 +43,37 @@ router.post("/uploadFile", (req, res) => {
 });
 
 router.post("/uploadBeat", auth, (req, res) => {
-    const beat = new Beat(req.body)
+    var beatDetails = req.body;
 
-    beat.save((err) => {
-        if (err) return res.status(400).json({ success: false, err });
-        return res.status(200).json({ success: true });
-    })
+    stripe.products.create(
+        {
+            name: req.body.title,
+            type: 'good',
+            description: req.body.description,
+            shippable: false
+        }, (err, product) => {
+            if (err) return res.status(400).json({ success: false, err });
+
+            beatDetails['stripeProductId'] = product.id;
+
+            stripe.prices.create(
+                {
+                    unit_amount: req.body.price * 100,
+                    currency: 'usd',
+                    product: product.id,
+                }, (err, price) => {
+                    if (err) return res.status(400).json({ success: false, err });
+
+                    beatDetails['stripePriceId'] = price.id;
+                    const beat = new Beat(beatDetails);
+                    beat.save((err) => {
+                        if (err) return res.status(400).json({ success: false, err });
+                        return res.status(200).json({ success: true });
+                    });
+                }
+            );
+        }
+    );
 });
 
 router.post("/getBeats", (req, res) => { // no need auth
