@@ -1,23 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const upload = require("../services/fileupload");
+const singleUpload = upload.single('file');
 const { Beat } = require("../models/Beat");
-const multer = require('multer');
 const { auth } = require("../middleware/auth");
 const { stripeSecret } = require("../config/dev");
 const stripe = require('stripe')(stripeSecret);
 
-var path = require('path');
-
-const mediaFilter = function (req, file, cb) {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (ext !== '.mp3' && ext !== '.wav' && ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
-        return cb(new Error('File type not supported.'), false);
-    } else {
-        cb(null, true)
-    }
-}
-
-var storage = multer.diskStorage({
+/*var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const ext = path.extname(file.originalname).toLowerCase();
         if (ext === '.mp3' || ext === '.wav') {
@@ -36,28 +26,18 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage,
     fileFilter: mediaFilter
-}).single("file");
+}).single("file");*/
 
 //=================================
 //             Beat
 //=================================
 
-router.post("/uploadAudio", auth, (req, res) => {
-    upload(req, res, err => {
+router.post("/uploadFile", (req, res) => {
+    singleUpload(req, res, err => {
         if (err) {
-            return res.json({ success: false, err });
+            return res.status(415).json({ success: false, err });
         } else {
-            return res.json({ success: true, file: res.req.file.path, fileName: res.req.file.filename });
-        }
-    })
-});
-
-router.post("/uploadImage", auth, (req, res) => {
-    upload(req, res, err => {
-        if (err) {
-            return res.json({ success: false, err });
-        } else {
-            return res.json({ success: true, file: res.req.file.path, fileName: res.req.file.filename });
+            return res.status(200).json({ success: true, file: { location: req.file.location, name: req.file.originalname } });
         }
     })
 });

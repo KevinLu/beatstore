@@ -32,10 +32,11 @@ const rejectStyle = {
     borderColor: '#ff1744'
 };
 
-function AudioUpload(props) {
+function FileUpload(props) {
     const toast = useToast();
 
-    const [Files, setFiles] = useState([])
+    const [Files, setFiles] = useState([]);
+    const [Filenames, setFilenames] = useState([]);
 
     const onDrop = (files) => {
         let formData = new FormData();
@@ -43,14 +44,14 @@ function AudioUpload(props) {
             header: { 'content-type': 'multipart/form-data' }
         }
         formData.append("file", files[0]);
-        Axios.post('/api/beat/uploadAudio', formData, config)
+        Axios.post('/api/beat/uploadFile', formData, config)
             .then(response => {
                 if (response.data.success) {
-                    setFiles([...Files, response.data.file])
-                    props.refreshFunction([...Files, response.data.file])
+                    setFilenames([...Filenames, response.data.file.name])
+                    props.refreshFunction([...Files, response.data.file.location])
                     toast({
                         position: "bottom",
-                        title: "Audio file uploaded.",
+                        title: "File uploaded.",
                         description: "Beat file successfully uploaded.",
                         status: "success",
                         duration: 3000,
@@ -59,7 +60,7 @@ function AudioUpload(props) {
                 } else {
                     toast({
                         position: "bottom",
-                        title: "Error uploading audio file.",
+                        title: "Error uploading file.",
                         description: "Check the file type.",
                         status: "error",
                         duration: 9000,
@@ -75,7 +76,7 @@ function AudioUpload(props) {
         isDragActive,
         isDragAccept,
         isDragReject
-    } = useDropzone({ onDrop, accept: 'audio/*' });
+    } = useDropzone({ onDrop, accept: props.accept });
 
     const style = useMemo(() => ({
         ...baseStyle,
@@ -110,11 +111,11 @@ function AudioUpload(props) {
                 <div className="container">
                     <div {...getRootProps({ style })}>
                         <input {...getInputProps()} />
-                        <p>Drag your beats here, or click to select.</p>
+                        <p>Drag your file here, or click to select.</p>
                     </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    {Files.map((file, index) => (
+                    {Filenames.map((file, index) => (
                         <div key={index} style={{ marginLeft: 'auto', marginBottom: '3px' }}>
                             <Tag
                                 size="md"
@@ -122,7 +123,7 @@ function AudioUpload(props) {
                                 variant="solid"
                                 variantColor="blue"
                             >
-                                <TagLabel>{file.substring(28)}</TagLabel>
+                                <TagLabel>{file}</TagLabel>
                                 <TagCloseButton onClick={onDelete} />
                             </Tag>
                         </div>
@@ -133,4 +134,4 @@ function AudioUpload(props) {
     )
 }
 
-export default AudioUpload
+export default FileUpload
