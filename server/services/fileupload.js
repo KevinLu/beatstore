@@ -26,6 +26,7 @@ var upload = multer({
         s3: s3,
         acl: 'public-read',
         bucket: s3Bucket,
+        contentType: multerS3.AUTO_CONTENT_TYPE,
         metadata: (req, file, cb) => {
             cb(null, Object.assign({}, req.body));
         },
