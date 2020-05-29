@@ -4,6 +4,9 @@ const multerS3 = require('multer-sharp-s3');
 const path = require('path');
 const { s3SecretAccessKey, s3AccessKeyId, s3Bucket } = require('../config/key');
 
+const imageWidth = 208; //px
+const imageHeight = 208; //px
+
 const s3 = new aws.S3();
 
 aws.config.update({
@@ -31,8 +34,8 @@ var upload = multer({
             cb(null, file.originalname);
         },
         resize: {
-            width: 200,
-            height: 200
+            width: 208,
+            height: 208
         }
     }),
     fileFilter: mediaFilter

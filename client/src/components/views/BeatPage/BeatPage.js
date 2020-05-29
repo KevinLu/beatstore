@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { addToCart } from '../../../_actions/cart_actions';
-import { Box, Grid, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel } from '@chakra-ui/core';
+import { Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel } from '@chakra-ui/core';
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 import { MdDateRange, MdMusicNote } from 'react-icons/md';
 
@@ -55,18 +55,18 @@ function BeatPage(props) {
 
     return (
         <Box m="5em 1em 5em 1em">
-            <Grid templateColumns={{ base: "1fr", lg: "1fr 10fr 1fr" }} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" size="180px">
-                    <Image borderRadius="3px" size="200px" src={Beat.images[0]}></Image>
+            <Flex maxWidth={["480px", "480px", "480px", "1166px"]} margin="auto" flexWrap="wrap" flexDirection={{base: "column", lg: "row"}}>
+                <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" size="208px">
+                    <Image borderRadius="3px" size="208px" src={Beat.images[0]}></Image>
                 </Skeleton>
 
-                <div>
-                    <Stack mt={{ base: 8, lg: 3 }} textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
+                <Flex flexDir="column" flexGrow="1">
+                    <Stack mt={{base: 3, lg: 0}} textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
                         <Heading as="h2" size="xl">{Beat.title}</Heading>
                         <div>
                             <Skeleton size="15px" isLoaded={BeatLoaded} display="inline">
                                 <Icon name="star" color="orange.400" mr={1} />
-                                <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.name}</Text>
+                                <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.username}</Text>
                             </Skeleton>
                         </div>
                     </Stack>
@@ -98,8 +98,7 @@ function BeatPage(props) {
                             </Button>
                         </Skeleton>
                     </ButtonGroup>
-                </div>
-
+                </Flex>
                 <Stack spacing={2} isInline height={10} margin={{ base: "1em auto 0 auto", lg: "auto 0 0 0" }}>
                     {Beat.tags.map((tag, i) => (
                         <Tag size="md" key={i} variantColor="blue">
@@ -108,7 +107,7 @@ function BeatPage(props) {
                         </Tag>
                     ))}
                 </Stack>
-            </Grid>
+            </Flex>
         </Box>
     );
 }
