@@ -111,8 +111,11 @@ function UploadBeatPage(props) {
         var safeTitle = field.title.replace(/\W+/g, '-').toLowerCase();
         var unixTimestamp = Math.floor(field.date / 1000);
 
+        console.log(Audios);
+        console.log(Images);
+
         var ad = new Audio();
-        ad.src = `${Audios[0]}`
+        ad.src = Audios[0];
         ad.onloadedmetadata = function () {
             const variables = {
                 producer: props.user.userData._id,

@@ -7,27 +7,6 @@ const { auth } = require("../middleware/auth");
 const { stripeSecret } = require("../config/dev");
 const stripe = require('stripe')(stripeSecret);
 
-/*var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const ext = path.extname(file.originalname).toLowerCase();
-        if (ext === '.mp3' || ext === '.wav') {
-            cb(null, 'uploads/beats/')
-        } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
-            cb(null, 'uploads/img')
-        } else {
-            cb(new Error('File type not supported.'));
-        }
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}`)
-    }
-})
-
-var upload = multer({
-    storage: storage,
-    fileFilter: mediaFilter
-}).single("file");*/
-
 //=================================
 //             Beat
 //=================================
@@ -37,7 +16,7 @@ router.post("/uploadFile", (req, res) => {
         if (err) {
             return res.status(415).json({ success: false, err });
         } else {
-            return res.status(200).json({ success: true, file: { location: req.file.location, name: req.file.originalname } });
+            return res.status(200).json({ success: true, file: { location: req.file.Location, name: req.file.originalname } });
         }
     })
 });

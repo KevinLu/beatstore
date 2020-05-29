@@ -47,6 +47,7 @@ function FileUpload(props) {
         Axios.post('/api/beat/uploadFile', formData, config)
             .then(response => {
                 if (response.data.success) {
+                    console.log(response);
                     setFilenames([...Filenames, response.data.file.name])
                     props.refreshFunction([...Files, response.data.file.location])
                     toast({
