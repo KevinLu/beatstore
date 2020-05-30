@@ -8,7 +8,7 @@ function LeftMenu(props) {
   }
 
   return (
-    <Flex align="center" mr={5} ml={5}>
+    <Flex align="center">
       <Heading color="white" as="h1" size="lg" letterSpacing={"-.1rem"}>
         <a href="#home" onClick={goHome}>BEATSTORE</a>
         </Heading>
