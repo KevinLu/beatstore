@@ -5,7 +5,15 @@ import {
     LOGOUT_USER,
 } from '../_actions/types';
 
-export default function (state = {}, action) {
+const initialState = {
+    userData: {
+        isAuth: false,
+        role: 0,
+        error: true
+    }
+}
+
+export default function (state = initialState, action) {
     switch (action.type) {
         case REGISTER_USER:
             return { ...state, register: action.payload }
@@ -14,7 +22,7 @@ export default function (state = {}, action) {
         case AUTH_USER:
             return { ...state, userData: action.payload }
         case LOGOUT_USER:
-            return { ...state }
+            return { ...state, userData: state }
         default:
             return state;
     }

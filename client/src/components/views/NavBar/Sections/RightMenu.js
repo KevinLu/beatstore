@@ -1,150 +1,127 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from 'react';
-import { Box, Badge } from "@chakra-ui/core";
+import {
+  Avatar, Box, Badge, Menu, Button, Flex,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuGroup,
+  MenuDivider,
+  MenuOptionGroup,
+  MenuItemOption,
+  Image,
+  Text
+} from "@chakra-ui/core";
 import axios from 'axios';
 import { USER_SERVER } from '../../../Config';
 import { withRouter, Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import { FaShoppingCart } from "react-icons/fa";
+import { FiLogIn } from "react-icons/fi";
 
 function delete_cookie(name) {
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 function RightMenu(props) {
-  const [show, setShow] = useState(false);
   const [CartLength, setCartLength] = useState(0);
-  const handleToggle = () => setShow(!show);
+  const [IsAdmin, setIsAdmin] = useState(false);
+  const [IsLoggedIn, setIsLoggedIn] = useState(false);
 
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.user.userData);
   const cart = useSelector(state => state.cart.cart.array.length);
 
   useEffect(() => {
+    if (user) {
+      if (user.isAuth) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false); // required to reset state after logout
+      }
+      if (user.role === 1) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false); // required to reset state after logout
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
     setCartLength(cart);
-  }, [cart])
+  }, [cart]);
 
   const logoutHandler = () => {
     axios.get(`${USER_SERVER}/logout`).then(response => {
       if (response.data.success) {
         delete_cookie("w_auth");
-        props.history.push("/login");
       }
     });
   };
 
-  if (user.userData && user.userData.isAuth && user.userData.role) {
-    return (
-      <Box>
-        <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
-          <svg
-            fill="white"
-            width="12px"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Menu</title>
-            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-          </svg>
-        </Box>
-        <Box
-          display={{ sm: show ? "block" : "none", md: "flex" }}
-          width={{ sm: "full", md: "auto" }}
-          alignItems="center"
-          flexGrow={1}
-        >
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-            <Link to="/upload">
-              UPLOAD
+  const UserIcon = () => {
+    if (IsLoggedIn || IsAdmin) { // all logged in users have this (including admin)
+      return (
+        <MenuButton>
+          <Avatar size="sm" src={user.image} />
+        </MenuButton>
+      );
+    } else {
+      return (
+        <Link to="/login">
+          <Button rightIcon="arrow-forward" variantColor="blue">
+            Login
+        </Button>
         </Link>
-          </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-            <Link fontSize="lg" onClick={logoutHandler}>
-              LOGOUT
-        </Link>
-          </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
-            <Link to="/cart">
-              <Box as={FaShoppingCart} />
-            </Link>
-            <Badge ml="1" variantColor="green">{CartLength}</Badge>
-          </Box>
-        </Box>
+      );
+    }
+  };
+
+  const UserMenu = () => {
+    if (IsAdmin) {
+      return (
+        <MenuList zIndex="3">
+          <MenuGroup color="black" title={user.username}>
+            <MenuItem color="black">My account</MenuItem>
+            <MenuItem color="black">Orders</MenuItem>
+          </MenuGroup>
+          <MenuDivider />
+          <MenuGroup color="black" title="Admin">
+            <MenuItem color="black">Dashboard</MenuItem>
+          </MenuGroup>
+          <MenuDivider />
+          <Link onClick={logoutHandler} to="/login">
+            <MenuItem color="black">Logout</MenuItem>
+          </Link>
+        </MenuList>
+      );
+    } else if (IsLoggedIn) {
+      return (
+        <MenuList zIndex="3">
+          <MenuItem color="black">My account</MenuItem>
+          <MenuItem color="black">Orders</MenuItem>
+          <MenuDivider />
+          <Link onClick={logoutHandler} to="/login">
+            <MenuItem color="black">Logout</MenuItem>
+          </Link>
+        </MenuList>
+      );
+    } else {
+      return (<div></div>);
+    }
+  };
+
+  return (
+    <Flex alignItems="center">
+      <Box fontWeight="600" fontSize="lg" mr={6} display="flex">
+        <Link to="/cart"><Box as={FaShoppingCart} /></Link>
+        <Badge ml="1" variantColor="green" height="1.6em">{CartLength}</Badge>
       </Box>
-    )
-  } else if (user.userData && user.userData.isAuth) {
-    return (
-      <div>
-        <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
-          <svg
-            fill="white"
-            width="12px"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Menu</title>
-            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-          </svg>
-        </Box>
-
-        <Box
-          display={{ sm: show ? "block" : "none", md: "flex" }}
-          width={{ sm: "full", md: "auto" }}
-          alignItems="center"
-          flexGrow={1}
-        >
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="block">
-            <Link fontSize="lg" onClick={logoutHandler}>
-              LOGOUT
-        </Link>
-          </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
-            <Link to="/cart"><Box as={FaShoppingCart} /></Link>
-            <Badge ml="1" variantColor="green">{CartLength}</Badge>
-          </Box>
-        </Box>
-      </div>
-    )
-  } else {
-    return (
-      <div>
-        <Box display={{ sm: "block", md: "none" }} onClick={handleToggle}>
-          <svg
-            fill="white"
-            width="12px"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Menu</title>
-            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-          </svg>
-        </Box>
-
-        <Box
-          display={{ sm: show ? "block" : "none", md: "flex" }}
-          width={{ sm: "full", md: "auto" }}
-          alignItems="center"
-          flexGrow={1}
-        >
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
-            <Link to="/login">
-              SIGN IN
-        </Link>
-          </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6}>
-            <Link to="/register">
-              REGISTER
-        </Link>
-          </Box>
-          <Box fontWeight="600" fontSize="lg" mt={{ base: 4, md: 0 }} mr={6} display="flex">
-            <Link to="/cart">
-              <Box as={FaShoppingCart} />
-            </Link>
-            <Badge ml="1" variantColor="green">{CartLength}</Badge>
-          </Box>
-        </Box>
-      </div>
-    );
-  }
+      <Menu>
+        <UserIcon />
+        <UserMenu />
+      </Menu>
+    </Flex>
+  );
 }
 
 export default withRouter(RightMenu);
