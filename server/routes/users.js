@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
-const { Beat } = require("../models/Beat");
 
 const { auth } = require("../middleware/auth");
 
@@ -12,18 +11,16 @@ const { auth } = require("../middleware/auth");
 router.get("/auth", auth, async (req, res) => {
     if (req.isAuth) {
         try {
-            var user = await User.findById(req.user._id).select('-password');
-            if (!user) throw Error('User does not exist');
+            if (!req.user) throw Error('User does not exist');
             res.status(200).json({
-                _id: user._id,
+                _id: req.user._id,
                 isAuth: true,
-                isAnonymous: user.isAnonymous,
-                email: user.email,
-                username: user.username,
-                role: user.role,
-                image: user.image,
-                cart: user.cart,
-                history: user.history
+                email: req.user.email,
+                username: req.user.username,
+                role: req.user.role,
+                image: req.user.image,
+                cart: req.user.cart,
+                history: req.user.history
             });
         } catch (e) {
             console.log(e)

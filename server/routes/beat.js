@@ -4,7 +4,7 @@ const upload = require("../services/fileupload");
 const singleUpload = upload.single('file');
 const { Beat } = require("../models/Beat");
 const { auth } = require("../middleware/auth");
-const { stripeSecret } = require("../config/dev");
+const { stripeSecret } = require("../config/key");
 const stripe = require('stripe')(stripeSecret);
 
 //=================================
