@@ -61,7 +61,9 @@ function RightMenu(props) {
   const UserIcon = () => {
     if (IsLoggedIn || IsAdmin) { // all logged in users have this (including admin)
       return (
-        <MenuButton size="40px" rounded="full" src={user.image} as={Image} />
+        <MenuButton>
+          <Avatar size="sm" src={user.image} />
+        </MenuButton>
       );
     } else {
       return (
