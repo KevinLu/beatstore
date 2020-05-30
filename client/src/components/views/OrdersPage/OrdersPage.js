@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Axios from 'axios';
-import { Button, useToast } from '@chakra-ui/core';
+import { Box, Heading, Button, useToast } from '@chakra-ui/core';
+import LoadingView from '../../utils/LoadingView';
 
 function OrdersPage() {
+    const [IsLoading, setIsLoading] = useState(true);
+
     const location = useLocation();
     const queries = queryString.parse(location.search);
     const toast = useToast();
@@ -33,9 +36,21 @@ function OrdersPage() {
             });
     };
 
+    const OrdersView = () => {
+        if (IsLoading) {
+            return <LoadingView isLoading={IsLoading} />
+        }
+    };
+
     return (
         <div>
             <Button onClick={verifyCheckoutSessionId}>Verify session id</Button>
+            <Box m="3em 1em 5em 1em">
+                <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
+                    <Heading>ORDERS</Heading>
+                    <OrdersView />
+                </Box>
+            </Box>
         </div>
     )
 }
