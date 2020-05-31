@@ -11,15 +11,24 @@ const stripe = require('stripe')(stripeSecret);
 //=================================
 
 const handleCheckoutSession = (intent) => {
-    const data = {
-        user: intent.client_reference_id,
-        checkoutSession: intent
-    };
+    stripe.checkout.sessions.listLineItems(
+        intent.id,
+        { limit: 100 },
+        (err, lineItems) => {
+            if (err) console.log(err);
 
-    const order = new Order(data);
-    order.save((err, doc) => {
-        if (err) console.log(err);
-    });
+            const data = {
+                user: intent.client_reference_id,
+                checkoutSession: intent,
+                products: lineItems.data
+            };
+
+            const order = new Order(data);
+            order.save((err, doc) => {
+                if (err) console.log(err);
+            });
+        }
+    );
 };
 
 const handlePaymentSuccess = (intent) => {
@@ -38,7 +47,7 @@ const handlePaymentSuccess = (intent) => {
 
 const handlePaymentFailure = (intent) => {
     delete intent.client_secret;
-    
+
     const data = {
         paymentIntent: intent,
         success: false

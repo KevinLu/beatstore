@@ -12,6 +12,13 @@ function OrdersPage() {
     const queries = queryString.parse(location.search);
     const toast = useToast();
 
+    useEffect(() => {
+        Axios.get('/api/order/getUserOrders')
+            .then(response => {
+                console.log(response);
+            });
+    }, []);
+
     const verifyCheckoutSessionId = () => {
         Axios.get(`/api/order/getSession?session_id=${queries.session_id}`)
             .then(response => {
@@ -52,7 +59,7 @@ function OrdersPage() {
                 </Box>
             </Box>
         </div>
-    )
+    );
 }
 
 export default OrdersPage

@@ -84,6 +84,9 @@ function RightMenu() {
           <MenuDivider />
           <MenuGroup color="black" title="Admin">
             <MenuItem color="black">Dashboard</MenuItem>
+            <Link to="/upload">
+              <MenuItem color="black">Upload</MenuItem>
+            </Link>
           </MenuGroup>
           <MenuDivider />
           <Link onClick={logoutHandler} to="/login">

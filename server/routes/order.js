@@ -9,17 +9,16 @@ const stripe = require('stripe')(stripeSecret);
 //             Order
 //=================================
 
-router.post("/add", (req, res) => {
-
-    const order = new Order(req.body);
-
-    order.save((err, doc) => {
-        if (err) return res.json({ success: false, err });
-        return res.status(200).json({
-            success: true,
-            orderId: order._id
-        });
-    });
+router.get("/getUserOrders", auth, async (req, res) => {
+    if (req.isAuth) {
+        try {
+            if (!req.user) throw Error('User does not exist');
+            const orders = await Order.find({ user: req.user._id });
+            return res.status(200).json({ success: true, orders });
+        } catch (e) {
+            return res.status(400).json({ success: false, msg: e.message });
+        }
+    }
 });
 
 router.post("/createSession", auth, async (req, res) => {
@@ -32,7 +31,6 @@ router.post("/createSession", auth, async (req, res) => {
     };
     if (req.isAuth) {
         // without the JSON methods, Stripe will crash because apparently req.user._id is not a string?
-        console.log(JSON.parse(JSON.stringify(req.user._id)));
         sessionData.client_reference_id = JSON.parse(JSON.stringify(req.user._id));
     }
     const session = await stripe.checkout.sessions.create(sessionData);
