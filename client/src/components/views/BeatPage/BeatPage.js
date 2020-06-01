@@ -57,7 +57,7 @@ function BeatPage(props) {
         <Box m="5em 1em 5em 1em">
             <Flex maxWidth={["480px", "480px", "480px", "1166px"]} margin="auto" flexWrap="wrap" flexDirection={{base: "column", lg: "row"}}>
                 <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" size="208px">
-                    <Image borderRadius="3px" size="208px" src={Beat.artwork}></Image>
+                    <Image borderRadius="3px" size="208px" src={Beat.artwork[0]}></Image>
                 </Skeleton>
 
                 <Flex flexDir="column" flexGrow="1">
