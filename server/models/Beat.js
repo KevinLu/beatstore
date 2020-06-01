@@ -28,11 +28,19 @@ const beatSchema = mongoose.Schema({
     date: {
         type: Date
     },
-    audios: {
+    previewAudio: {
         type: Array,
         default: []
     },
-    images: {
+    purchaseAudio: {
+        type: Array,
+        default: []
+    },
+    trackStems: {
+        type: Array,
+        default: []
+    },
+    artwork: {
         type: Array,
         default: []
     },

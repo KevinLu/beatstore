@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const upload = require("../services/fileupload");
-const singleUpload = upload.single('file');
+const { uploadPublic, uploadPrivate } = require("../services/fileupload");
+const singleUploadPublic = uploadPublic.single('file');
+const singleUploadPrivate = uploadPrivate.single('file');
 const { Beat } = require("../models/Beat");
 const { auth } = require("../middleware/auth");
 const { stripeSecret } = require("../config/key");
@@ -11,9 +12,21 @@ const stripe = require('stripe')(stripeSecret);
 //             Beat
 //=================================
 
-router.post("/uploadFile", (req, res) => {
-    singleUpload(req, res, err => {
+router.post("/uploadPublicFile", (req, res) => {
+    singleUploadPublic(req, res, err => {
         if (err) {
+            console.log(err);
+            return res.status(415).json({ success: false, err });
+        } else {
+            return res.status(200).json({ success: true, file: { location: req.file.Location, name: req.file.originalname } });
+        }
+    })
+});
+
+router.post("/uploadPrivateFile", (req, res) => {
+    singleUploadPrivate(req, res, err => {
+        if (err) {
+            console.log(err);
             return res.status(415).json({ success: false, err });
         } else {
             return res.status(200).json({ success: true, file: { location: req.file.Location, name: req.file.originalname } });
@@ -30,9 +43,9 @@ router.post("/uploadBeat", auth, (req, res) => {
             name: req.body.title,
             type: 'good',
             description: req.body.description,
-            images: req.body.images,
-            shippable: false,
-            metadata: { mongo_id: JSON.parse(JSON.stringify(beat._id)) }
+            metadata: { mongo_id: JSON.parse(JSON.stringify(beat._id)) },
+            images: req.body.artwork,
+            shippable: false
         }, (err, product) => {
             if (err) return res.status(400).json({ success: false, err });
 
