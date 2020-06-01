@@ -18,7 +18,10 @@ mongoose.connect(db, {
   .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err));
 
-app.use(cors())
+app.use(cors());
+
+// use webhook route before using bodyParser middleware to get raw data
+app.use('/webhook', require('./routes/webhook'));
 
 //to not get any deprecation warning or error
 //support parsing of application/x-www-form-urlencoded post data

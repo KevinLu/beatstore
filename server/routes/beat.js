@@ -5,7 +5,7 @@ const singleUploadPublic = uploadPublic.single('file');
 const singleUploadPrivate = uploadPrivate.single('file');
 const { Beat } = require("../models/Beat");
 const { auth } = require("../middleware/auth");
-const { stripeSecret } = require("../config/dev");
+const { stripeSecret } = require("../config/key");
 const stripe = require('stripe')(stripeSecret);
 
 //=================================
@@ -35,32 +35,35 @@ router.post("/uploadPrivateFile", (req, res) => {
 });
 
 router.post("/uploadBeat", auth, (req, res) => {
-    var beatDetails = req.body;
+    const beat = new Beat(req.body);
 
+    // Create a new product on Stripe
     stripe.products.create(
         {
             name: req.body.title,
             type: 'good',
             description: req.body.description,
+            metadata: { mongo_id: JSON.parse(JSON.stringify(beat._id)) },
             images: req.body.artwork,
             shippable: false
         }, (err, product) => {
             if (err) return res.status(400).json({ success: false, err });
-
-            beatDetails['stripeProductId'] = product.id;
 
             stripe.prices.create(
                 {
                     unit_amount: req.body.price * 100,
                     currency: 'usd',
                     product: product.id,
+                    metadata: { mongo_id: JSON.parse(JSON.stringify(beat._id)) }
                 }, (err, price) => {
                     if (err) return res.status(400).json({ success: false, err });
 
-                    beatDetails['stripePriceId'] = price.id;
-                    const beat = new Beat(beatDetails);
-                    beat.save((err) => {
+                    beat.stripeProductId = product.id;
+                    beat.stripePriceId = price.id;
+
+                    beat.save((err) => { // Save beat into MongoDB
                         if (err) return res.status(400).json({ success: false, err });
+
                         return res.status(200).json({ success: true });
                     });
                 }

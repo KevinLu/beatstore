@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCartItems, removeFromCart } from '../../../_actions/cart_actions';
-import { Box, CircularProgress, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
+import { Box, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
+import LoadingView from "../../utils/LoadingView";
 import { Link } from "react-router-dom";
 import Axios from "axios";
 import { loadStripe } from '@stripe/stripe-js';
@@ -91,12 +92,6 @@ function CartPage() {
             });
     }
 
-    const CartLoadingView = () => (
-        <Box display="flex" justifyContent="center" mt={10}>
-            <CircularProgress isIndeterminate={IsLoading} color="blue" />
-        </Box>
-    );
-
     const PaidForView = () => (
         <Box display="flex" justifyContent="center" mt={10}>
             <Heading>Thank you for your purchase!</Heading>
@@ -132,7 +127,7 @@ function CartPage() {
 
     const CartView = () => {
         if (IsLoading) {
-            return <CartLoadingView />
+            return <LoadingView isLoading={IsLoading} />
         } else if (cart.cart.array.length === 0) {
             return <EmptyCartView />
         } else if (PaidFor) {

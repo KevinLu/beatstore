@@ -19,7 +19,7 @@ function delete_cookie(name) {
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-function RightMenu(props) {
+function RightMenu() {
   const [CartLength, setCartLength] = useState(0);
   const [IsAdmin, setIsAdmin] = useState(false);
   const [IsLoggedIn, setIsLoggedIn] = useState(false);
@@ -79,11 +79,16 @@ function RightMenu(props) {
         <MenuList zIndex="3">
           <MenuGroup color="black" title={user.username}>
             <MenuItem color="black">My account</MenuItem>
-            <MenuItem color="black">Orders</MenuItem>
+            <Link to="/orders">
+              <MenuItem color="black">Orders</MenuItem>
+            </Link>
           </MenuGroup>
           <MenuDivider />
           <MenuGroup color="black" title="Admin">
             <MenuItem color="black">Dashboard</MenuItem>
+            <Link to="/upload">
+              <MenuItem color="black">Upload</MenuItem>
+            </Link>
           </MenuGroup>
           <MenuDivider />
           <Link onClick={logoutHandler} to="/login">
@@ -95,7 +100,9 @@ function RightMenu(props) {
       return (
         <MenuList zIndex="3">
           <MenuItem color="black">My account</MenuItem>
-          <MenuItem color="black">Orders</MenuItem>
+          <Link to="/orders">
+            <MenuItem color="black">Orders</MenuItem>
+          </Link>
           <MenuDivider />
           <Link onClick={logoutHandler} to="/login">
             <MenuItem color="black">Logout</MenuItem>

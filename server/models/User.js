@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const config = require("../config/key");
 const jwt = require('jsonwebtoken');
-const moment = require("moment");
 
 const userSchema = mongoose.Schema({
     username: {
@@ -30,10 +29,6 @@ const userSchema = mongoose.Schema({
     role: {
         type: Number,
         default: 0
-    },
-    isAnonymous: {
-        type: Boolean,
-        default: false
     },
     image: String
 })
