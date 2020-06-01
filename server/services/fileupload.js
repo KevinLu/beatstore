@@ -32,7 +32,7 @@ var uploadPublic = multer({
         s3: s3,
         ACL: 'public-read',
         Bucket: s3PublicBucket,
-        contentType: multerS3.AUTO_CONTENT_TYPE,
+        ContentType: multerS3.AUTO_CONTENT_TYPE,
         Key: (req, file, cb) => {
             cb(null, file.originalname);
         },
@@ -49,7 +49,8 @@ var uploadPrivate = multer({
     storage: multerS3({
         s3: s3,
         Bucket: s3PrivateBucket,
-        contentType: multerS3.AUTO_CONTENT_TYPE,
+        ContentType: multerS3.AUTO_CONTENT_TYPE,
+        ContentDisposition: 'attachment',
         Key: (req, file, cb) => {
             cb(null, file.originalname);
         }
