@@ -170,7 +170,7 @@ function CartPage() {
         return (
             <div key={index}>
                 <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3} alignItems="center">
-                    <Image borderRadius="3px" size={{ base: "44px", lg: "60px" }} src={item.images[0]}></Image>
+                    <Image borderRadius="3px" size={{ base: "44px", lg: "60px" }} src={item.artwork}></Image>
 
                     <ListText fontSize="md" fontWeight="600"><Link to={`/beat/${item.url}`}>{item.title}</Link></ListText>
 

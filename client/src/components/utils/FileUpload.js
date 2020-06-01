@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useToast, Box, Grid, Tag, TagLabel, TagCloseButton } from "@chakra-ui/core";
+import { useToast, Box, Flex, Text, Tag, TagLabel, TagCloseButton, CircularProgress } from "@chakra-ui/core";
 import Axios from 'axios';
 
 const baseStyle = {
@@ -10,44 +10,50 @@ const baseStyle = {
     alignItems: 'center',
     padding: '20px',
     marginBottom: '1em',
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 2,
     borderColor: '#636363',
     borderStyle: 'dashed',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#F7FAFC',
     color: '#262626',
     outline: 'none',
-    transition: 'border .24s ease-in-out'
+    transition: 'backgroundColor .24s ease-in-out'
 };
 
 const activeStyle = {
-    borderColor: '#2196f3'
+    borderColor: '#ffffff',
+    backgroundColor: '#63b3ed'
 };
 
 const acceptStyle = {
-    borderColor: '#00e676'
+    borderColor: '#ffffff',
+    backgroundColor: '#68d391'
 };
 
 const rejectStyle = {
-    borderColor: '#ff1744'
+    borderColor: '#ffffff',
+    backgroundColor: '#fc8181'
 };
 
 function FileUpload(props) {
+    const uploadUrl = props.public ? '/api/beat/uploadPublicFile' : '/api/beat/uploadPrivateFile';
+
     const toast = useToast();
 
     const [Files, setFiles] = useState([]);
     const [Filenames, setFilenames] = useState([]);
+    const [IsUploading, setIsUploading] = useState(false);
 
     const onDrop = (files) => {
+        setIsUploading(true);
         let formData = new FormData();
         const config = {
             header: { 'content-type': 'multipart/form-data' }
         }
         formData.append("file", files[0]);
-        Axios.post('/api/beat/uploadFile', formData, config)
+        Axios.post(uploadUrl, formData, config)
             .then(response => {
                 if (response.data.success) {
-                    console.log(response);
                     setFilenames([...Filenames, response.data.file.name])
                     props.refreshFunction([...Files, response.data.file.location])
                     toast({
@@ -68,6 +74,7 @@ function FileUpload(props) {
                         isClosable: true,
                     })
                 }
+                setIsUploading(false);
             });
     }
 
@@ -107,15 +114,21 @@ function FileUpload(props) {
     }
 
     return (
-        <Box>
-            <Grid templateColumns="repeat(2, 1fr)">
+        <Flex justifyContent="center">
+            <Flex flexWrap="wrap" flexDirection="column">
                 <div className="container">
                     <div {...getRootProps({ style })}>
-                        <input {...getInputProps()} />
-                        <p>Drag your file here, or click to select.</p>
+                        {IsUploading ?
+                            <CircularProgress isIndeterminate={IsUploading} />
+                            :
+                            <Flex justifyContent="center" flexDirection="column" alignItems="center">
+                                <Box size="25px" as={props.icon} />
+                                <Text>Drag your file here, or click to select.</Text>
+                                <input {...getInputProps()} />
+                            </Flex>}
                     </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <Box>
                     {Filenames.map((file, index) => (
                         <div key={index} style={{ marginLeft: 'auto', marginBottom: '3px' }}>
                             <Tag
@@ -129,9 +142,9 @@ function FileUpload(props) {
                             </Tag>
                         </div>
                     ))}
-                </div>
-            </Grid>
-        </Box>
+                </Box>
+            </Flex>
+        </Flex>
     )
 }
 
