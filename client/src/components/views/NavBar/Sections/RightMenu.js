@@ -7,17 +7,13 @@ import {
   MenuItem,
   MenuGroup,
   MenuDivider,
-  MenuOptionGroup,
-  MenuItemOption,
-  Image,
-  Text
+  Icon
 } from "@chakra-ui/core";
 import axios from 'axios';
 import { USER_SERVER } from '../../../Config';
 import { withRouter, Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import { FaShoppingCart } from "react-icons/fa";
-import { FiLogIn } from "react-icons/fi";
+import { FaShoppingCart, FaCaretDown } from "react-icons/fa";
 
 function delete_cookie(name) {
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -61,8 +57,9 @@ function RightMenu(props) {
   const UserIcon = () => {
     if (IsLoggedIn || IsAdmin) { // all logged in users have this (including admin)
       return (
-        <MenuButton>
+        <MenuButton display="flex" alignItems="center">
           <Avatar size="sm" src={user.image} />
+          <Box as={FaCaretDown}></Box>
         </MenuButton>
       );
     } else {

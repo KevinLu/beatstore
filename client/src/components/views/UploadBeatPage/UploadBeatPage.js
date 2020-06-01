@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import {
+    Box,
+    Flex,
+    Text,
     FormControl,
     FormLabel,
     Heading,
-    FormHelperText,
+    Badge,
     Input,
     Textarea,
     Button,
     useToast
 } from "@chakra-ui/core";
+import '../../utils/TagifyStyles.css';
 import FileUpload from '../../utils/FileUpload';
 import Tags from '@yaireo/tagify/dist/react.tagify';
 import Axios from 'axios';
+import { MdMusicNote, MdImage } from 'react-icons/md';
+import { FiSliders } from 'react-icons/fi';
+import { FaMusic } from 'react-icons/fa';
 
 function UploadBeatPage(props) {
 
@@ -31,16 +38,28 @@ function UploadBeatPage(props) {
         }))
     }
 
-    const [Audios, setAudios] = useState([])
+    const [PreviewAudio, setPreviewAudio] = useState([])
 
-    const updateAudios = (newAudios) => {
-        setAudios(newAudios)
+    const updatePreviewAudio = (newPreviewAudio) => {
+        setPreviewAudio(newPreviewAudio)
     }
 
-    const [Images, setImages] = useState([])
+    const [PurchaseAudio, setPurchaseAudio] = useState([])
 
-    const updateImages = (newImages) => {
-        setImages(newImages)
+    const updatePurchaseAudio = (newPurchaseAudio) => {
+        setPurchaseAudio(newPurchaseAudio)
+    }
+
+    const [TrackStems, setTrackStems] = useState([])
+
+    const updateTrackStems = (newTrackStems) => {
+        setTrackStems(newTrackStems)
+    }
+
+    const [Artwork, setArtwork] = useState([])
+
+    const updateArtwork = (newArtwork) => {
+        setArtwork(newArtwork)
     }
 
     // Tagify settings object
@@ -97,7 +116,7 @@ function UploadBeatPage(props) {
     const onSubmit = (event) => {
         event.preventDefault();
 
-        if (!field.title || !field.description || !field.price || !field.bpm || !field.date || !Images || !Audios || !BeatTags) {
+        if (!field.title || !field.description || !field.price || !field.bpm || !field.date || !PreviewAudio || !Artwork || !PurchaseAudio) {
             return toast({
                 position: "bottom",
                 title: "Empty fields!",
@@ -111,11 +130,8 @@ function UploadBeatPage(props) {
         var safeTitle = field.title.replace(/\W+/g, '-').toLowerCase();
         var unixTimestamp = Math.floor(field.date / 1000);
 
-        console.log(Audios);
-        console.log(Images);
-
         var ad = new Audio();
-        ad.src = Audios[0];
+        ad.src = PreviewAudio[0];
         ad.onloadedmetadata = function () {
             const variables = {
                 producer: props.user.userData._id,
@@ -125,8 +141,10 @@ function UploadBeatPage(props) {
                 length: ad.duration,
                 price: field.price,
                 date: field.date,
-                audios: Audios,
-                images: Images,
+                previewAudio: PreviewAudio,
+                purchaseAudio: PurchaseAudio,
+                trackStems: TrackStems,
+                artwork: Artwork,
                 tags: BeatTags,
                 url: `${safeTitle}-${unixTimestamp}`
             }
@@ -158,27 +176,52 @@ function UploadBeatPage(props) {
     }
 
     return (
-
-        <div style={{ margin: '2rem' }}>
-            <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <Heading>Upload a Beat</Heading>
-                </div>
-
+        <Box m="3em 1em 5em 1em">
+            <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
+                <Heading>UPLOAD</Heading>
                 <form>
-                    <FormControl isRequired>
-                        <FormLabel>Upload Beat Preview (tagged)</FormLabel>
-                        <FileUpload accept="audio/*" refreshFunction={updateAudios} />
-                        <FormHelperText>MP3/WAV only</FormHelperText>
-                    </FormControl>
+                    <Text mt={10} fontSize="2xl">Audio/Image Files</Text>
+                    <Flex mt={3} flexWrap="wrap" justifyContent="space-between">
+                        <FormControl isRequired>
+                            <Flex alignItems="center">
+                                <FormLabel>Beat Preview (tagged)</FormLabel>
+                                <Badge variantColor="green">MP3/WAV</Badge>
+                            </Flex>
+                            <FileUpload icon={MdMusicNote} public={true} accept="audio/mpeg, audio/wav" refreshFunction={updatePreviewAudio} />
+                        </FormControl>
 
-                    <FormControl isRequired mt={5}>
-                        <FormLabel>Upload Artwork</FormLabel>
-                        <FileUpload accept="image/*" refreshFunction={updateImages} />
-                        <FormHelperText>PNG/JPG/JPEG only</FormHelperText>
-                    </FormControl>
+                        <FormControl isRequired>
+                            <Flex alignItems="center">
+                                <FormLabel>Beat for Purchase</FormLabel>
+                                <Badge variantColor="green">MP3/WAV</Badge>
+                            </Flex>
+                            <FileUpload icon={FaMusic} public={false} accept="audio/mpeg, audio/wav" refreshFunction={updatePurchaseAudio} />
+                        </FormControl>
 
-                    <FormControl isRequired mt={5}>
+                        <FormControl>
+                            <Flex alignItems="center">
+                                <FormLabel>Track Stems</FormLabel>
+                                <Badge variantColor="green">ZIP/RAR</Badge>
+                            </Flex>
+                            <FileUpload icon={FiSliders} public={false}
+                                accept=".rar, application/vnd.rar, application/x-rar-compressed,
+                            application/octet-stream, application/zip,
+                            application/x-zip-compressed, multipart/x-zip"
+                                refreshFunction={updateTrackStems} />
+                        </FormControl>
+
+                        <FormControl isRequired>
+                            <Flex alignItems="center">
+                                <FormLabel>Artwork</FormLabel>
+                                <Badge variantColor="green">PNG/JPG/JPEG</Badge>
+                            </Flex>
+                            <FileUpload icon={MdImage} public={true} accept="image/jpg, image/png, image/jpeg" refreshFunction={updateArtwork} />
+                        </FormControl>
+                    </Flex>
+
+                    <Text mt={10} fontSize="2xl">Track Information</Text>
+
+                    <FormControl isRequired mt={4}>
                         <FormLabel>Title</FormLabel>
                         <Input placeholder="Name of beat" onChange={onChangeHandler} value={field.title} name="title" />
                     </FormControl>
@@ -204,14 +247,14 @@ function UploadBeatPage(props) {
                     </FormControl>
 
                     <FormLabel mt={5}>Tags (max. 3)</FormLabel>
-                    <Tags
+                    <Tags style={{ 'border-radius': '0.25rem' }}
                         settings={settings}
                     />
 
                     <Button mt={5} variantColor="blue" onClick={onSubmit}>Upload</Button>
                 </form>
-            </div>
-        </div>
+            </Box>
+        </Box>
     )
 }
 
