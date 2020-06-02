@@ -85,7 +85,9 @@ function RightMenu() {
           </MenuGroup>
           <MenuDivider />
           <MenuGroup color="black" title="Admin">
-            <MenuItem color="black">Dashboard</MenuItem>
+            <Link to="/dashboard">
+              <MenuItem color="black">Dashboard</MenuItem>
+            </Link>
             <Link to="/upload">
               <MenuItem color="black">Upload</MenuItem>
             </Link>

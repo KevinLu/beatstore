@@ -12,6 +12,7 @@ import NavBar from "./views/NavBar/NavBar";
 import Footer from "./views/Footer/Footer";
 import UploadBeatPage from "./views/UploadBeatPage/UploadBeatPage";
 import OrdersPage from "./views/OrdersPage/OrdersPage";
+import DashboardPage from "./views/DashboardPage/DashboardPage";
 import CartPage from "./views/CartPage/CartPage";
 import BeatPage from "./views/BeatPage/BeatPage";
 import BeatPlayer from "./views/BeatPlayer/BeatPlayer";
@@ -72,6 +73,7 @@ function App() {
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, PUBLIC_PAGE, false)} />
             <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
             <Route exact path="/orders" component={Auth(OrdersPage, LOGGED_IN_ONLY, false)} />
+            <Route exact path="/dashboard" component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
             <Route component={Auth(ErrorNotFoundPage, PUBLIC_PAGE, false)} />
           </Switch>
         </NavBar>
