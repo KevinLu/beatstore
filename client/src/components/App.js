@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Route, Switch } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { createCart, getCart } from "../_actions/cart_actions";
 import { setIndex } from "../_actions/playlist_actions";
@@ -13,6 +13,7 @@ import { ThemeProvider, CSSReset } from "@chakra-ui/core";
 
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const newCart = () => {
     dispatch(createCart())
@@ -49,7 +50,7 @@ function App() {
           <NavBar>
             <Main />
           </NavBar>
-          <Footer />
+          {location.pathname === "/dashboard" ? <div></div> : <Footer />}
           <BeatPlayer />
         </AudioContextProvider>
       </Suspense>
