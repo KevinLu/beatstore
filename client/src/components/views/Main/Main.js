@@ -30,7 +30,10 @@ function Main() {
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, PUBLIC_PAGE, false)} />
             <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
             <Route exact path="/orders" component={Auth(OrdersPage, LOGGED_IN_ONLY, false)} />
-            <Route exact path="/dashboard" component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
+            <Route exact path='/dashboard' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
+            <Route exact path='/dashboard/beats' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
+            <Route exact path='/dashboard/licenses' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
+            <Route exact path='/dashboard/settings' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
             <Route component={Auth(ErrorNotFoundPage, PUBLIC_PAGE, false)} />
         </Switch>
     );

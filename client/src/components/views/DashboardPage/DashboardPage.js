@@ -1,10 +1,14 @@
-import React from 'react'
+import React from 'react';
+import Sidebar from './sections/Sidebar';
+import DashboardContent from './sections/DashboardContent';
+import { Flex } from '@chakra-ui/core';
 
-function DashboardPage() {
+function DashboardPage(props) {
     return (
-        <div>
-            Dashboard
-        </div>
+        <Flex>
+            <Sidebar />
+            <DashboardContent />
+        </Flex>
     )
 }
 

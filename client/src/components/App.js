@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { createCart, getCart } from "../_actions/cart_actions";
@@ -45,15 +45,13 @@ function App() {
   return (
     <ThemeProvider>
       <CSSReset />
-      <Suspense fallback={(<div>Loading...</div>)}>
-        <AudioContextProvider>
-          <NavBar>
-            <Main />
-          </NavBar>
-          {location.pathname === "/dashboard" ? <div></div> : <Footer />}
-          <BeatPlayer />
-        </AudioContextProvider>
-      </Suspense>
+      <AudioContextProvider>
+        <NavBar>
+          <Main />
+        </NavBar>
+        {location.pathname.includes("dashboard") ? <div></div> : <Footer />}
+        <BeatPlayer />
+      </AudioContextProvider>
     </ThemeProvider>
   );
 }
