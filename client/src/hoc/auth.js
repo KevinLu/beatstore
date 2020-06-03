@@ -47,13 +47,13 @@ export default function (SpecificComponent, option, adminRoute) {
 
         }, [])
 
-        if (IsLoading) {
+        /*if (IsLoading) {
             return (
                 <Flex height="100vh" alignItems="center" justifyContent="center">
                     <LoadingView isLoading={IsLoading} />
                 </Flex>
             )
-        }
+        }*/
         return (
             <SpecificComponent {...props} user={user} />
         )
