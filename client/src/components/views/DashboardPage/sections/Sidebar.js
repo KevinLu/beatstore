@@ -19,15 +19,15 @@ const NavItem = ({ title, icon }) => {
             <Box
                 as="button"
                 h="38px"
-                w={{ base: "auto", xl: "220px" }}
-                textAlign={{ base: "left", lg: "center" }}
+                w={{ base: "auto", md: "170px", lg: "220px" }}
+                textAlign={{ base: "left", md: "center" }}
                 backgroundColor={isActive ? 'blue.50' : ''}
                 mb="16px"
                 display="flex"
                 justifyContent="stretch"
                 alignItems="center"
-                px={{ base: "8px", xl: "38px" }}
-                borderRadius={{ base: "8px", xl: "0px" }}
+                px={{ base: "8px", md: "18px", lg: "38px" }}
+                borderRadius={{ base: "8px", md: "0px" }}
             >
                 <Box
                     color={isActive ? 'blue.700' : 'blueGray.500'}
@@ -38,8 +38,8 @@ const NavItem = ({ title, icon }) => {
                     <Box size="24px" position="absolute" />
                 </Tooltip>
                 <Text
-                    display={{ base: 'none', lg: 'initial' }}
-                    ml={{ base: "0px", lg: "15px", xl: "23px" }}
+                    display={{ base: 'none', md: 'initial' }}
+                    ml={{ base: "0px", md: "15px" }}
                     lineHeight="38px"
                     fontWeight="600"
                     color={isActive ? 'blue.700' : 'blueGray.500'}
@@ -52,29 +52,33 @@ const NavItem = ({ title, icon }) => {
     );
 };
 
-const Sidebar = ({ isMobile }) => {
+const Sidebar = () => {
     return (
         <Box
-            h="calc(100vh - 64px)"
-            w={{ base: "70px", lg: "190px", xl: "220px" }}
+            h={{ base: "60px", sm: "calc(100vh - 64px)" }}
+            w={{ base: "100%", sm: "60px", md: "170px", lg: "220px" }}
+            position={{ base: "absolute", sm: "unset" }}
+            bottom={{ base: 0, sm: "unset" }}
             display="flex"
-            alignItems="center"
             justifyContent="space-between"
-            flexDirection="column"
-            boxShadow={isMobile ? '' : '0px 1px 4px rgba(0, 0, 0, 0.1)'}>
-            <Box textAlign="center">
+            boxShadow="0px 1px 4px rgba(0, 0, 0, .1)">
+            <Box
+                w="100%"
+                mx={{ base: 12, sm: 0 }}
+                alignItems="center"
+                display="flex"
+                flexDirection={{ base: "row", sm: "column" }}
+                justifyContent={{ base: "space-between", sm: "unset" }}
+                textAlign="center">
                 <Box
+                    display={{ base: "none", sm: "initial" }}
                     w="fit-content"
-                    margin="auto"
                     pb="20px">
                 </Box>
                 <NavItem title="Dashboard" icon={MdDashboard} />
                 <NavItem title="Beats" icon={FaMusic} />
                 <NavItem title="Licenses" icon={IoIosPaper} />
                 <NavItem title="Settings" icon={MdSettings} />
-            </Box>
-            <Box mb="2em" display={{ base: "none", lg: "initial" }}>
-                Beatstore v0.0.1
             </Box>
         </Box>
     );
