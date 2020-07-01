@@ -9,7 +9,8 @@ let auth = (req, res, next) => {
   if (!token) {
     res.json({ isAuth: false, error: true });
     req.isAuth = false;
-    next();
+    res.end();
+    //next();
     return;
   }
   try {
@@ -30,6 +31,7 @@ let auth = (req, res, next) => {
   } catch (e) {
     console.log(e)
     res.status(400).json({ msg: 'Token is not valid' });
+    res.end();
   }
 };
 
