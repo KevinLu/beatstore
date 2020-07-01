@@ -55,4 +55,27 @@ router.get("/getSession", async (req, res) => {
     }
 });
 
+router.get("/getOrderStatus", async (req, res) => {
+    try {
+        const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+        try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
+            return res.status(200).json({
+                success: true,
+                paymentIntent: paymentIntent
+            });
+        } catch (err) {
+            return res.status(400).send({
+                success: false,
+                err
+            });
+        }
+    } catch (err) {
+        return res.status(400).send({
+            success: false,
+            err
+        });
+    }
+});
+
 module.exports = router;
