@@ -15,6 +15,7 @@ import OrdersPage from "./views/OrdersPage/OrdersPage";
 import CartPage from "./views/CartPage/CartPage";
 import BeatPage from "./views/BeatPage/BeatPage";
 import BeatPlayer from "./views/BeatPlayer/BeatPlayer";
+import DownloadPage from "./views/DownloadPage/DownloadPage";
 import ErrorNotFoundPage from "./views/ErrorNotFoundPage/ErrorNotFoundPage";
 import { AudioContextProvider } from "./utils/AudioContext";
 import { ThemeProvider, CSSReset } from "@chakra-ui/core";
@@ -72,6 +73,7 @@ function App() {
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, PUBLIC_PAGE, false)} />
             <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
             <Route exact path="/orders" component={Auth(OrdersPage, LOGGED_IN_ONLY, false)} />
+            <Route exact path="/download" component={Auth(DownloadPage, PUBLIC_PAGE, false)} />
             <Route component={Auth(ErrorNotFoundPage, PUBLIC_PAGE, false)} />
           </Switch>
         </NavBar>

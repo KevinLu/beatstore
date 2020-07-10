@@ -19,17 +19,27 @@ function OrdersPage() {
             });
     }, []);
 
-    const verifyCheckoutSessionId = () => {
-        Axios.get(`/api/order/getSession?session_id=${queries.session_id}`)
+    const verifyOrderIsPaid = () => {
+        Axios.get(`/api/order/getOrderStatus?session_id=${queries.session_id}`)
             .then(response => {
                 if (response.data.success) {
-                    toast({
-                        title: "Thank you for your purchase!",
-                        description: "You can find your orders here.",
-                        status: "success",
-                        duration: 9000,
-                        isClosable: true,
-                    });
+                    if (response.data.paymentIntent.status === "succeeded") {
+                        toast({
+                            title: "Thank you for your purchase!",
+                            description: "You can find your orders here.",
+                            status: "success",
+                            duration: 9000,
+                            isClosable: true,
+                        });
+                    } else {
+                        toast({
+                            title: "Payment not yet received.",
+                            description: "We haven't received your payment yet, please check back later.",
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                        });
+                    }
                 }
             })
             .catch(err => {
@@ -51,7 +61,7 @@ function OrdersPage() {
 
     return (
         <div>
-            <Button onClick={verifyCheckoutSessionId}>Verify session id</Button>
+            <Button onClick={verifyOrderIsPaid}>Verify session id</Button>
             <Box m="3em 1em 5em 1em">
                 <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
                     <Heading>ORDERS</Heading>

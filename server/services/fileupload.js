@@ -1,6 +1,7 @@
 const aws = require('aws-sdk');
 const multer = require('multer');
-const multerS3 = require('multer-sharp-s3');
+const multerS3 = require('multer-s3');
+const multerSharpS3 = require('multer-sharp-s3');
 const path = require('path');
 const { s3SecretAccessKey, s3AccessKeyId, s3PublicBucket, s3PrivateBucket } = require('../config/key');
 
@@ -28,11 +29,11 @@ const mediaFilter = function (req, file, cb) {
 
 // uploadPublic is used to upload public files that can be accessed by anyone
 var uploadPublic = multer({
-    storage: multerS3({
+    storage: multerSharpS3({
         s3: s3,
         ACL: 'public-read',
         Bucket: s3PublicBucket,
-        ContentType: multerS3.AUTO_CONTENT_TYPE,
+        ContentType: multerSharpS3.AUTO_CONTENT_TYPE,
         Key: (req, file, cb) => {
             cb(null, file.originalname);
         },
@@ -48,10 +49,10 @@ var uploadPublic = multer({
 var uploadPrivate = multer({
     storage: multerS3({
         s3: s3,
-        Bucket: s3PrivateBucket,
-        ContentType: multerS3.AUTO_CONTENT_TYPE,
-        ContentDisposition: 'attachment',
-        Key: (req, file, cb) => {
+        bucket: s3PrivateBucket,
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        contentDisposition: 'attachment',
+        key: function (req, file, cb) {
             cb(null, file.originalname);
         }
     }),

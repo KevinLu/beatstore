@@ -29,7 +29,7 @@ router.post("/uploadPrivateFile", (req, res) => {
             console.log(err);
             return res.status(415).json({ success: false, err });
         } else {
-            return res.status(200).json({ success: true, file: { location: req.file.Location, name: req.file.originalname } });
+            return res.status(200).json({ success: true, file: { location: req.file.location, name: req.file.originalname } });
         }
     })
 });
