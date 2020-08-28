@@ -7,10 +7,10 @@ let auth = (req, res, next) => {
 
   // Check for token
   if (!token) {
-    res.json({ isAuth: false, error: true });
+    //res.json({ isAuth: false, error: true });
     req.isAuth = false;
-    res.end();
-    //next();
+    //res.end();
+    next();
     return;
   }
   try {
