@@ -86,13 +86,12 @@ router.get("/getOrderStatus", async (req, res) => {
                         } else {
                             const expiry = 7200; // link expiry in seconds
                             var downloadLinks = [];
-                            
+
                             docs.forEach((doc, index) => {
                                 const audioUrl = doc.purchaseAudio[0];
                                 downloadLinks[index] = generateSignedUrl(audioUrl.substr(audioUrl.lastIndexOf('/') + 1), expiry);
                             });
-                        
-                        
+                            
                             return res.status(200).json({
                                 success: true,
                                 orderStatus: paymentIntent.status,
