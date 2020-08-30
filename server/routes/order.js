@@ -88,8 +88,9 @@ router.get("/getOrderStatus", async (req, res) => {
                             var downloadLinks = [];
 
                             docs.forEach((doc, index) => {
-                                const audioUrl = doc.purchaseAudio[0];
-                                downloadLinks[index] = generateSignedUrl(audioUrl.substr(audioUrl.lastIndexOf('/') + 1), expiry);
+                                var audioUrl = doc.purchaseAudio[0];
+                                var processedLink = decodeURIComponent(audioUrl.substr(audioUrl.lastIndexOf('/') + 1)).normalize('NFD');
+                                downloadLinks[index] = generateSignedUrl(processedLink, expiry);
                             });
                             
                             return res.status(200).json({
