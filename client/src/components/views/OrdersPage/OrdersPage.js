@@ -92,13 +92,15 @@ function OrdersPage() {
 
     const renderOrderItems = Orders.map((order, index) => {
         var orderTotal = 0;
-        var currency = "USD";
+        var currency = "USD"; // Default currency is USD as set in Stripe
 
         return (
-            <Box key={index}>
-                <Heading as="h4" size="md" fontWeight="600" mb={4}>{order.date.substring(0, 10)}</Heading>
+            <Box key={index} border="1px solid" borderColor="gray.200" borderRadius="4px" mb={4} p={4}>
+                <Heading as="h4" size="md" fontWeight="600" mb={4}>ORDER DATE: {order.date.substring(0, 10)}</Heading>
                 {order.products.map((product, index) => {
                     orderTotal += product.amount_total;
+                    // This will break if items are in different currencies
+                    // -> shouldn't happen (?) because currency is set in Stripe
                     currency = product.currency.toUpperCase();
 
                     return (
@@ -114,32 +116,29 @@ function OrdersPage() {
                                     />
                                 </Link>
                                 <Stack>
-                                    <Heading as="h3" size="lg" fontWeight="600">{product.description}</Heading>
-                                    <Text fontSize="md" fontWeight="400">${product.amount_total / 100} {product.currency.toUpperCase()}</Text>
+                                    <Link to={"/beat/" + product.url}>
+                                        <Heading as="h3" size="lg" fontWeight="600">{product.description}</Heading>
+                                    </Link>
+                                    <Text wordWrap="anywhere" fontSize="md" fontWeight="400">${product.amount_total / 100} {product.currency.toUpperCase()}</Text>
                                 </Stack>
                                 <Box ml="auto">
-                                <Menu>
-                                    <MenuButton as={Button} rightIcon="chevron-down">
-                                        Actions
-                                    </MenuButton>
-                                    <MenuList>
-                                        <MenuItem>Download</MenuItem>
-                                        <MenuItem>View License</MenuItem>
-                                        <MenuItem>View Receipt</MenuItem>
-                                    </MenuList>
-                                </Menu>
+                                    <Menu>
+                                        <MenuButton as={Button} rightIcon="chevron-down">
+                                            Actions
+                                        </MenuButton>
+                                        <MenuList>
+                                            <MenuItem>Download</MenuItem>
+                                            <MenuItem>View License</MenuItem>
+                                            <MenuItem>View Receipt</MenuItem>
+                                        </MenuList>
+                                    </Menu>
                                 </Box>
                             </Grid>
                         </div>
                     );
                 })}
-
-                <Heading textAlign="right" as="h3" size="lg" fontWeight="600">Total: ${orderTotal / 100} {currency}</Heading>
-
-                {index !== (Orders.length - 1) ? // adds divider between list items
-                    <Divider /> :
-                    <></>
-                }
+                <Divider borderColor="gray.400" />
+                <Heading as="h3" size="lg" fontWeight="600">Total: ${orderTotal / 100} {currency}</Heading>
             </Box>
         );
     });
