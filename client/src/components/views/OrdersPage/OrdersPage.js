@@ -117,9 +117,9 @@ function OrdersPage() {
                                 </Link>
                                 <Stack>
                                     <Link to={"/beat/" + product.url}>
-                                        <Heading as="h3" size="lg" fontWeight="600">{product.description}</Heading>
+                                        <Heading as="h3" size="md" fontWeight="400">{product.description}</Heading>
                                     </Link>
-                                    <Text wordWrap="anywhere" fontSize="md" fontWeight="400">${product.amount_total / 100} {product.currency.toUpperCase()}</Text>
+                                    <Text wordWrap="anywhere" fontSize="md" fontWeight="400" mt={2}>${product.amount_total / 100} {product.currency.toUpperCase()}</Text>
                                 </Stack>
                                 <Box ml="auto">
                                     <Menu>
@@ -138,7 +138,7 @@ function OrdersPage() {
                     );
                 })}
                 <Divider borderColor="gray.400" />
-                <Heading as="h3" size="lg" fontWeight="600">Total: ${orderTotal / 100} {currency}</Heading>
+                <Heading as="h3" size="md" fontWeight="600">Total: ${orderTotal / 100} {currency}</Heading>
             </Box>
         );
     });
