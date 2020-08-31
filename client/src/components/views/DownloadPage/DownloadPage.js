@@ -79,6 +79,12 @@ function DownloadPage() {
             return (
                 <Box margin="40vh auto">
                     <LoadingView isLoading={IsLoading} />
+                    <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
+                        <div>
+                            Download not working? Contact me at&nbsp;
+                            <Link textAlign="center" color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+                        </div>
+                    </Text>
                 </Box>
             );
         } else {
@@ -123,8 +129,10 @@ function DownloadPage() {
                         )
                     })}
                     <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
-                        Download not working? Contact me at&nbsp;
-                        <Link color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+                        <div>
+                            Download not working? Contact me at&nbsp;
+                            <Link textAlign="center" color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+                        </div>
                     </Text>
                 </div>
             );
