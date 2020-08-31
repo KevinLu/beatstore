@@ -17,7 +17,7 @@ router.get("/getUserOrders", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User does not exist');
-            const orders = await Order.find({ user: req.user._id });
+            const orders = await Order.find({ user: req.user._id }).sort({_id: -1});
             return res.status(200).json({ success: true, orders });
         } catch (e) {
             return res.status(400).json({ success: false, msg: e.message });
