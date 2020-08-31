@@ -3,7 +3,8 @@ import {
     GET_CART,
     ADD_TO_CART,
     GET_ITEMS_INFO_CART,
-    REMOVE_FROM_CART
+    REMOVE_FROM_CART,
+    REMOVE_ALL_FROM_CART
 } from '../_actions/types';
 
 const initialState = {
@@ -29,6 +30,24 @@ export default function (state = initialState, action) {
                 ...state, cartDetail: action.payload
             }
         case REMOVE_FROM_CART:
+            if (Object.keys(action.payload.cart).length === 0) {
+                return {
+                    ...state,
+                    cart: {
+                        array: [],
+                        _id: "",
+                        _v: 0
+                    },
+                    cartDetail: action.payload.cartDetail
+                }
+            } else {
+                return {
+                    ...state,
+                    cart: { ...state.cart, array: action.payload.cart },
+                    cartDetail: action.payload.cartDetail
+                }
+            }
+        case REMOVE_ALL_FROM_CART:
             console.log(action)
             if (Object.keys(action.payload.cart).length === 0) {
                 return {

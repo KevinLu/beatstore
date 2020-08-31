@@ -4,7 +4,8 @@ import {
     GET_CART,
     ADD_TO_CART,
     GET_ITEMS_INFO_CART,
-    REMOVE_FROM_CART
+    REMOVE_FROM_CART,
+    REMOVE_ALL_FROM_CART
 } from './types';
 import { CART_SERVER } from '../components/Config.js';
 
@@ -70,6 +71,24 @@ export function removeFromCart(beatId, cartId) {
         });
     return {
         type: REMOVE_FROM_CART,
+        payload: request
+    }
+}
+
+export function removeAllFromCart(cartId) {
+    const request = axios.post(`${CART_SERVER}/removeAll?cartId=${cartId}`)
+        .then(response => {
+            response.data.cart.forEach(cartItem => {
+                response.data.cartDetail.forEach((beatDetail, index) => {
+                    if (cartItem.id === beatDetail._id) {
+                        response.data.cartDetail[index].quantity = cartItem.quantity;
+                    }
+                })
+            })
+            return response.data;
+        });
+    return {
+        type: REMOVE_ALL_FROM_CART,
         payload: request
     }
 }

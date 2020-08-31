@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { removeAllFromCart } from '../../../_actions/cart_actions';
 import {
     Box,
     Image,
@@ -16,12 +18,20 @@ import Axios from 'axios';
 import LoadingView from '../../utils/LoadingView';
 
 function DownloadPage() {
+    const dispatch = useDispatch();
     const location = useLocation();
     const queries = queryString.parse(location.search);
     const toast = useToast();
 
     const [Items, setItems] = useState([]);
     const [IsLoading, setIsLoading] = useState(true);
+
+    const removeAllItemsFromCart = () => {
+        dispatch(removeAllFromCart(window.localStorage.getItem("cartId")))
+            .then(response => {
+                console.log(response);
+            });
+    }
 
     const verifyOrderIsPaid = (session_id) => {
         Axios.get(`/api/order/getOrderStatus?session_id=${session_id}`)
@@ -36,6 +46,7 @@ function DownloadPage() {
                             isClosable: true,
                         });
                         setItems(response.data);
+                        removeAllItemsFromCart();
                     } else {
                         toast({
                             title: "Payment not yet received.",
