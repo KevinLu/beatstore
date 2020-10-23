@@ -83,7 +83,15 @@ function BeatPage(props) {
                     </Stack>
 
                     <Skeleton isLoaded={BeatLoaded} mt={3} ml={{ base: "0", lg: "2em" }}>
-                        <Text textAlign={{ base: "center", lg: "initial" }} fontSize="md" color="black">"{Beat.description}"</Text>
+                        <Text
+                            textAlign={{ base: "center", lg: "initial" }}
+                            fontSize="md"
+                            color="black"
+                            overflow="hidden"
+                            maxW="85ch"
+                            style={{display: "-webkit-box", WebkitLineClamp: 3, textOverflow: "ellipsis", WebkitBoxOrient: "vertical"}}>
+                            "{Beat.description}"
+                        </Text>
                     </Skeleton>
 
                     <ButtonGroup spacing={2} margin={{ base: "1em auto 0 auto", lg: "1em 0 0 2em" }} display="flex" justifyContent={{ base: "center", lg: "left" }}>
