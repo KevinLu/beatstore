@@ -56,6 +56,18 @@ function OrdersPage() {
             });
     }, [toast]);
 
+    const downloadBeat = (mongo_id) => {
+        Axios.post('/api/order/getDownloadLink', {mongo_id})
+            .then(response => {
+                if (response.data.success) {
+                    window.location = response.data.downloadLink;
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
     const renderOrderItems = Orders.map((order, index) => {
         var orderTotal = 0;
         var currency = "USD"; // Default currency is USD as set in Stripe
@@ -93,7 +105,7 @@ function OrdersPage() {
                                             Actions
                                         </MenuButton>
                                         <MenuList>
-                                            <MenuItem>Download</MenuItem>
+                                            <MenuItem onClick={() => downloadBeat(product.price.metadata.mongo_id)}>Download</MenuItem>
                                             <MenuItem>View License</MenuItem>
                                             <MenuItem>View Receipt</MenuItem>
                                         </MenuList>

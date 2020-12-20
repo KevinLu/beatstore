@@ -128,4 +128,30 @@ router.get("/getOrderStatus", async (req, res) => {
     }
 });
 
+router.post("/getDownloadLink", auth, async (req, res) => {
+    if (req.isAuth) {
+        try {
+            if (!req.body.mongo_id) throw Error('No beat ID attached with your request.');
+            const mongo_id = req.body.mongo_id;
+
+            const beat = await Beat.findById(mongo_id);
+
+            const expiry = 7200; // link expiry in seconds
+
+            var audioUrl = beat.purchaseAudio[0];
+            var processedLink = decodeURIComponent(audioUrl.substr(audioUrl.lastIndexOf('/') + 1)).normalize('NFD');
+            var downloadLink = generateSignedUrl(processedLink, expiry);
+            
+            return res.status(200).json({
+                success: true,
+                downloadLink: downloadLink
+            });
+        } catch (e) {
+            return res.status(400).json({ success: false, msg: e.message });
+        }
+    } else {
+        return res.status(401).json({ success: false, msg: "You must be logged in to do this." });
+    }
+});
+
 module.exports = router;
