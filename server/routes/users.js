@@ -12,7 +12,7 @@ router.get("/auth", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User does not exist');
-            res.status(200).json({
+            return res.status(200).json({
                 _id: req.user._id,
                 isAuth: true,
                 email: req.user.email,
@@ -24,8 +24,12 @@ router.get("/auth", auth, async (req, res) => {
             });
         } catch (e) {
             console.log(e)
-            res.status(400).json({ msg: e.message });
+            return res.status(400).json({ msg: e.message });
         }
+    } else {
+        return res.status(200).json({
+            isAuth: false
+        });
     }
 });
 
