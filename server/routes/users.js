@@ -109,7 +109,10 @@ router.post("/loginAnon", (req, res) => {
 });
 
 router.get("/logout", auth, (req, res) => {
-    return res.status(200).send({
+    return res
+        .cookie("w_auth", "", { expires: new Date(null) })
+        .status(200)
+        .send({
         success: true
     });
 });
