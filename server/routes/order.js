@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const { auth } = require("../middleware/auth");
 const { Order } = require("../models/Order");
+const { Payment } = require("../models/Payment");
 const { Beat } = require("../models/Beat");
 const { stripeSecret } = require("../config/key");
 const stripe = require('stripe')(stripeSecret);
@@ -145,6 +146,28 @@ router.post("/getDownloadLink", auth, async (req, res) => {
             return res.status(200).json({
                 success: true,
                 downloadLink: downloadLink
+            });
+        } catch (e) {
+            return res.status(400).json({ success: false, msg: e.message });
+        }
+    } else {
+        return res.status(401).json({ success: false, msg: "You must be logged in to do this." });
+    }
+});
+
+router.post("/getReceiptLink", auth, async (req, res) => {
+    if (req.isAuth) {
+        try {
+            if (!req.body.paymentIntent) throw Error('No payment ID attached with your request.');
+            const paymentIntent = req.body.paymentIntent;
+
+            const payment = await Payment.find({ 'paymentIntent.id': paymentIntent });
+
+            const receiptLink = payment[0].paymentIntent.charges.data[0].receipt_url;
+            
+            return res.status(200).json({
+                success: true,
+                receiptLink: receiptLink
             });
         } catch (e) {
             return res.status(400).json({ success: false, msg: e.message });

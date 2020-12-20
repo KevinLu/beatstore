@@ -64,13 +64,38 @@ function OrdersPage(props) {
                 }
             })
             .catch(err => {
-                console.log(err);
+                toast({
+                    title: "An error occurred.",
+                    description: err.response.data.msg,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                });
+            });
+    }
+
+    const viewReceipt = (paymentIntent) => {
+        Axios.post('/api/order/getReceiptLink', {paymentIntent})
+            .then(response => {
+                if (response.data.success) {
+                    window.location = response.data.receiptLink;
+                }
+            })
+            .catch(err => {
+                toast({
+                    title: "An error occurred.",
+                    description: err.response.data.msg,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                });
             });
     }
 
     const renderOrderItems = Orders.map((order, index) => {
         var orderTotal = 0;
         var currency = "USD"; // Default currency is USD as set in Stripe
+        var paymentIntent = order.checkoutSession.payment_intent;
 
         return (
             <Box key={index} border="1px solid" borderColor="gray.200" borderRadius="4px" mb={4} p={4}>
@@ -107,7 +132,7 @@ function OrdersPage(props) {
                                         <MenuList>
                                             <MenuItem onClick={() => downloadBeat(product.price.metadata.mongo_id)}>Download</MenuItem>
                                             <MenuItem>View License</MenuItem>
-                                            <MenuItem>View Receipt</MenuItem>
+                                            <MenuItem onClick={() => viewReceipt(paymentIntent)}>View Receipt</MenuItem>
                                         </MenuList>
                                     </Menu>
                                 </Box>
