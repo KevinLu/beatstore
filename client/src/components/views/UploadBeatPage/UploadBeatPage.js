@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
     Box,
     Flex,
@@ -16,9 +16,9 @@ import '../../utils/TagifyStyles.css';
 import FileUpload from '../../utils/FileUpload';
 import Tags from '@yaireo/tagify/dist/react.tagify';
 import Axios from 'axios';
-import { MdMusicNote, MdImage } from 'react-icons/md';
-import { FiSliders } from 'react-icons/fi';
-import { FaMusic } from 'react-icons/fa';
+import {MdMusicNote, MdImage} from 'react-icons/md';
+import {FiSliders} from 'react-icons/fi';
+import {FaMusic} from 'react-icons/fa';
 
 function UploadBeatPage(props) {
 
@@ -31,7 +31,7 @@ function UploadBeatPage(props) {
     });
 
     const onChangeHandler = e => {
-        const { name, value } = e.target
+        const {name, value} = e.target
         setField(prevField => ({
             ...prevField,
             [name]: value
@@ -175,8 +175,8 @@ function UploadBeatPage(props) {
         };
     }
 
-    return (
-        <Box m="3em 1em 5em 1em">
+    if (props.user && props.user.userData.isAuth) {
+        return (<Box m="3em 1em 5em 1em">
             <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
                 <Heading>UPLOAD</Heading>
                 <form>
@@ -205,8 +205,8 @@ function UploadBeatPage(props) {
                             </Flex>
                             <FileUpload icon={FiSliders} public={false}
                                 accept=".rar, application/vnd.rar, application/x-rar-compressed,
-                            application/octet-stream, application/zip,
-                            application/x-zip-compressed, multipart/x-zip"
+                        application/octet-stream, application/zip,
+                        application/x-zip-compressed, multipart/x-zip"
                                 refreshFunction={updateTrackStems} />
                         </FormControl>
 
@@ -247,15 +247,17 @@ function UploadBeatPage(props) {
                     </FormControl>
 
                     <FormLabel mt={5}>Tags (max. 3)</FormLabel>
-                    <Tags style={{ 'border-radius': '0.25rem' }}
+                    <Tags style={{'border-radius': '0.25rem'}}
                         settings={settings}
                     />
 
                     <Button mt={5} variantColor="blue" onClick={onSubmit}>Upload</Button>
                 </form>
             </Box>
-        </Box>
-    )
+        </Box>);
+    } else {
+        return (<></>);
+    }
 }
 
 export default UploadBeatPage

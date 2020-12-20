@@ -4,28 +4,28 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/core": "^0.8.0",
-    "@emotion/core": "^10.0.28",
+    "@emotion/core": "^10.1.1",
     "@emotion/styled": "^10.0.27",
-    "@stripe/stripe-js": "^1.5.0",
-    "@yaireo/tagify": "^3.9.3",
+    "@stripe/stripe-js": "^1.11.0",
+    "@yaireo/tagify": "^3.21.5",
     "axios": "^0.19.2",
-    "core-js": "^3.6.4",
+    "core-js": "^3.8.1",
     "emotion-theming": "^10.0.27",
     "formik": "^1.5.8",
-    "moment": "^2.24.0",
-    "query-string": "^6.12.1",
-    "react": "^16.8.6",
+    "moment": "^2.29.1",
+    "query-string": "^6.13.7",
+    "react": "^16.14.0",
     "react-app-polyfill": "^1.0.6",
-    "react-dom": "^16.8.6",
+    "react-dom": "^16.14.0",
     "react-dropzone": "^10.2.2",
-    "react-icons": "^3.7.0",
-    "react-redux": "^7.1.0-rc.1",
+    "react-icons": "^3.11.0",
+    "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "redux": "^4.0.0",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
-    "stripe": "^8.55.0",
+    "stripe": "^8.129.0",
     "yup": "^0.27.0"
   },
   "scripts": {
@@ -51,6 +51,6 @@
   },
   "devDependencies": {
     "babel-plugin-emotion": "^10.0.33",
-    "http-proxy-middleware": "^1.0.4"
+    "http-proxy-middleware": "^1.0.6"
   }
 }

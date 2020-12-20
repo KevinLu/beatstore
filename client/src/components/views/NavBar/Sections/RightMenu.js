@@ -50,6 +50,7 @@ function RightMenu() {
     axios.get(`${USER_SERVER}/logout`).then(response => {
       if (response.data.success) {
         delete_cookie("w_auth");
+        window.location.reload();
       }
     });
   };

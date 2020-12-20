@@ -12,7 +12,7 @@ router.get("/auth", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User does not exist');
-            res.status(200).json({
+            return res.status(200).json({
                 _id: req.user._id,
                 isAuth: true,
                 email: req.user.email,
@@ -24,8 +24,12 @@ router.get("/auth", auth, async (req, res) => {
             });
         } catch (e) {
             console.log(e)
-            res.status(400).json({ msg: e.message });
+            return res.status(400).json({ msg: e.message });
         }
+    } else {
+        return res.status(200).json({
+            isAuth: false
+        });
     }
 });
 
@@ -71,7 +75,7 @@ router.post("/login", (req, res) => {
             user.generateToken((err, user) => {
                 if (err) return res.status(400).send(err);
                 res
-                    .cookie("w_auth", user.token)
+                    .cookie("w_auth", user.token, { sameSite: "lax", httpOnly: true })
                     .status(200)
                     .json({
                         loginSuccess: true, userId: user._id
@@ -109,7 +113,10 @@ router.post("/loginAnon", (req, res) => {
 });
 
 router.get("/logout", auth, (req, res) => {
-    return res.status(200).send({
+    return res
+        .cookie("w_auth", "", { expires: new Date(null) })
+        .status(200)
+        .send({
         success: true
     });
 });

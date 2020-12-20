@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { auth } from '../_actions/user_actions';
 import { useSelector, useDispatch } from "react-redux";
+import { Redirect } from 'react-router-dom';
 
 // Auth(SpecificComponent, option, adminRoute)
 // option:
@@ -25,17 +26,20 @@ export default function (SpecificComponent, option, adminRoute) {
                     if (option === PUBLIC_PAGE) { // if page doesn't need auth to view
                         console.log("no auth required")
                     } else if (option === LOGGED_IN_ONLY) { // if page needs auth to view, redirect to login pag
-                        props.history.push('/login')
+                        window.location.href = '/login';
+                        return null;
                     } else if (option === PUBLIC_ONLY) { // if page is only for non logged in users
                         console.log("non logged in users only")
                     }
                 } else { //Loggined in Status
                     if (adminRoute && response.payload.role === 0) { // page is admin only, but user is not admin
-                        props.history.push('/')
+                        window.location.href = '/';
+                        return null;
                     }
                     else {
                         if (option === PUBLIC_ONLY) { // Logged in Status, but Try to go into log in page 
-                            props.history.push('/')
+                            window.location.href = '/';
+                            return null;
                         }
                     }
                 }

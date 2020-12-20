@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { removeAllFromCart } from '../../../_actions/cart_actions';
 import {
     Box,
     Image,
@@ -16,12 +18,20 @@ import Axios from 'axios';
 import LoadingView from '../../utils/LoadingView';
 
 function DownloadPage() {
+    const dispatch = useDispatch();
     const location = useLocation();
     const queries = queryString.parse(location.search);
     const toast = useToast();
 
     const [Items, setItems] = useState([]);
     const [IsLoading, setIsLoading] = useState(true);
+
+    const removeAllItemsFromCart = () => {
+        dispatch(removeAllFromCart(window.localStorage.getItem("cartId")))
+            .then(response => {
+                console.log(response);
+            });
+    }
 
     const verifyOrderIsPaid = (session_id) => {
         Axios.get(`/api/order/getOrderStatus?session_id=${session_id}`)
@@ -36,6 +46,7 @@ function DownloadPage() {
                             isClosable: true,
                         });
                         setItems(response.data);
+                        removeAllItemsFromCart();
                     } else {
                         toast({
                             title: "Payment not yet received.",
@@ -68,6 +79,12 @@ function DownloadPage() {
             return (
                 <Box margin="40vh auto">
                     <LoadingView isLoading={IsLoading} />
+                    <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
+                        <div>
+                            Download not working? Contact me at&nbsp;
+                            <Link textAlign="center" color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+                        </div>
+                    </Text>
                 </Box>
             );
         } else {
@@ -112,8 +129,10 @@ function DownloadPage() {
                         )
                     })}
                     <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
-                        Download not working? Contact me at&nbsp;
-                        <Link color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+                        <div>
+                            Download not working? Contact me at&nbsp;
+                            <Link textAlign="center" color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+                        </div>
                     </Text>
                 </div>
             );

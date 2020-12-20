@@ -107,4 +107,20 @@ router.post("/remove", (req, res) => {
     )
 })
 
+router.post("/removeAll", (req, res) => {
+    const cartId = req.query.cartId;
+
+    Cart.findOneAndUpdate(
+        { _id: cartId },
+        { "$pull": { "array": { "$exists": true }}},
+        (err, cartInfo) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({success: false, err});
+            }
+            return res.status(200).json({cartDetail: [], cart: []});
+        }
+    )
+})
+
 module.exports = router;
