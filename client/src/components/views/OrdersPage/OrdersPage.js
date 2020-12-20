@@ -20,7 +20,7 @@ import {
 import { Link } from 'react-router-dom';
 import LoadingView from '../../utils/LoadingView';
 
-function OrdersPage() {
+function OrdersPage(props) {
     const [IsLoading, setIsLoading] = useState(true);
     const [Orders, setOrders] = useState([]);
 
@@ -121,26 +121,30 @@ function OrdersPage() {
         );
     });
 
-    return (
-        <div>
-            <Box m="3em 1em 5em 1em">
-                <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
-                    <Heading mb={8}>ORDERS</Heading>
-                    {Orders.length > 0 ?
-                        renderOrderItems
-                        : IsLoading ?
-                            <LoadingView isLoading={IsLoading} />
-                            :
-                            <Text fontSize="lg">No orders found! Check out more beats
-                                <Link to="/">
-                                    &nbsp;<u>here</u>
-                                </Link>.
-                            </Text>
-                    }
+    if (props.user && props.user.userData.isAuth) {
+        return (
+            <div>
+                <Box m="3em 1em 5em 1em">
+                    <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
+                        <Heading mb={8}>ORDERS</Heading>
+                        {Orders.length > 0 ?
+                            renderOrderItems
+                            : IsLoading ?
+                                <LoadingView isLoading={IsLoading} />
+                                :
+                                <Text fontSize="lg">No orders found! Check out more beats
+                                    <Link to="/">
+                                        &nbsp;<u>here</u>
+                                    </Link>.
+                                </Text>
+                        }
+                    </Box>
                 </Box>
-            </Box>
-        </div>
-    );
+            </div>
+        );
+    } else {
+        return (<></>);
+    }
 }
 
 export default OrdersPage
