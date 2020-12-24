@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const prod = require('../config/prod');
 const Schema = mongoose.Schema;
 const { Beat } = require("../models/Beat");
+const { User } = require("../models/User");
 
 const orderSchema = mongoose.Schema({
     user: {
@@ -24,11 +26,15 @@ orderSchema.pre('save', function (next) {
     var order = this;
 
     const mutateOrder = async (item, index) => {
-        const beat = await Beat.find({_id: item}).exec();
+        const beat = await Beat.findById(item).exec();
 
         if (beat.length > 0) {
-            order.products[index].image = beat[0].artwork[0];
-            order.products[index].url = beat[0].url;
+            order.products[index].title = beat.title;
+            order.products[index].image = beat.artwork[0];
+            order.products[index].url = beat.url;
+            const producer = await User.findById(beat.producer).exec();
+            const savedProducer = {_id: producer._id, username: producer.username, email: producer.email};
+            order.products[index].producer = savedProducer;
         }
 
         return order;
