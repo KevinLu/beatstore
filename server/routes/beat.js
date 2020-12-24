@@ -1,35 +1,56 @@
 const express = require('express');
 const router = express.Router();
-const { uploadPublic, uploadPrivate } = require("../services/fileupload");
-const singleUploadPublic = uploadPublic.single('file');
+const fs = require('fs');
+const fileType = require('file-type');
+const multiparty = require('multiparty');
+const sharp = require('sharp');
+const {uploadPrivate, uploadFilePublic} = require("../services/fileupload");
 const singleUploadPrivate = uploadPrivate.single('file');
-const { Beat } = require("../models/Beat");
-const { auth } = require("../middleware/auth");
-const { stripeSecret } = require("../config/key");
+const {Beat} = require("../models/Beat");
+const {auth} = require("../middleware/auth");
+const {stripeSecret} = require("../config/key");
 const stripe = require('stripe')(stripeSecret);
 
 //=================================
 //             Beat
 //=================================
 
+const imageWidth = 208; //px
+const imageHeight = 208; //px
+
 router.post("/uploadPublicFile", (req, res) => {
-    singleUploadPublic(req, res, err => {
-        if (err) {
-            console.log(err);
-            return res.status(415).json({ success: false, err });
-        } else {
-            return res.status(200).json({ success: true, file: { location: req.file.Location, name: req.file.originalname } });
+    const form = new multiparty.Form();
+    form.parse(req, async (error, fields, files) => {
+        if (error) {
+            return res.status(415).json({success: false, error});
+        };
+        try {
+            const path = files.file[0].path;
+            const buffer = fs.readFileSync(path);
+            const type = await fileType.fromBuffer(buffer);
+            const fileName = files.file[0].originalFilename;
+            // Only use Sharp to resize if these aren't audio files
+            if (type.ext !== "mp3" && type.ext !== "wav") {
+                const rsz = await sharp(buffer).resize(imageWidth, imageHeight).toBuffer();
+                const data = await uploadFilePublic(rsz, fileName, type);
+                return res.status(200).json({success: true, file: {location: data.Location, name: data.Key}});
+            } else {
+                const data = await uploadFilePublic(buffer, fileName, type);
+                return res.status(200).json({success: true, file: {location: data.Location, name: data.Key}});
+            }
+        } catch (err) {
+            return res.status(415).json({success: false, err});
         }
-    })
+    });
 });
 
 router.post("/uploadPrivateFile", (req, res) => {
     singleUploadPrivate(req, res, err => {
         if (err) {
             console.log(err);
-            return res.status(415).json({ success: false, err });
+            return res.status(415).json({success: false, err});
         } else {
-            return res.status(200).json({ success: true, file: { location: req.file.location, name: req.file.originalname } });
+            return res.status(200).json({success: true, file: {location: req.file.location, name: req.file.originalname}});
         }
     })
 });
@@ -43,28 +64,28 @@ router.post("/uploadBeat", auth, (req, res) => {
             name: req.body.title,
             type: 'good',
             description: req.body.description,
-            metadata: { mongo_id: JSON.parse(JSON.stringify(beat._id)) },
+            metadata: {mongo_id: JSON.parse(JSON.stringify(beat._id))},
             images: req.body.artwork,
             shippable: false
         }, (err, product) => {
-            if (err) return res.status(400).json({ success: false, err });
+            if (err) return res.status(400).json({success: false, err});
 
             stripe.prices.create(
                 {
                     unit_amount: req.body.price * 100,
                     currency: 'usd',
                     product: product.id,
-                    metadata: { mongo_id: JSON.parse(JSON.stringify(beat._id)) }
+                    metadata: {mongo_id: JSON.parse(JSON.stringify(beat._id))}
                 }, (err, price) => {
-                    if (err) return res.status(400).json({ success: false, err });
+                    if (err) return res.status(400).json({success: false, err});
 
                     beat.stripeProductId = product.id;
                     beat.stripePriceId = price.id;
 
                     beat.save((err) => { // Save beat into MongoDB
-                        if (err) return res.status(400).json({ success: false, err });
+                        if (err) return res.status(400).json({success: false, err});
 
-                        return res.status(200).json({ success: true });
+                        return res.status(200).json({success: true});
                     });
                 }
             );
@@ -80,14 +101,14 @@ router.post("/getBeats", (req, res) => { // no need auth
     let terms = req.body.searchTerm;
 
     if (terms) { // if a search term is specified, only then we look for specific beats
-        Beat.find({ $text: { $search: terms } })
+        Beat.find({$text: {$search: terms}})
             .populate("producer")
             .sort([[sortBy, order]])
             .skip(skip)
             .limit(limit)
             .exec((err, beats) => {
-                if (err) return res.status(400).json({ success: false, err });
-                res.status(200).json({ success: true, beats, count: beats.length });
+                if (err) return res.status(400).json({success: false, err});
+                res.status(200).json({success: true, beats, count: beats.length});
             });
     } else {
         Beat.find()
@@ -96,8 +117,8 @@ router.post("/getBeats", (req, res) => { // no need auth
             .skip(skip)
             .limit(limit)
             .exec((err, beats) => {
-                if (err) return res.status(400).json({ success: false, err });
-                res.status(200).json({ success: true, beats, count: beats.length });
+                if (err) return res.status(400).json({success: false, err});
+                res.status(200).json({success: true, beats, count: beats.length});
             });
     }
 });
@@ -114,7 +135,7 @@ router.get("/beats_by_url", (req, res) => { // no need auth
         });
     }
 
-    Beat.find({ 'url': { $in: beatUrls } })
+    Beat.find({'url': {$in: beatUrls}})
         .populate('producer')
         .exec((err, beat) => {
             if (err) return res.status(400).send(err);
@@ -134,7 +155,7 @@ router.get("/beats_by_id", (req, res) => { // no need auth
         });
     }
 
-    Beat.find({ '_id': { $in: beatIds } })
+    Beat.find({'_id': {$in: beatIds}})
         .populate('producer')
         .exec((err, beat) => {
             if (err) return res.status(400).send(err);
