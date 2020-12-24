@@ -1,10 +1,9 @@
 import React from 'react';
-import {Text, List, ListItem, Stack} from "@chakra-ui/core";
+import {Box, List, ListItem, Stack} from "@chakra-ui/core";
 
 function LicenseText(props) {
     return (
-        <div>
-            <Text fontSize="lg">
+        <Box fontSize="lg">
                 This agreement (the “Agreement”) is for a <b>non-exclusive MP3 Lease</b>, effective as of <b>{props.date}</b> (the “Effective Date”).
                 &nbsp;<b>Producer Name</b> p/k/a <b>{props.producer}</b> (the “Producer” or “Licensor”); and <b>Licensee</b> (“You” or “Licensee”),
             sets forth the terms and conditions of the Licensee’s use of the Producer’s music file(s) entitled <b>{props.title}</b> (the “Beat”)
@@ -258,8 +257,7 @@ function LicenseText(props) {
                 </ListItem>
                     </Stack>
                 </List>
-            </Text>
-        </div>
+        </Box>
     );
 };
 
