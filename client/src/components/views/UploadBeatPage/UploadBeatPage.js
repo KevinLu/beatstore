@@ -12,9 +12,9 @@ import {
     Button,
     useToast
 } from "@chakra-ui/core";
-import '../../utils/TagifyStyles.css';
 import FileUpload from '../../utils/FileUpload';
-import Tags from '@yaireo/tagify/dist/react.tagify';
+import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
+import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Axios from 'axios';
 import {MdMusicNote, MdImage} from 'react-icons/md';
 import {FiSliders} from 'react-icons/fi';
