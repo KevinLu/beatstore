@@ -15,14 +15,27 @@ import {
     Button,
     useToast,
     Image,
-    Divider
+    Divider,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure
 } from '@chakra-ui/core';
 import { Link } from 'react-router-dom';
 import LoadingView from '../../utils/LoadingView';
+import LicenseText from "../../utils/LicenseText";
 
 function OrdersPage(props) {
     const [IsLoading, setIsLoading] = useState(true);
     const [Orders, setOrders] = useState([]);
+    const event = new Date(Date.now());
+    const dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+    const [LicenseDetails, setLicenseDetails] = useState({'producer': 'PRODUCER NAME', 'title': 'Beat Title', 'price': "price", 'date': event.toLocaleString('en-US', dateOptions)});
+    const {isOpen, onOpen, onClose} = useDisclosure();
 
     const location = useLocation();
     const queries = queryString.parse(location.search);
@@ -96,6 +109,7 @@ function OrdersPage(props) {
         var orderTotal = 0;
         var currency = "USD"; // Default currency is USD as set in Stripe
         var paymentIntent = order.checkoutSession.payment_intent;
+        var orderDate = new Date(order.date).toLocaleString('en-US', dateOptions);
 
         return (
             <Box key={index} border="1px solid" borderColor="gray.200" borderRadius="4px" mb={4} p={4}>
@@ -105,6 +119,7 @@ function OrdersPage(props) {
                     // This will break if items are in different currencies
                     // -> shouldn't happen (?) because currency is set in Stripe
                     currency = product.currency.toUpperCase();
+                    const details = {'producer': product.producer.username, 'title': product.title, 'price': product.amount_total / 100, 'date': orderDate};
 
                     return (
                         <div key={index}>
@@ -131,7 +146,7 @@ function OrdersPage(props) {
                                         </MenuButton>
                                         <MenuList>
                                             <MenuItem onClick={() => downloadBeat(product.price.metadata.mongo_id)}>Download</MenuItem>
-                                            <MenuItem>View License</MenuItem>
+                                            <MenuItem onClick={()=>{setLicenseDetails(details, onOpen());}}>View License</MenuItem>
                                             <MenuItem onClick={() => viewReceipt(paymentIntent)}>View Receipt</MenuItem>
                                         </MenuList>
                                     </Menu>
@@ -165,6 +180,22 @@ function OrdersPage(props) {
                         }
                     </Box>
                 </Box>
+                <Modal preserveScrollBarGap isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="full">
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader fontWeight="bold">BEAT LICENSE</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <LicenseText producer={LicenseDetails.producer} title={LicenseDetails.title} price={LicenseDetails.price} date={LicenseDetails.date} />
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <Button variantColor="blue" mr={3} onClick={onClose}>
+                                CLOSE
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             </div>
         );
     } else {

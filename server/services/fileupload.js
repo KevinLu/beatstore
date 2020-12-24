@@ -1,12 +1,8 @@
 const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const multerSharpS3 = require('multer-sharp-s3');
 const path = require('path');
 const { s3SecretAccessKey, s3AccessKeyId, s3PublicBucket, s3PrivateBucket } = require('../config/key');
-
-const imageWidth = 208; //px
-const imageHeight = 208; //px
 
 const s3 = new aws.S3();
 
@@ -27,23 +23,16 @@ const mediaFilter = function (req, file, cb) {
     }
 }
 
-// uploadPublic is used to upload public files that can be accessed by anyone
-var uploadPublic = multer({
-    storage: multerSharpS3({
-        s3: s3,
-        ACL: 'public-read',
-        Bucket: s3PublicBucket,
-        ContentType: multerSharpS3.AUTO_CONTENT_TYPE,
-        Key: (req, file, cb) => {
-            cb(null, file.originalname);
-        },
-        resize: {
-            width: imageWidth,
-            height: imageHeight
-        }
-    }),
-    fileFilter: mediaFilter
-});
+const uploadFilePublic = (buffer, name, type) => {
+    const params = {
+      ACL: 'public-read',
+      Body: buffer,
+      Bucket: s3PublicBucket,
+      ContentType: type.mime,
+      Key: name,
+    };
+    return s3.upload(params).promise();
+  };
 
 // uploadPrivate is used to upload private files that can only be accessed by paying customers
 var uploadPrivate = multer({
@@ -59,4 +48,4 @@ var uploadPrivate = multer({
     fileFilter: mediaFilter
 });
 
-module.exports = { uploadPublic, uploadPrivate };
+module.exports = { uploadFilePublic, uploadPrivate };

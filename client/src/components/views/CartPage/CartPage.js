@@ -1,32 +1,43 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCartItems, removeFromCart } from '../../../_actions/cart_actions';
-import { Box, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider } from "@chakra-ui/core";
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {getCartItems, removeFromCart} from '../../../_actions/cart_actions';
+import {
+    Box, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure
+} from "@chakra-ui/core";
 import LoadingView from "../../utils/LoadingView";
-import { Link } from "react-router-dom";
+import LicenseText from "../../utils/LicenseText";
+import {Link} from "react-router-dom";
 import Axios from "axios";
-import { loadStripe } from '@stripe/stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 import {stripePublicKey} from '../../utils/StripeClient';
 
 const stripePromise = loadStripe(stripePublicKey);
 
-const ListHeading = ({ children, displayBreakpoints, float }) => (
+const ListHeading = ({children, displayBreakpoints, float}) => (
     <Box w="100%" h="10" display={displayBreakpoints}>
         <Text float={float} fontWeight="600" fontSize="sm" color="gray.900" letterSpacing="2px">{children}</Text>
     </Box>
 );
 
-const ListText = ({ children, displayBreakpoints, fontSize, fontWeight, float }) => (
+const ListText = ({children, displayBreakpoints, fontSize, fontWeight, float}) => (
     <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints}>
         <Text float={float} fontWeight={fontWeight} fontSize={fontSize} color="black">{children}</Text>
     </Box>
 );
 
 const CartHeading = () => (
-    <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3}>
+    <Grid templateColumns={{base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr"}} gap={3}>
         <div></div>
         <ListHeading>PRODUCT</ListHeading>
-        <ListHeading float={{ base: "right", lg: "initial" }}>PRICE</ListHeading>
+        <ListHeading float={{base: "right", lg: "initial"}}>PRICE</ListHeading>
         <div></div>
     </Grid>
 );
@@ -51,6 +62,11 @@ function CartPage() {
     const [IsLoading, setIsLoading] = useState(true);
     const [GrossAmount, setGrossAmount] = useState(0);
     const [PaidFor, setPaidFor] = useState(false);
+    const [LicenseDetails, setLicenseDetails] = useState({'producer': 'PRODUCER NAME', 'title': 'Beat Title', 'price': "price"});
+    const {isOpen, onOpen, onClose} = useDisclosure();
+
+    const event = new Date(Date.now());
+    const dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
 
     useEffect(() => {
         let cartItems = [];
@@ -114,7 +130,7 @@ function CartPage() {
         if (apiResponse.data.success) {
             const sessionId = apiResponse.data.sessionId;
             const stripe = await stripePromise;
-            const { error } = await stripe.redirectToCheckout({
+            const {error} = await stripe.redirectToCheckout({
                 sessionId,
             });
             // If `redirectToCheckout` fails due to a browser or network
@@ -134,12 +150,12 @@ function CartPage() {
             return <PaidForView />
         } else {
             return (
-                <Grid templateColumns={{ base: "1fr", lg: "2.5fr 1fr" }} mt="5em">
+                <Grid templateColumns={{base: "1fr", lg: "2.5fr 1fr"}} mt="5em">
                     <div>
                         <CartHeading />
                         {renderCartItems}
                     </div>
-                    <Box mt={{ base: "2em", lg: "0" }}>
+                    <Box mt={{base: "2em", lg: "0"}}>
                         <Box display="flex" justifyContent="space-between">
                             <Text color="black" fontSize="lg" fontWeight="600">Gross</Text>
                             <Text color="black" fontSize="lg" fontWeight="600">${GrossAmount}</Text>
@@ -162,39 +178,58 @@ function CartPage() {
     };
 
     const renderCartItems = cart.cartDetail.map((item, index) => {
+        const details = {'producer': item.producer.username, 'title': item.title, 'price': item.price};
         return (
-            <div key={index}>
-                <Grid templateColumns={{ base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr" }} gap={3} alignItems="center">
-                    <Image borderRadius="3px" size={{ base: "44px", lg: "60px" }} src={item.artwork[0]}></Image>
+            <Box key={index} mb="2em">
+                <Grid templateColumns={{base: "0.5fr 3fr 1fr", lg: "0.5fr 2fr 0.5fr 2fr"}} gap={3} alignItems="center">
+                    <Image borderRadius="3px" size={{base: "44px", lg: "60px"}} src={item.artwork[0]}></Image>
 
                     <ListText fontSize="md" fontWeight="600"><Link to={`/beat/${item.url}`}>{item.title}</Link></ListText>
 
-                    <ListText float={{ base: "right", lg: "initial" }} fontSize="xl" fontWeight="700">${item.price}</ListText>
+                    <ListText float={{base: "right", lg: "initial"}} fontSize="xl" fontWeight="700">${item.price}</ListText>
 
-                    <ButtonGroup display={{ base: "none", lg: "flex" }}>
-                        <Button>
+                    <ButtonGroup display={{base: "none", lg: "flex"}}>
+                        <Button onClick={()=>{setLicenseDetails(details, onOpen());}}>
                             REVIEW LICENSE
                         </Button>
                         <CloseButton size="lg" onClick={() => removeItemFromCart(item._id)} />
                     </ButtonGroup>
                 </Grid>
-                <ButtonGroup display={{ base: "flex", lg: "none" }} justifyContent="space-between" mt="0.5em">
-                    <Button size="sm">
+                <ButtonGroup display={{base: "flex", lg: "none"}} justifyContent="space-between" mt="0.5em">
+                    <Button onClick={()=>{setLicenseDetails(details, onOpen());}} size="sm">
                         REVIEW LICENSE
                     </Button>
-                    <CloseButton size="md" />
+                    <CloseButton size="md" onClick={() => removeItemFromCart(item._id)} />
                 </ButtonGroup>
-            </div>
+            </Box>
         );
     });
 
     return (
-        <Box m="3em 1em 5em 1em">
-            <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
-                <Heading>CART</Heading>
-                <CartView />
+        <>
+            <Box m="3em 1em 5em 1em">
+                <Box maxWidth={["480px", "500px", "600px", "1166px"]} margin="auto">
+                    <Heading>CART</Heading>
+                    <CartView />
+                </Box>
             </Box>
-        </Box>
+            <Modal preserveScrollBarGap isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="full">
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader fontWeight="bold">BEAT LICENSE</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <LicenseText producer={LicenseDetails.producer} title={LicenseDetails.title} price={LicenseDetails.price} date={event.toLocaleString('en-US', dateOptions)} />
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button variantColor="blue" mr={3} onClick={onClose}>
+                            CLOSE
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
     )
 }
 
