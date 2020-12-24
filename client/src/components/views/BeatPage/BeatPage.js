@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { addToCart } from '../../../_actions/cart_actions';
-import { Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel } from '@chakra-ui/core';
+import { Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel, useToast } from '@chakra-ui/core';
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 import { MdDateRange, MdMusicNote } from 'react-icons/md';
 
@@ -36,6 +36,7 @@ function BeatPage(props) {
     });
     const [BeatLoaded, setBeatLoaded] = useState(false);
     const dispatch = useDispatch();
+    const toast = useToast();
 
     useEffect(() => {
         Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
@@ -51,6 +52,13 @@ function BeatPage(props) {
 
     const addToCartHandler = (beatId) => {
         dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
+        toast({
+            title: "Added to cart!",
+            position: "bottom-right",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+        });
     }
 
     return (
@@ -78,7 +86,7 @@ function BeatPage(props) {
                         </Tag>
                         <Tag size="md" variantColor="gray">
                             <TagIcon as={MdDateRange} size="16px" />
-                            <TagLabel>{Beat.date}</TagLabel>
+                            <TagLabel>{Beat.date ? new Date(Beat.date).toDateString() : "Date"}</TagLabel>
                         </Tag>
                     </Stack>
 
