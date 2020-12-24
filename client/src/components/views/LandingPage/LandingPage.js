@@ -54,6 +54,7 @@ function LandingPage() {
     const [IsLoading, setIsLoading] = isLoading;
     const [Playlist, setPlaylist] = playlist;
     const [CurrentAudio, setCurrentAudio] = audio;
+    const toast = useToast();
 
     const show = useSelector(state => state.playlist.show);
 
@@ -80,6 +81,13 @@ function LandingPage() {
 
     const addToCartHandler = (beatId) => {
         dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
+        toast({
+            title: "Added to cart!",
+            position: "bottom-right",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+        });
     }
 
     // Render the beats in a list
