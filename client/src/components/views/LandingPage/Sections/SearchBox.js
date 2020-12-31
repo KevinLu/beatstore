@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
     Text,
     List,
@@ -10,17 +10,26 @@ import {
     InputGroup,
     InputLeftElement,
     InputRightElement,
+    Tag,
+    TagLabel,
+    TagIcon,
+    Stack,
+    Flex,
     useToast
 } from "@chakra-ui/core";
-import { IoMdMusicalNote } from 'react-icons/io';
+import {IoMdMusicalNote} from 'react-icons/io';
 import styled from '@emotion/styled';
 import Axios from 'axios';
+import {Link} from 'react-router-dom';
+import {FaHashtag} from 'react-icons/fa';
 
 const SearchResult = styled.div`
   &:hover {
     background: #EDF2F7;
   }
 `
+// TODO: enable this?
+// let searchTerms = "";
 
 function SearchBox(props) {
     const [Beats, setBeats] = useState([]);
@@ -34,6 +43,7 @@ function SearchBox(props) {
             searchTerm: event.currentTarget.value
         }
         getBeats(variables);
+        // searchTerms = event.currentTarget.value;
     }
 
     const handleFocus = () => {
@@ -58,7 +68,7 @@ function SearchBox(props) {
                         toast({
                             position: "bottom",
                             title: "An error occurred.",
-                            description: "Unable to load beats.",
+                            description: "Unable to search for beats.",
                             status: "error",
                             duration: 9000,
                             isClosable: true,
@@ -71,12 +81,41 @@ function SearchBox(props) {
     const showSearchResults = Beats.map((beat, index) => {
         if (SearchFocused) {
             return (
-                <SearchResult key={index}>
-                    <ListItem display="flex" pt={3} pb={3}>
-                        <ListIcon icon={IoMdMusicalNote} color="blue.500" size="25px" ml={3} />
-                        <Text fontSize="md" fontWeight="600" color="black">{beat.title}</Text>
-                    </ListItem>
-                </SearchResult>
+                <Link to={`/beat/${beat.url}`}>
+                    <SearchResult key={index}>
+                        <ListItem display="flex" pt={3} pb={3} justifyContent="space-between">
+                            <Flex ml={3}>
+                                <ListIcon icon={IoMdMusicalNote} color="blue.500" size="25px" />
+                                <Text fontSize="md" fontWeight="600" color="black">{beat.title}</Text>
+                            </Flex>
+                            {/* SHOW ALL TAGS IN SEARCH RESULT ON DESKTOP */}
+                            <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mr={3}>
+                                {beat.tags.map((tag, i) => (
+                                    <Tag size="md" key={i} variantColor="blue">
+                                        <TagIcon as={FaHashtag} size="13px" />
+                                        <TagLabel lineHeight="2em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>
+                                            {tag}
+                                        </TagLabel>
+                                    </Tag>
+                                ))}
+                            </Stack>
+                            {/* TODO: enable this? SHOW ONLY 1 RELEVANT TAG ON MOBILE */}
+                            {/* <Stack spacing={2} isInline display={{base: "initial", md: "none"}} mr={3}>
+                                {beat.tags.map((tag, i) => {
+                                    console.log(searchTerms.includes(tag));
+                                    if (searchTerms.includes(tag)) {
+                                        return (
+                                            <Tag size="md" key={i} variantColor="blue">
+                                                <TagIcon as={FaHashtag} size="13px" />
+                                                <TagLabel lineHeight="2em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                            </Tag>
+                                        )
+                                    }
+                                })}
+                            </Stack> */}
+                        </ListItem>
+                    </SearchResult>
+                </Link>
             );
         }
     });
@@ -85,7 +124,17 @@ function SearchBox(props) {
         <div>
             <InputGroup>
                 <InputLeftElement children={<Icon name="search" color="gray.300" />} />
-                <Input onFocus={handleFocus} onBlur={handleBlur} color="black" fontWeight="600" size="lg" id="search" placeholder={props.placeholder} onChange={handleChange} />
+                <Input onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    color="black"
+                    fontWeight="600"
+                    size="lg"
+                    id="search"
+                    placeholder={props.placeholder}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    aria-autocomplete="none"
+                    type="search" />
                 <InputRightElement width="4.5rem">
                     <Button variantColor="blue">
                         SEARCH
