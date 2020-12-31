@@ -24,18 +24,14 @@ const SearchResult = styled.div`
 
 function SearchBox(props) {
     const [Beats, setBeats] = useState([]);
-    const [SearchTerms, setSearchTerms] = useState("");
     const [SearchFocused, setSearchFocused] = useState(false);
-    const [ListBorder, setListBorder] = useState("0px solid");
     const toast = useToast();
-    const searchInput = React.createRef();
 
     const handleChange = (event) => {
-        setSearchTerms(event.currentTarget.value);
         const variables = {
             skip: 0,
             limit: 3,
-            searchTerm: SearchTerms
+            searchTerm: event.currentTarget.value
         }
         getBeats(variables);
     }
@@ -56,10 +52,7 @@ function SearchBox(props) {
                 setTimeout(() => {
                     if (response.data.success) {
                         if (response.data.beats.length >= Beats.length || response.data.beats.length === 0) {
-                            setBeats(response.data.beats)
-                            setListBorder("1px solid")
-                        } else {
-                            setListBorder("0px solid")
+                            setBeats(response.data.beats);
                         }
                     } else {
                         toast({
@@ -69,7 +62,7 @@ function SearchBox(props) {
                             status: "error",
                             duration: 9000,
                             isClosable: true,
-                        })
+                        });
                     }
                 }, 1);
             });
