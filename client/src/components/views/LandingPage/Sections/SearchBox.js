@@ -17,17 +17,22 @@ import {
     Flex,
     useToast
 } from "@chakra-ui/core";
-import {IoMdMusicalNote} from 'react-icons/io';
+import {IoMdMusicalNote, IoIosMore} from 'react-icons/io';
+import {FaHashtag} from 'react-icons/fa';
 import styled from '@emotion/styled';
 import Axios from 'axios';
 import {Link} from 'react-router-dom';
-import {FaHashtag} from 'react-icons/fa';
 
 const SearchResult = styled.div`
+  background: white;
   &:hover {
     background: #EDF2F7;
   }
 `
+
+let MAX_SUGGESTIONS = 3;
+let MAX_SEARCH = 100;
+
 // TODO: enable this?
 // let searchTerms = "";
 
@@ -39,7 +44,7 @@ function SearchBox(props) {
     const handleChange = (event) => {
         const variables = {
             skip: 0,
-            limit: 3,
+            limit: MAX_SEARCH,
             searchTerm: event.currentTarget.value
         }
         getBeats(variables);
@@ -78,7 +83,7 @@ function SearchBox(props) {
             });
     };
 
-    const showSearchResults = Beats.map((beat, index) => {
+    const showSearchResults = Beats.slice(0, MAX_SUGGESTIONS).map((beat, index) => {
         if (SearchFocused) {
             return (
                 <Link to={`/beat/${beat.url}`}>
@@ -142,12 +147,20 @@ function SearchBox(props) {
                 </InputRightElement>
             </InputGroup>
             {Beats.length !== 0 && SearchFocused ?
-                <List mt={5} border="1px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
+                <List mt={2} border="1px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
                     {showSearchResults}
+                    {Beats.length > MAX_SUGGESTIONS ?
+                        <SearchResult key="last">
+                            <ListItem display="flex" p={3}>
+                                <ListIcon icon={IoIosMore} color="blue.800" size="25px" />
+                                <Text fontSize="md" fontWeight="600" color="black">Explore all {Beats.length} beats...</Text>
+                            </ListItem>
+                        </SearchResult>
+                        :
+                        <></>
+                    }
                 </List> :
-                <List mt={5} border="0px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
-                    {showSearchResults}
-                </List>
+                <></>
             }
         </div>
     )
