@@ -35,7 +35,7 @@ let MAX_SUGGESTIONS = 3;
 let MAX_SEARCH = 100;
 
 // TODO: enable this?
-// let searchTerms = "";
+let searchTerms = "";
 
 function SearchBox(props) {
     const [Beats, setBeats] = useState([]);
@@ -49,7 +49,7 @@ function SearchBox(props) {
             searchTerm: event.currentTarget.value
         }
         getBeats(variables);
-        // searchTerms = event.currentTarget.value;
+        searchTerms = event.currentTarget.value;
     }
 
     const handleFocus = () => {
@@ -163,12 +163,14 @@ function SearchBox(props) {
                 <List mt={2} border="1px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
                     {showSearchResults}
                     {Beats.length > MAX_SUGGESTIONS ?
-                        <SearchResult key="last">
-                            <ListItem display="flex" p={3}>
-                                <ListIcon icon={IoIosMore} color="blue.800" size="25px" />
-                                <Text fontSize="md" fontWeight="600" color="black">Explore all {Beats.length} beats...</Text>
-                            </ListItem>
-                        </SearchResult>
+                        <Link to={`/beats?search_keyword=${searchTerms}`}>
+                            <SearchResult key="last">
+                                <ListItem display="flex" p={3}>
+                                    <ListIcon icon={IoIosMore} color="blue.800" size="25px" />
+                                    <Text fontSize="md" fontWeight="600" color="black">Explore all {Beats.length} beats...</Text>
+                                </ListItem>
+                            </SearchResult>
+                        </Link>
                         :
                         <></>
                     }
