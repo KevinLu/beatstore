@@ -19,9 +19,9 @@ import {
 } from "@chakra-ui/core";
 import {IoMdMusicalNote, IoIosMore} from 'react-icons/io';
 import {FaHashtag} from 'react-icons/fa';
+import {Link} from 'react-router-dom';
 import styled from '@emotion/styled';
 import Axios from 'axios';
-import {Link} from 'react-router-dom';
 
 const SearchResult = styled.div`
   background: white;
@@ -29,7 +29,8 @@ const SearchResult = styled.div`
     background: #EDF2F7;
   }
 `
-
+const CancelToken = Axios.CancelToken;
+let source = CancelToken.source();
 let MAX_SUGGESTIONS = 3;
 let MAX_SEARCH = 100;
 
@@ -62,8 +63,17 @@ function SearchBox(props) {
     }
 
     const getBeats = (variables) => {
-        Axios.post('/api/beat/getBeats', variables)
+        source && source.cancel('Operation canceled due to new request.');
+        source = Axios.CancelToken.source();
+
+        Axios.post(
+            '/api/beat/getBeats',
+            variables,
+            {
+                cancelToken: source.token
+            })
             .then(response => {
+                console.log(CancelToken)
                 setTimeout(() => {
                     if (response.data.success) {
                         if (response.data.beats.length >= Beats.length || response.data.beats.length === 0) {
@@ -80,6 +90,9 @@ function SearchBox(props) {
                         });
                     }
                 }, 1);
+            })
+            .catch(error => {
+                if (Axios.isCancel(error)) console.log("cancelled");
             });
     };
 
@@ -98,7 +111,7 @@ function SearchBox(props) {
                                 {beat.tags.map((tag, i) => (
                                     <Tag size="md" key={i} variantColor="blue">
                                         <TagIcon as={FaHashtag} size="13px" />
-                                        <TagLabel lineHeight="2em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>
+                                        <TagLabel lineHeight="2em" mt="-0.14em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>
                                             {tag}
                                         </TagLabel>
                                     </Tag>
