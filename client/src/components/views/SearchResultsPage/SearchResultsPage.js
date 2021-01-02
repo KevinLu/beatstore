@@ -26,18 +26,19 @@ import BeatList from '../BeatList/BeatList';
 
 function SearchResultsPage() {
     const location = useLocation();
-    const queries = queryString.parse(location.search);
+    const [Query, setQuery] = useState("");
 
     useEffect(() => {
-        console.log(queries);
-    }, [queries]);
+        const params = queryString.parse(location.search);
+        setQuery(params.search_keyword);
+    }, [location.search]);
 
     return (
         <div>
             <Box m="5em 1em 5em 1em">
                 <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
-                    <Heading textAlign="center">BEATS</Heading>
-                    <BeatList />
+                    <Heading textAlign="center" mb="2em">BEATS</Heading>
+                    <BeatList query={Query} />
                 </Box>
             </Box>
         </div>

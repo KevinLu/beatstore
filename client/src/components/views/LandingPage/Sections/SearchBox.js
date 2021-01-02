@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/core";
 import {IoMdMusicalNote, IoIosMore} from 'react-icons/io';
 import {FaHashtag} from 'react-icons/fa';
-import {Link} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 import styled from '@emotion/styled';
 import Axios from 'axios';
 
@@ -60,6 +60,12 @@ function SearchBox(props) {
         setTimeout(() => {
             setSearchFocused(false);
         }, 200);
+    }
+
+    const handleSearch = () => {
+        if (searchTerms) {
+            props.history.push(`/beats?search_keyword=${searchTerms}`);
+        }
     }
 
     const getBeats = (variables) => {
@@ -154,7 +160,7 @@ function SearchBox(props) {
                     aria-autocomplete="none"
                     type="search" />
                 <InputRightElement width="4.5rem">
-                    <Button variantColor="blue">
+                    <Button onClick={handleSearch} variantColor="blue">
                         SEARCH
                     </Button>
                 </InputRightElement>
@@ -181,4 +187,4 @@ function SearchBox(props) {
     )
 }
 
-export default SearchBox
+export default withRouter(SearchBox)

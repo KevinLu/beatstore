@@ -1,9 +1,10 @@
-import React, {useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {addToCart} from '../../../_actions/cart_actions';
 import {setIndex, setShow} from '../../../_actions/playlist_actions';
 import {AudioContext} from "../../utils/AudioContext";
 import {Link} from 'react-router-dom';
+import Axios from 'axios';
 import {
     Text,
     Heading,
@@ -42,12 +43,64 @@ const secondsToTime = (e) => {
     return m + ':' + s;
 }
 
-function BeatList() {
+function BeatList(props) {
     const {isLoading, playlist, audio} = useContext(AudioContext);
     const [IsLoading, setIsLoading] = isLoading;
     const [Playlist, setPlaylist] = playlist;
     const [CurrentAudio, setCurrentAudio] = audio;
+    const [List, setList] = useState([]);
+    const [PlayingIndex, setPlayingIndex] = useState(-1);
     const toast = useToast();
+
+    useEffect(() => {
+        let isMounted = true;
+        if (props.query) {
+            let variables = {searchTerm: props.query};
+            if (props.query === "ALL") {
+                variables = {};
+            }
+            Axios.post('/api/beat/getBeats', variables)
+                .then(response => {
+                    if (response.data.success) {
+                        let newPlaylist = [];
+                        response.data.beats.forEach((beat, index) => {
+                            newPlaylist[index] = {
+                                _id: beat._id,
+                                title: beat.title,
+                                tags: beat.tags,
+                                producer: beat.producer.username,
+                                price: beat.price,
+                                url: beat.url,
+                                image: beat.artwork[0],
+                                audio: beat.previewAudio[0],
+                                length: beat.length,
+                                bpm: beat.bpm,
+                                isPlaying: false,
+                                isPaused: false,
+                                index: index
+                            };
+                        });
+                        if (isMounted) {
+                            setList(newPlaylist);
+                        }
+                    }
+                });
+        }
+        return () => {isMounted = false};
+    }, [props.query]);
+
+    useEffect(() => {
+        if (PlayingIndex !== -1 && Playlist.length !== 0) {
+            if (!show) {
+                setShowHandler(true);
+            }
+            CurrentAudio.pause();
+            CurrentAudio.src = Playlist[PlayingIndex].audio;
+            setIndexHandler(PlayingIndex);
+            CurrentAudio.play();
+            Playlist[PlayingIndex].isPlaying = true;
+        }
+    }, [PlayingIndex]);
 
     const show = useSelector(state => state.playlist.show);
 
@@ -61,15 +114,23 @@ function BeatList() {
         dispatch(setShow(bool));
     }
 
-    const playAudio = (beat) => {
-        if (!show) {
-            setShowHandler(true);
+    const playAudio = (index) => {
+        if (Playlist.length === 0) {
+            setPlaylist(List);
+            setPlayingIndex(index);
+        } else {
+            // Prevents calling setPlaylist if playlist
+            // did not change
+            for (let i = 0; i < Playlist.length; i++) {
+                if (List[index]) {
+                    if (List[index]._id !== Playlist[i]._id) {
+                        setPlaylist(List);
+                        break;
+                    }
+                }
+            }
+            setPlayingIndex(index);
         }
-        CurrentAudio.pause();
-        CurrentAudio.src = Playlist[beat.index].audio;
-        setIndexHandler(beat.index);
-        CurrentAudio.play();
-        Playlist[beat.index].isPlaying = true;
     }
 
     const addToCartHandler = (beatId) => {
@@ -84,7 +145,7 @@ function BeatList() {
     }
 
     // Render the beats in a list
-    const renderListItems = Playlist.map((beat, index) => {
+    const renderListItems = List.map((beat, index) => {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
@@ -95,7 +156,7 @@ function BeatList() {
                         src={beat.image}
                         fallbackSrc="https://via.placeholder.com/44"
                         cursor="pointer"
-                        onClick={() => playAudio(beat)} />
+                        onClick={() => playAudio(index)} />
 
                     <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
@@ -105,7 +166,7 @@ function BeatList() {
 
                     <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mt="0.45em">
                         {beat.tags.map((tag, i) => (
-                            <Tag as={Link} to={`/beats?search_keyword=#${tag}`} size="md" key={i} variantColor="blue">
+                            <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} variantColor="blue">
                                 <TagIcon as={FaHashtag} size="13px" />
                                 <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
                             </Tag>
@@ -126,7 +187,7 @@ function BeatList() {
                     </ButtonGroup>
 
                 </Grid>
-                {index !== (Playlist.length - 1) ? // adds divider between list items
+                {index !== (List.length - 1) ? // adds divider between list items
                     <Divider /> :
                     <></>
                 }
@@ -174,20 +235,13 @@ function BeatList() {
         return (
             <Box m="5em 1em 5em 1em" display="flex" justifyContent="center">
                 <Box maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                    <Heading>No beats uploaded yet.</Heading>
+                    <Heading>blah blah blah</Heading>
                 </Box>
             </Box>
         );
     }
 
-    return (
-        Playlist.length > 0 ?
-            <PageContents />
-            : IsLoading ?
-                <PlaceholderContent />
-                :
-                <EmptyState />
-    );
+    return <PageContents />;
 }
 
 export default BeatList;
