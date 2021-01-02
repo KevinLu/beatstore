@@ -18,7 +18,6 @@ function BeatPlayer() {
     const [Playlist, setPlaylist] = playlist;
     const [CurrentAudio, setCurrentAudio] = audio;
 
-    const [Volume, setVolume] = useState(1);
     const ProgressLengthRef = useRef();
     const {width} = useContainerDimensions(ProgressLengthRef);
 
