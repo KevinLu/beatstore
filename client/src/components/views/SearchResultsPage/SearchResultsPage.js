@@ -1,25 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-    Box,
-    Grid,
-    Text,
-    Heading,
-    List,
-    ListItem,
-    ListIcon,
-    Button,
-    Icon,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    InputRightElement,
-    Tag,
-    TagLabel,
-    TagIcon,
-    Stack,
-    Flex,
-    useToast
-} from "@chakra-ui/core";
+import {Box, Heading} from "@chakra-ui/core";
 import {useLocation} from 'react-router-dom';
 import queryString from 'query-string';
 import BeatList from '../BeatList/BeatList';
@@ -30,7 +10,11 @@ function SearchResultsPage() {
 
     useEffect(() => {
         const params = queryString.parse(location.search);
-        setQuery(params.search_keyword);
+        if (params.search_keyword) {
+            setQuery(params.search_keyword);
+        } else {
+            setQuery("ALL");
+        }
     }, [location.search]);
 
     return (
