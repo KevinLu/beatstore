@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchBox from './Sections/SearchBox';
 import {Link} from 'react-router-dom';
-import {Box, Button} from "@chakra-ui/core";
+import {Box, Button} from "@chakra-ui/react";
 import BeatList from '../BeatList/BeatList';
 
 function LandingPage() {
@@ -19,7 +19,7 @@ function LandingPage() {
                 <Search />
                 <BeatList query="ALL" />
                 <Box display="flex" justifyContent="center" mt={10}>
-                    <Button as={Link} to="/beats" variantColor="blue">BROWSE ALL</Button>
+                    <Button as={Link} to="/beats" colorScheme="blue">BROWSE ALL</Button>
                 </Box>
             </Box>
         </Box>

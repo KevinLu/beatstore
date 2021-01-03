@@ -15,7 +15,7 @@ import {
   Box,
   Heading,
   useToast
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 function RegisterPage(props) {
   const dispatch = useDispatch();
@@ -133,7 +133,7 @@ function RegisterPage(props) {
             <Box mt={5}>
               <Button
                 width="100%"
-                variantColor="blue"
+                colorScheme="blue"
                 isLoading={props.isSubmitting}
                 type="submit"
               >

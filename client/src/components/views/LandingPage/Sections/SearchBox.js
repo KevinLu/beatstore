@@ -12,12 +12,12 @@ import {
     InputRightElement,
     Tag,
     TagLabel,
-    TagIcon,
+    TagLeftIcon,
     Stack,
     Flex,
     useToast
-} from "@chakra-ui/core";
-import {IoMdMusicalNote, IoIosMore} from 'react-icons/io';
+} from "@chakra-ui/react";
+import {IoMdMusicalNote, IoIosMore, IoMdSearch} from 'react-icons/io';
 import {FaHashtag} from 'react-icons/fa';
 import {Link, withRouter} from 'react-router-dom';
 import styled from '@emotion/styled';
@@ -109,14 +109,14 @@ function SearchBox(props) {
                     <SearchResult key={index}>
                         <ListItem display="flex" pt={3} pb={3} justifyContent="space-between">
                             <Flex ml={3}>
-                                <ListIcon icon={IoMdMusicalNote} color="blue.500" size="25px" />
+                                <ListIcon as={IoMdMusicalNote} color="blue.500" boxSize="25px" />
                                 <Text fontSize="md" fontWeight="600" color="black">{beat.title}</Text>
                             </Flex>
                             {/* SHOW ALL TAGS IN SEARCH RESULT ON DESKTOP */}
                             <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mr={3}>
                                 {beat.tags.map((tag, i) => (
-                                    <Tag size="md" key={i} variantColor="blue">
-                                        <TagIcon as={FaHashtag} size="13px" />
+                                    <Tag size="md" key={i} colorScheme="blue">
+                                        <TagLeftIcon as={FaHashtag} boxSize="13px" />
                                         <TagLabel lineHeight="2em" mt="-0.14em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>
                                             {tag}
                                         </TagLabel>
@@ -129,8 +129,8 @@ function SearchBox(props) {
                                     console.log(searchTerms.includes(tag));
                                     if (searchTerms.includes(tag)) {
                                         return (
-                                            <Tag size="md" key={i} variantColor="blue">
-                                                <TagIcon as={FaHashtag} size="13px" />
+                                            <Tag size="md" key={i} colorScheme="blue">
+                                                <TagLeftIcon as={FaHashtag} boxSize="13px" />
                                                 <TagLabel lineHeight="2em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
                                             </Tag>
                                         )
@@ -146,21 +146,20 @@ function SearchBox(props) {
 
     return (
         <div>
-            <InputGroup>
-                <InputLeftElement children={<Icon name="search" color="gray.300" />} />
+            <InputGroup size="lg">
+                <InputLeftElement fontSize="1.75em" pointerEvents="none" children={<Icon as={IoMdSearch} color="gray.300" />} />
                 <Input onFocus={handleFocus}
                     onBlur={handleBlur}
                     color="black"
                     fontWeight="600"
-                    size="lg"
                     id="search"
                     placeholder={props.placeholder}
                     onChange={handleChange}
                     autoComplete="off"
                     aria-autocomplete="none"
                     type="search" />
-                <InputRightElement width="4.5rem">
-                    <Button onClick={handleSearch} variantColor="blue">
+                <InputRightElement width="6.5rem">
+                    <Button onClick={handleSearch} colorScheme="blue">
                         SEARCH
                     </Button>
                 </InputRightElement>
@@ -172,7 +171,7 @@ function SearchBox(props) {
                         <Link to={`/beats?search_keyword=${searchTerms}`}>
                             <SearchResult key="last">
                                 <ListItem display="flex" p={3}>
-                                    <ListIcon icon={IoIosMore} color="blue.800" size="25px" />
+                                    <ListIcon as={IoIosMore} color="blue.800" boxSize="25px" />
                                     <Text fontSize="md" fontWeight="600" color="black">Explore all {Beats.length} beats...</Text>
                                 </ListItem>
                             </SearchResult>

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { addToCart } from '../../../_actions/cart_actions';
-import { Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagIcon, TagLabel, useToast } from '@chakra-ui/core';
+import { Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagLeftIcon, TagLabel, useToast } from '@chakra-ui/react';
 import { FaHashtag, FaCartPlus } from 'react-icons/fa';
 import { MdDateRange, MdMusicNote } from 'react-icons/md';
 
@@ -64,15 +64,15 @@ function BeatPage(props) {
     return (
         <Box m="5em 1em 5em 1em">
             <Flex maxWidth={["480px", "480px", "480px", "1166px"]} margin="auto" flexWrap="wrap" flexDirection={{base: "column", lg: "row"}}>
-                <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" size="208px">
-                    <Image borderRadius="3px" size="208px" src={Beat.artwork[0]}></Image>
+                <Skeleton isLoaded={BeatLoaded} margin="auto" borderRadius="3px" boxSize="208px">
+                    <Image borderRadius="3px" boxSize="208px" src={Beat.artwork[0]}></Image>
                 </Skeleton>
 
                 <Flex flexDir="column" flexGrow="1">
                     <Stack mt={{base: 3, lg: 0}} textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
                         <Heading as="h2" size="xl">{Beat.title}</Heading>
                         <div>
-                            <Skeleton size="15px" isLoaded={BeatLoaded} display="inline">
+                            <Skeleton boxSize="15px" isLoaded={BeatLoaded} display="inline">
                                 <Icon name="star" color="orange.400" mr={1} />
                                 <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.username}</Text>
                             </Skeleton>
@@ -80,12 +80,12 @@ function BeatPage(props) {
                     </Stack>
 
                     <Stack mt={3} isInline display="block" textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
-                        <Tag size="md" variantColor="gray">
-                            <TagIcon as={MdMusicNote} size="15px" />
+                        <Tag size="md" colorScheme="gray">
+                            <TagLeftIcon as={MdMusicNote} boxSize="15px" />
                             <TagLabel mt="-0.1em">{Beat.bpm}</TagLabel>
                         </Tag>
-                        <Tag size="md" variantColor="gray">
-                            <TagIcon as={MdDateRange} size="16px" />
+                        <Tag size="md" colorScheme="gray">
+                            <TagLeftIcon as={MdDateRange} boxSize="16px" />
                             <TagLabel>{Beat.date ? new Date(Beat.date).toDateString() : "Date"}</TagLabel>
                         </Tag>
                     </Stack>
@@ -104,12 +104,12 @@ function BeatPage(props) {
 
                     <ButtonGroup spacing={2} margin={{ base: "1em auto 0 auto", lg: "1em 0 0 2em" }} display="flex" justifyContent={{ base: "center", lg: "left" }}>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                            <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid" onClick={() => addToCartHandler(Beat._id)}>
+                            <Button leftIcon={FaCartPlus} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(Beat._id)}>
                                 ${Beat.price}
                             </Button>
                         </Skeleton>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                            <Button leftIcon="download" variantColor="blue" variant="outline">
+                            <Button leftIcon="download" colorScheme="blue" variant="outline">
                                 DOWNLOAD
                             </Button>
                         </Skeleton>
@@ -117,8 +117,8 @@ function BeatPage(props) {
                 </Flex>
                 <Stack spacing={2} isInline height={10} margin={{ base: "1em auto 0 auto", lg: "auto 0 0 0" }}>
                     {Beat.tags.map((tag, i) => (
-                        <Tag size="md" key={i} variantColor="blue">
-                            <TagIcon as={FaHashtag} size="13px" />
+                        <Tag size="md" key={i} colorScheme="blue">
+                            <TagLeftIcon as={FaHashtag} boxSize="13px" />
                             <TagLabel mt="-0.1em" fontWeight="600" maxWidth={{ base: "10ch", md: "12ch", lg: "15ch" }}>{tag}</TagLabel>
                         </Tag>
                     ))}

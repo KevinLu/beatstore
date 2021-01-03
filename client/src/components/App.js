@@ -19,7 +19,7 @@ import DownloadPage from "./views/DownloadPage/DownloadPage";
 import SearchResultsPage from './views/SearchResultsPage/SearchResultsPage';
 import ErrorNotFoundPage from "./views/ErrorNotFoundPage/ErrorNotFoundPage";
 import { AudioContextProvider } from "./utils/AudioContext";
-import { ThemeProvider, CSSReset } from "@chakra-ui/core";
+import { ChakraProvider, CSSReset } from "@chakra-ui/react";
 
 // Auth(SpecificComponent, option, adminRoute)
 // option:
@@ -61,7 +61,7 @@ function App() {
   }
 
   return (
-    <ThemeProvider>
+    <ChakraProvider>
       <CSSReset />
       <Suspense fallback={(<div>Loading...</div>)}>
        <AudioContextProvider>
@@ -83,7 +83,7 @@ function App() {
         <BeatPlayer />
        </AudioContextProvider>
       </Suspense>
-    </ThemeProvider>
+    </ChakraProvider>
   );
 }
 

@@ -1,19 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Avatar, Box, Badge, Menu, Button, Flex,
   MenuButton,
   MenuList,
   MenuItem,
   MenuGroup,
-  MenuDivider,
-  Icon
-} from "@chakra-ui/core";
+  MenuDivider
+} from "@chakra-ui/react";
 import axios from 'axios';
-import { USER_SERVER } from '../../../Config';
-import { withRouter, Link } from 'react-router-dom';
-import { useSelector } from "react-redux";
-import { FaShoppingCart, FaCaretDown } from "react-icons/fa";
+import {USER_SERVER} from '../../../Config';
+import {withRouter, Link} from 'react-router-dom';
+import {useSelector} from "react-redux";
+import {FaShoppingCart} from "react-icons/fa";
 
 function delete_cookie(name) {
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -60,13 +59,12 @@ function RightMenu() {
       return (
         <MenuButton display="flex" alignItems="center">
           <Avatar size="sm" src={user.image} />
-          <Box as={FaCaretDown}></Box>
         </MenuButton>
       );
     } else {
       return (
         <Link to="/login">
-          <Button rightIcon="arrow-forward" variantColor="blue">
+          <Button colorScheme="blue">
             Login
         </Button>
         </Link>
@@ -77,38 +75,42 @@ function RightMenu() {
   const UserMenu = () => {
     if (IsAdmin) {
       return (
-        <MenuList zIndex="3">
-          <MenuGroup color="black" title={user.username}>
+        <Box zIndex="3">
+          <MenuList>
+            <MenuGroup color="black" title={user.username}>
+              <MenuItem color="black">My account</MenuItem>
+              <Link to="/orders">
+                <MenuItem color="black">Orders</MenuItem>
+              </Link>
+            </MenuGroup>
+            <MenuDivider />
+            <MenuGroup color="black" title="Admin">
+              <MenuItem color="black">Dashboard</MenuItem>
+              <Link to="/upload">
+                <MenuItem color="black">Upload</MenuItem>
+              </Link>
+            </MenuGroup>
+            <MenuDivider />
+            <Link onClick={logoutHandler} to="/login">
+              <MenuItem color="black">Logout</MenuItem>
+            </Link>
+          </MenuList>
+        </Box>
+      );
+    } else if (IsLoggedIn) {
+      return (
+        <Box zIndex="3">
+          <MenuList>
             <MenuItem color="black">My account</MenuItem>
             <Link to="/orders">
               <MenuItem color="black">Orders</MenuItem>
             </Link>
-          </MenuGroup>
-          <MenuDivider />
-          <MenuGroup color="black" title="Admin">
-            <MenuItem color="black">Dashboard</MenuItem>
-            <Link to="/upload">
-              <MenuItem color="black">Upload</MenuItem>
+            <MenuDivider />
+            <Link onClick={logoutHandler} to="/login">
+              <MenuItem color="black">Logout</MenuItem>
             </Link>
-          </MenuGroup>
-          <MenuDivider />
-          <Link onClick={logoutHandler} to="/login">
-            <MenuItem color="black">Logout</MenuItem>
-          </Link>
-        </MenuList>
-      );
-    } else if (IsLoggedIn) {
-      return (
-        <MenuList zIndex="3">
-          <MenuItem color="black">My account</MenuItem>
-          <Link to="/orders">
-            <MenuItem color="black">Orders</MenuItem>
-          </Link>
-          <MenuDivider />
-          <Link onClick={logoutHandler} to="/login">
-            <MenuItem color="black">Logout</MenuItem>
-          </Link>
-        </MenuList>
+          </MenuList>
+        </Box>
       );
     } else {
       return (<div></div>);
@@ -119,7 +121,7 @@ function RightMenu() {
     <Flex alignItems="center">
       <Box fontWeight="600" fontSize="lg" mr={6} display="flex">
         <Link to="/cart"><Box as={FaShoppingCart} /></Link>
-        <Badge ml="1" variantColor="green" height="1.6em">{CartLength}</Badge>
+        <Badge ml="1" colorScheme="green" height="1.6em">{CartLength}</Badge>
       </Box>
       <Menu>
         <UserIcon />
