@@ -21,7 +21,9 @@ function SearchResultsPage() {
         <div>
             <Box m="5em 1em 5em 1em">
                 <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
-                    <Heading textAlign="center" mb="2em">BEATS</Heading>
+                    {Query !== "ALL" ?
+                    <Heading textAlign="center" mb="2em">SEARCH: {Query}</Heading> :
+                    <Heading textAlign="center" mb="2em">BEATS</Heading>}
                     <BeatList query={Query} />
                 </Box>
             </Box>
