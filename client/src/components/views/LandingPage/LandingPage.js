@@ -7,7 +7,7 @@ import BeatList from '../BeatList/BeatList';
 function LandingPage() {
     const Search = () => {
         return (
-            <Box width={["400px", "450px", "600px", "700px"]} margin="auto auto 15em">
+            <Box width={["400px", "450px", "600px", "700px"]} margin="auto auto 10em">
                 <SearchBox placeholder="Search for a vibe" width={["400px", "450px", "600px", "700px"]} />
             </Box>
         );
