@@ -13,7 +13,7 @@ import {
   Box,
   Heading,
   useToast
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 
 function LoginPage(props) {
@@ -111,7 +111,7 @@ function LoginPage(props) {
             </Box>
             <Box mb={300} mt={3}>
               <Button
-                variantColor="blue"
+                colorScheme="blue"
                 isLoading={props.isSubmitting}
                 type="submit"
               >

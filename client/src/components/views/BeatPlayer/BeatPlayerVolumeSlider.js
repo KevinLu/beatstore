@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Box, IconButton, Slider, SliderTrack, SliderFilledTrack, SliderThumb} from '@chakra-ui/core';
+import {Box, IconButton, Slider, SliderTrack, SliderFilledTrack, SliderThumb} from '@chakra-ui/react';
 import {FaVolumeUp, FaVolumeMute} from 'react-icons/fa';
 
 function BeatPlayerVolumeSlider(props) {
@@ -23,7 +23,7 @@ function BeatPlayerVolumeSlider(props) {
 
     return (
         <Box display={{base: "none", md: "flex"}} position="absolute" right="0px" mr="2.5rem" alignItems="center" h="100%">
-            <IconButton size="lg" icon={Volume === 0 ? FaVolumeMute : FaVolumeUp} variant="link" color="white" aria-label="Mute or unmute volume" onClick={muteOrUnmute} />
+            <IconButton size="lg" icon={Volume === 0 ? <FaVolumeMute /> : <FaVolumeUp />} variant="link" color="white" aria-label="Mute or unmute volume" onClick={muteOrUnmute} />
             <Box width="80px">
                 <Slider min={0} max={1} step={0.02} value={Volume} defaultValue={1} onChange={handleVolumeChange}>
                     <SliderTrack />

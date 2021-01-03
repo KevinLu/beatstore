@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading} from "@chakra-ui/core";
+import {Box, Heading} from "@chakra-ui/react";
 import {useLocation} from 'react-router-dom';
 import queryString from 'query-string';
 import BeatList from '../BeatList/BeatList';

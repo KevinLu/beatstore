@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import {
     Box,
     Flex,
+    Grid,
+    GridItem,
     Text,
     FormControl,
     FormLabel,
@@ -11,7 +13,7 @@ import {
     Textarea,
     Button,
     useToast
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import FileUpload from '../../utils/FileUpload';
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
@@ -181,11 +183,11 @@ function UploadBeatPage(props) {
                 <Heading>UPLOAD</Heading>
                 <form>
                     <Text mt={10} fontSize="2xl">Audio/Image Files</Text>
-                    <Flex mt={3} flexWrap="wrap" justifyContent="space-between">
+                    <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={6}>
                         <FormControl isRequired>
                             <Flex alignItems="center">
                                 <FormLabel>Beat Preview (tagged)</FormLabel>
-                                <Badge variantColor="green">MP3/WAV</Badge>
+                                <Badge colorScheme="green">MP3/WAV</Badge>
                             </Flex>
                             <FileUpload icon={MdMusicNote} public={true} accept="audio/mpeg, audio/wav" refreshFunction={updatePreviewAudio} />
                         </FormControl>
@@ -193,7 +195,7 @@ function UploadBeatPage(props) {
                         <FormControl isRequired>
                             <Flex alignItems="center">
                                 <FormLabel>Beat for Purchase</FormLabel>
-                                <Badge variantColor="green">MP3/WAV</Badge>
+                                <Badge colorScheme="green">MP3/WAV</Badge>
                             </Flex>
                             <FileUpload icon={FaMusic} public={false} accept="audio/mpeg, audio/wav" refreshFunction={updatePurchaseAudio} />
                         </FormControl>
@@ -201,7 +203,7 @@ function UploadBeatPage(props) {
                         <FormControl>
                             <Flex alignItems="center">
                                 <FormLabel>Track Stems</FormLabel>
-                                <Badge variantColor="green">ZIP/RAR</Badge>
+                                <Badge colorScheme="green">ZIP/RAR</Badge>
                             </Flex>
                             <FileUpload icon={FiSliders} public={false}
                                 accept=".rar, application/vnd.rar, application/x-rar-compressed,
@@ -213,11 +215,11 @@ function UploadBeatPage(props) {
                         <FormControl isRequired>
                             <Flex alignItems="center">
                                 <FormLabel>Artwork</FormLabel>
-                                <Badge variantColor="green">PNG/JPG/JPEG</Badge>
+                                <Badge colorScheme="green">PNG/JPG/JPEG</Badge>
                             </Flex>
                             <FileUpload icon={MdImage} public={true} accept="image/jpg, image/png, image/jpeg" refreshFunction={updateArtwork} />
                         </FormControl>
-                    </Flex>
+                    </Grid>
 
                     <Text mt={10} fontSize="2xl">Track Information</Text>
 
@@ -251,7 +253,7 @@ function UploadBeatPage(props) {
                         settings={settings}
                     />
 
-                    <Button mt={5} variantColor="blue" onClick={onSubmit}>Upload</Button>
+                    <Button mt={5} colorScheme="blue" onClick={onSubmit}>Upload</Button>
                 </form>
             </Box>
         </Box>);

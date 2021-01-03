@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useToast, Box, Flex, Text, Tag, TagLabel, TagCloseButton, CircularProgress } from "@chakra-ui/core";
+import { useToast, Box, Flex, Text, Tag, TagLabel, TagCloseButton, CircularProgress } from "@chakra-ui/react";
 import Axios from 'axios';
 
 const baseStyle = {
@@ -122,7 +122,7 @@ function FileUpload(props) {
                             <CircularProgress isIndeterminate={IsUploading} />
                             :
                             <Flex justifyContent="center" flexDirection="column" alignItems="center">
-                                <Box size="25px" as={props.icon} />
+                                <Box boxSize="25px" as={props.icon} />
                                 <Text>Drag your file here, or click to select.</Text>
                                 <input {...getInputProps()} />
                             </Flex>}
@@ -135,7 +135,7 @@ function FileUpload(props) {
                                 size="md"
                                 key={index}
                                 variant="solid"
-                                variantColor="blue"
+                                colorScheme="blue"
                             >
                                 <TagLabel>{file}</TagLabel>
                                 <TagCloseButton onClick={onDelete} />

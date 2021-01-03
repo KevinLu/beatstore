@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Tooltip} from '@chakra-ui/core';
+import {Tooltip} from '@chakra-ui/react';
 import styled from "@emotion/styled/macro";
 const bp = ["30em", "48em", "62em", "80em"];
 
@@ -76,7 +76,7 @@ function BeatPlayerProgressBar(props) {
     const handleTimeUpdate = () => {
         let newTime = new Date();
         let timeDiff = newTime - startTime;
-        if (timeDiff > 1000) {
+        if (timeDiff >= 900) {
             updateSongProgress();
             startTime = newTime;
         }

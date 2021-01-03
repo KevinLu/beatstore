@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Box, List, ListItem } from "@chakra-ui/core";
+import { Grid, Box, List, ListItem } from "@chakra-ui/react";
 
 function Footer() {
     return (

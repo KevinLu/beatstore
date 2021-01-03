@@ -16,12 +16,13 @@ import {
     useToast,
     Tag,
     TagLabel,
-    TagIcon,
+    TagLeftIcon,
     Image,
     Divider,
     Skeleton
-} from "@chakra-ui/core";
-import {FaHashtag, FaCartPlus} from 'react-icons/fa';
+} from "@chakra-ui/react";
+import {FaHashtag, FaShoppingCart} from 'react-icons/fa';
+import {IoMdDownload} from 'react-icons/io';
 
 const ListHeading = ({children, displayBreakpoints}) => (
     <Box w="100%" h="10" display={displayBreakpoints}>
@@ -144,7 +145,7 @@ function BeatList(props) {
 
                     <Image
                         borderRadius="3px"
-                        size="44px"
+                        boxSize="44px"
                         src={beat.image}
                         fallbackSrc="https://via.placeholder.com/44"
                         cursor="pointer"
@@ -158,8 +159,8 @@ function BeatList(props) {
 
                     <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mt="0.45em">
                         {beat.tags.map((tag, i) => (
-                            <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} variantColor="blue">
-                                <TagIcon as={FaHashtag} size="13px" />
+                            <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} colorScheme="blue">
+                                <TagLeftIcon as={FaHashtag} boxSize="13px" />
                                 <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
                             </Tag>
                         ))}
@@ -168,19 +169,19 @@ function BeatList(props) {
                     <ButtonGroup spacing={2} ml="auto">
                         <IconButton
                             variant="outline"
-                            variantColor="blue"
+                            colorScheme="blue"
                             aria-label="Free download"
-                            icon="download"
+                            icon={<IoMdDownload />}
                         />
 
-                        <Button leftIcon={FaCartPlus} variantColor="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
+                        <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
                             ${beat.price}
                         </Button>
                     </ButtonGroup>
 
                 </Grid>
                 {index !== (List.length - 1) ? // adds divider between list items
-                    <Divider /> :
+                    <Divider mb={2} /> :
                     <></>
                 }
             </Box>
