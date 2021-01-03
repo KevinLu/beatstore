@@ -1,8 +1,9 @@
-import React, {useEffect, useState, useMemo} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, connect} from 'react-redux';
 import {addToCart} from '../../../_actions/cart_actions';
 import {setIndex, setShow, setPlaylist} from '../../../_actions/playlist_actions';
 import {Link} from 'react-router-dom';
+import LoadingView from '../../utils/LoadingView';
 import Axios from 'axios';
 import {
     Text,
@@ -19,7 +20,7 @@ import {
     TagLeftIcon,
     Image,
     Divider,
-    Skeleton
+    Fade
 } from "@chakra-ui/react";
 import {FaHashtag, FaShoppingCart} from 'react-icons/fa';
 import {IoMdDownload} from 'react-icons/io';
@@ -45,6 +46,7 @@ const secondsToTime = (e) => {
 
 function BeatList(props) {
     const [List, setList] = useState([]);
+    const [IsLoading, setIsLoading] = useState(true);
     const toast = useToast();
     const show = props.show;
     const playlist = props.playlist;
@@ -79,6 +81,7 @@ function BeatList(props) {
                         });
                         if (isMounted) {
                             setList(newPlaylist);
+                            setIsLoading(false);
                         }
                     }
                 });
@@ -142,14 +145,15 @@ function BeatList(props) {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
-
-                    <Image
-                        borderRadius="3px"
-                        boxSize="44px"
-                        src={beat.image}
-                        fallbackSrc="https://via.placeholder.com/44"
-                        cursor="pointer"
-                        onClick={() => playAudio(index)} />
+                    <Fade in={!IsLoading} unmountOnExit={true}>
+                        <Image
+                            borderRadius="3px"
+                            boxSize="44px"
+                            src={beat.image}
+                            fallbackSrc="https://via.placeholder.com/44"
+                            cursor="pointer"
+                            onClick={() => playAudio(index)} />
+                    </Fade>
 
                     <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
@@ -204,37 +208,23 @@ function BeatList(props) {
         );
     }
 
-    const PlaceholderContent = () => {
-        return (
-            <Box m="5em 1em 5em 1em">
-                <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
-                    <Grid templateColumns="1fr 5fr 1fr 1fr 4fr 3fr" gap={6}>
-                        <Skeleton height="44px" width="44px" />
-                        <Skeleton height="20px" mt="0.55em" />
-                        <Skeleton height="20px" mt="0.55em" />
-                        <Skeleton height="20px" mt="0.55em" />
-                        <Skeleton height="20px" mt="0.55em" />
-                        <Box display="flex">
-                            <Skeleton height="40px" width="40px" mr={2} />
-                            <Skeleton height="40px" width="100px" />
-                        </Box>
-                    </Grid>
-                </Box>
-            </Box>
-        );
-    }
-
     const EmptyState = () => {
         return (
             <Box m="5em 1em 5em 1em" display="flex" justifyContent="center">
                 <Box maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                    <Heading>blah blah blah</Heading>
+                    <Heading>No beats found.</Heading>
                 </Box>
             </Box>
         );
     }
 
-    return <PageContents />;
+    if (IsLoading) {
+        return <LoadingView />;
+    } else if (List.length === 0) {
+        return <EmptyState />;
+    } else {
+        return <PageContents />;
+    }
 }
 
 const mapStateToProps = (state) => {
