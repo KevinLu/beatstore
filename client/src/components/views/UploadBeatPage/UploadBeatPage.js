@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import {
     Box,
     Flex,
+    Grid,
+    GridItem,
     Text,
     FormControl,
     FormLabel,
@@ -181,7 +183,7 @@ function UploadBeatPage(props) {
                 <Heading>UPLOAD</Heading>
                 <form>
                     <Text mt={10} fontSize="2xl">Audio/Image Files</Text>
-                    <Flex mt={3} flexWrap="wrap" justifyContent="space-between">
+                    <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={6}>
                         <FormControl isRequired>
                             <Flex alignItems="center">
                                 <FormLabel>Beat Preview (tagged)</FormLabel>
@@ -217,7 +219,7 @@ function UploadBeatPage(props) {
                             </Flex>
                             <FileUpload icon={MdImage} public={true} accept="image/jpg, image/png, image/jpeg" refreshFunction={updateArtwork} />
                         </FormControl>
-                    </Flex>
+                    </Grid>
 
                     <Text mt={10} fontSize="2xl">Track Information</Text>
 
