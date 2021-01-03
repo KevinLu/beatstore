@@ -28,7 +28,7 @@ function SearchBar(props) {
             if (Value !== props.value) {
                 handleSearch(Value);
             }
-        }, 1000);
+        }, 600);
         return () => clearTimeout(timeoutId);
     }, [Value]);
 
