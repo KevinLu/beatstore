@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import Axios from 'axios';
-import { withRouter } from 'react-router-dom';
-import { addToCart } from '../../../_actions/cart_actions';
-import { Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagLeftIcon, TagLabel, useToast } from '@chakra-ui/react';
-import { FaHashtag, FaCartPlus } from 'react-icons/fa';
-import { MdDateRange, MdMusicNote } from 'react-icons/md';
+import {withRouter, Link} from 'react-router-dom';
+import {addToCart} from '../../../_actions/cart_actions';
+import {Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, Stack, Tag, TagLeftIcon, TagLabel, useToast} from '@chakra-ui/react';
+import {FaHashtag, FaShoppingCart, FaStar} from 'react-icons/fa';
+import {MdDateRange, MdMusicNote} from 'react-icons/md';
+import {IoMdDownload} from 'react-icons/io';
 
 function BeatPage(props) {
     const beatUrl = props.match.params.beatUrl;
@@ -37,6 +38,7 @@ function BeatPage(props) {
     const [BeatLoaded, setBeatLoaded] = useState(false);
     const dispatch = useDispatch();
     const toast = useToast();
+    const dateOptions = {year: 'numeric', month: 'long', day: 'numeric'};
 
     useEffect(() => {
         Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
@@ -69,30 +71,30 @@ function BeatPage(props) {
                 </Skeleton>
 
                 <Flex flexDir="column" flexGrow="1">
-                    <Stack mt={{base: 3, lg: 0}} textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
+                    <Stack mt={{base: 3, lg: 0}} textAlign={{base: "center", lg: "initial"}} ml={{base: "0", lg: "2em"}}>
                         <Heading as="h2" size="xl">{Beat.title}</Heading>
                         <div>
                             <Skeleton boxSize="15px" isLoaded={BeatLoaded} display="inline">
-                                <Icon name="star" color="orange.400" mr={1} />
+                                <Icon as={FaStar} color="orange.400" mr={1} />
                                 <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.username}</Text>
                             </Skeleton>
                         </div>
                     </Stack>
 
-                    <Stack mt={3} isInline display="block" textAlign={{ base: "center", lg: "initial" }} ml={{ base: "0", lg: "2em" }}>
+                    <Stack mt={3} isInline display="block" textAlign={{base: "center", lg: "initial"}} ml={{base: "0", lg: "2em"}}>
                         <Tag size="md" colorScheme="gray">
                             <TagLeftIcon as={MdMusicNote} boxSize="15px" />
                             <TagLabel mt="-0.1em">{Beat.bpm}</TagLabel>
                         </Tag>
                         <Tag size="md" colorScheme="gray">
                             <TagLeftIcon as={MdDateRange} boxSize="16px" />
-                            <TagLabel>{Beat.date ? new Date(Beat.date).toDateString() : "Date"}</TagLabel>
+                            <TagLabel>{Beat.date ? new Date(Beat.date).toLocaleString('en-US', dateOptions) : "Date"}</TagLabel>
                         </Tag>
                     </Stack>
 
-                    <Skeleton isLoaded={BeatLoaded} mt={3} ml={{ base: "0", lg: "2em" }}>
+                    <Skeleton isLoaded={BeatLoaded} mt={3} ml={{base: "0", lg: "2em"}}>
                         <Text
-                            textAlign={{ base: "center", lg: "initial" }}
+                            textAlign={{base: "center", lg: "initial"}}
                             fontSize="md"
                             color="black"
                             overflow="hidden"
@@ -102,24 +104,24 @@ function BeatPage(props) {
                         </Text>
                     </Skeleton>
 
-                    <ButtonGroup spacing={2} margin={{ base: "1em auto 0 auto", lg: "1em 0 0 2em" }} display="flex" justifyContent={{ base: "center", lg: "left" }}>
+                    <ButtonGroup spacing={2} margin={{base: "1em auto 0 auto", lg: "1em 0 0 2em"}} display="flex" justifyContent={{base: "center", lg: "left"}}>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                            <Button leftIcon={FaCartPlus} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(Beat._id)}>
+                            <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(Beat._id)}>
                                 ${Beat.price}
                             </Button>
                         </Skeleton>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                            <Button leftIcon="download" colorScheme="blue" variant="outline">
+                            <Button leftIcon={<IoMdDownload />} colorScheme="blue" variant="outline">
                                 DOWNLOAD
                             </Button>
                         </Skeleton>
                     </ButtonGroup>
                 </Flex>
-                <Stack spacing={2} isInline height={10} margin={{ base: "1em auto 0 auto", lg: "auto 0 0 0" }}>
+                <Stack spacing={2} isInline height={10} margin={{base: "1em auto 0 auto", lg: "auto 0 0 0"}}>
                     {Beat.tags.map((tag, i) => (
-                        <Tag size="md" key={i} colorScheme="blue">
+                        <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} colorScheme="blue">
                             <TagLeftIcon as={FaHashtag} boxSize="13px" />
-                            <TagLabel mt="-0.1em" fontWeight="600" maxWidth={{ base: "10ch", md: "12ch", lg: "15ch" }}>{tag}</TagLabel>
+                            <TagLabel mt="-0.1em" fontWeight="600" maxWidth={{base: "10ch", md: "12ch", lg: "15ch"}}>{tag}</TagLabel>
                         </Tag>
                     ))}
                 </Stack>
