@@ -1,5 +1,5 @@
 import React from 'react';
-import SearchBox from './Sections/SearchBox';
+import SearchBox from './SearchBox';
 import {Link} from 'react-router-dom';
 import {Box, Button} from "@chakra-ui/react";
 import BeatList from '../BeatList/BeatList';
