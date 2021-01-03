@@ -44,13 +44,15 @@ function SearchBox(props) {
     const toast = useToast();
 
     const handleChange = (event) => {
-        const variables = {
-            skip: 0,
-            limit: MAX_SEARCH,
-            searchTerm: event.currentTarget.value
+        if (event.currentTarget.value !== "") {
+            const variables = {
+                skip: 0,
+                limit: MAX_SEARCH,
+                searchTerm: event.currentTarget.value
+            }
+            getBeats(variables);
+            searchTerms = event.currentTarget.value;
         }
-        getBeats(variables);
-        searchTerms = event.currentTarget.value;
     }
 
     const handleFocus = () => {
