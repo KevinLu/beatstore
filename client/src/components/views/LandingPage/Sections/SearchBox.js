@@ -158,7 +158,7 @@ function SearchBox(props) {
                     autoComplete="off"
                     aria-autocomplete="none"
                     type="search" />
-                <InputRightElement width="6.5rem">
+                <InputRightElement width="5.5rem" p="0">
                     <Button onClick={handleSearch} colorScheme="blue">
                         SEARCH
                     </Button>
