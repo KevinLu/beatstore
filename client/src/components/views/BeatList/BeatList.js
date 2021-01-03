@@ -1,8 +1,7 @@
-import React, {useEffect, useContext, useState} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, {useEffect, useState, useMemo} from 'react';
+import {useDispatch, connect} from 'react-redux';
 import {addToCart} from '../../../_actions/cart_actions';
-import {setIndex, setShow} from '../../../_actions/playlist_actions';
-import {AudioContext} from "../../utils/AudioContext";
+import {setIndex, setShow, setPlaylist} from '../../../_actions/playlist_actions';
 import {Link} from 'react-router-dom';
 import Axios from 'axios';
 import {
@@ -44,13 +43,10 @@ const secondsToTime = (e) => {
 }
 
 function BeatList(props) {
-    const {isLoading, playlist, audio} = useContext(AudioContext);
-    const [IsLoading, setIsLoading] = isLoading;
-    const [Playlist, setPlaylist] = playlist;
-    const [CurrentAudio, setCurrentAudio] = audio;
     const [List, setList] = useState([]);
-    const [PlayingIndex, setPlayingIndex] = useState(-1);
     const toast = useToast();
+    const show = props.show;
+    const playlist = props.playlist;
 
     useEffect(() => {
         let isMounted = true;
@@ -89,21 +85,6 @@ function BeatList(props) {
         return () => {isMounted = false};
     }, [props.query]);
 
-    useEffect(() => {
-        if (PlayingIndex !== -1 && Playlist.length !== 0) {
-            if (!show) {
-                setShowHandler(true);
-            }
-            CurrentAudio.pause();
-            CurrentAudio.src = Playlist[PlayingIndex].audio;
-            setIndexHandler(PlayingIndex);
-            CurrentAudio.play();
-            Playlist[PlayingIndex].isPlaying = true;
-        }
-    }, [PlayingIndex]);
-
-    const show = useSelector(state => state.playlist.show);
-
     const dispatch = useDispatch();
 
     const setIndexHandler = (i) => {
@@ -114,22 +95,33 @@ function BeatList(props) {
         dispatch(setShow(bool));
     }
 
+    const setPlaylistHandler = (playlist) => {
+        dispatch(setPlaylist(playlist));
+    }
+
     const playAudio = (index) => {
-        if (Playlist.length === 0) {
-            setPlaylist(List);
-            setPlayingIndex(index);
+        if (!show) {
+            setShowHandler(true);
+        }
+        if (playlist === undefined || playlist.length === 0) {
+            setPlaylistHandler(List);
+            setIndexHandler(index);
         } else {
             // Prevents calling setPlaylist if playlist
             // did not change
-            for (let i = 0; i < Playlist.length; i++) {
-                if (List[index]) {
-                    if (List[index]._id !== Playlist[i]._id) {
-                        setPlaylist(List);
-                        break;
+            if (playlist.length !== List.length) {
+                setPlaylistHandler(List);
+            } else {
+                for (let i = 0; i < playlist.length; i++) {
+                    if (List[i]) {
+                        if (List[i]._id !== playlist[i]._id) {
+                            setPlaylistHandler(List);
+                            break;
+                        }
                     }
                 }
             }
-            setPlayingIndex(index);
+            setIndexHandler(index);
         }
     }
 
@@ -244,4 +236,11 @@ function BeatList(props) {
     return <PageContents />;
 }
 
-export default BeatList;
+const mapStateToProps = (state) => {
+    return {
+        show: state.playlist.show,
+        playlist: state.playlist.playlist
+    }
+}
+
+export default connect(mapStateToProps)(BeatList);

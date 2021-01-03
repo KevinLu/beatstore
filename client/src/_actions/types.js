@@ -10,3 +10,5 @@ export const REMOVE_FROM_CART = 'remove_from_cart';
 export const REMOVE_ALL_FROM_CART = 'remove_all_from_cart';
 export const SET_INDEX = 'set_index';
 export const SET_SHOW = 'set_show';
+export const SET_PLAYLIST = 'set_playlist';
+export const SET_PAUSED = 'set_paused';

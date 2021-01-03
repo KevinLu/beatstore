@@ -54,10 +54,10 @@ function App() {
 
   if (!window.localStorage.getItem("cartId")) {
     newCart();
-    createIndex();
+    //createIndex();
   } else {
     getCartInfo(window.localStorage.getItem("cartId"));
-    createIndex();
+    //createIndex();
   }
 
   return (

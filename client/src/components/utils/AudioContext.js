@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import Axios from 'axios';
+import React from 'react';
 
 export const AudioContext = React.createContext();
 
 export const AudioContextProvider = (props) => {
-    const [IsLoading, setIsLoading] = useState(true);
-    const [Playlist, setPlaylist] = useState([]);
-    const [CurrentAudio, setCurrentAudio] = useState(new Audio());
+    let audio = new Audio();
 
     return (
-        <AudioContext.Provider value={{ isLoading: [IsLoading, setIsLoading], playlist: [Playlist, setPlaylist], audio: [CurrentAudio, setCurrentAudio] }}>
+        <AudioContext.Provider value={audio}>
             {props.children}
         </AudioContext.Provider>
     );
