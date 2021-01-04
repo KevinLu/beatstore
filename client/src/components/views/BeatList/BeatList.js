@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, connect} from 'react-redux';
 import {addToCart} from '../../../_actions/cart_actions';
 import {setIndex, setShow, setPlaylist} from '../../../_actions/playlist_actions';
-import {Link} from 'react-router-dom';
+import {Link, useLocation, withRouter} from 'react-router-dom';
 import LoadingView from '../../utils/LoadingView';
 import Axios from 'axios';
 import {
@@ -44,20 +44,39 @@ const secondsToTime = (e) => {
     return m + ':' + s;
 }
 
+let beatsOnScreen = 10;
+let listLength = 0;
+
 function BeatList(props) {
     const [List, setList] = useState([]);
+    const [BeatsShown, setBeatsShown] = useState(10);
     const [IsLoading, setIsLoading] = useState(true);
+    const location = useLocation();
     const toast = useToast();
     const show = props.show;
     const playlist = props.playlist;
 
+    const loadMore = () => {
+        if (window.innerHeight + document.documentElement.scrollTop === document.scrollingElement.scrollHeight) {
+            if (listLength > beatsOnScreen) {
+                setBeatsShown(beatsOnScreen + 10);
+                beatsOnScreen = beatsOnScreen + 10;
+            }
+        }
+    }
+
     useEffect(() => {
+        // Enable infinite scroll if on search results page
+        if (location.pathname === "/beats") {
+            window.addEventListener('scroll', loadMore);
+        }
         let isMounted = true;
         if (props.query) {
-            let variables = {searchTerm: props.query};
-            if (props.query === "ALL") {
-                variables = {};
-            }
+            let variables = {
+                skip: 0,
+                limit: props.limit ? props.limit : 100,
+                searchTerm: props.query === "ALL" ? "" : props.query
+            };
             Axios.post('/api/beat/getBeats', variables)
                 .then(response => {
                     if (response.data.success) {
@@ -80,13 +99,19 @@ function BeatList(props) {
                             };
                         });
                         if (isMounted) {
+                            listLength = newPlaylist.length;
                             setList(newPlaylist);
                             setIsLoading(false);
                         }
                     }
                 });
         }
-        return () => {isMounted = false};
+        return () => {
+            isMounted = false;
+            beatsOnScreen = 10;
+            listLength = 0;
+            window.removeEventListener('scroll', loadMore);
+        };
     }, [props.query]);
 
     const dispatch = useDispatch();
@@ -141,7 +166,7 @@ function BeatList(props) {
     }
 
     // Render the beats in a list
-    const renderListItems = List.map((beat, index) => {
+    const renderListItems = List.slice(0, BeatsShown).map((beat, index) => {
         return (
             <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
                 <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
@@ -234,4 +259,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(BeatList);
+export default withRouter(connect(mapStateToProps)(BeatList));

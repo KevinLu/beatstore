@@ -34,7 +34,7 @@ function SearchResultsPage() {
                     <Heading textAlign="center" mb="2rem">SEARCH: {Query}</Heading> :
                     <Heading textAlign="center" mb="2rem">BEATS</Heading>}
                     <Search />
-                    <BeatList query={Query} />
+                    <BeatList query={Query} limit="50" />
                 </Box>
             </Box>
         </div>

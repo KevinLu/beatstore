@@ -17,7 +17,7 @@ function LandingPage() {
         <Box m="5em 1em 5em 1em">
             <Box maxWidth={["400px", "628px", "800px", "1166px"]} margin="auto">
                 <Search />
-                <BeatList query="ALL" />
+                <BeatList query="ALL" limit="10" />
                 <Box display="flex" justifyContent="center" mt={10}>
                     <Button as={Link} to="/beats" colorScheme="blue">BROWSE ALL</Button>
                 </Box>
