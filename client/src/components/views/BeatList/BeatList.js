@@ -24,7 +24,6 @@ import {
 } from "@chakra-ui/react";
 import {FaHashtag, FaShoppingCart} from 'react-icons/fa';
 import {IoMdDownload} from 'react-icons/io';
-import {set} from 'mongoose';
 
 const ListHeading = ({children, displayBreakpoints}) => (
     <Box w="100%" h="10" display={displayBreakpoints}>
