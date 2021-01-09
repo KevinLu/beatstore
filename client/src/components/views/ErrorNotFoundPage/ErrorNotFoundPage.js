@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, Text, Flex } from "@chakra-ui/core";
+import { Heading, Text, Flex } from "@chakra-ui/react";
 
 function ErrorNotFoundPage() {
     return (

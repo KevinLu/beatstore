@@ -1,10 +1,15 @@
 import React from 'react';
-import { Box, CircularProgress } from '@chakra-ui/core';
+import {Box, Spinner} from '@chakra-ui/react';
 
-function LoadingView(props) {
+function LoadingView() {
     return (
         <Box display="flex" justifyContent="center" mt={10}>
-            <CircularProgress isIndeterminate={props.isLoading} color="blue" />
+            <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl" />
         </Box>
     );
 }

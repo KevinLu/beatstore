@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, List, ListItem, Stack} from "@chakra-ui/core";
+import {Box, List, ListItem, Stack} from "@chakra-ui/react";
 
 function LicenseText(props) {
     return (

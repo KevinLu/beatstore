@@ -16,9 +16,10 @@ import CartPage from "./views/CartPage/CartPage";
 import BeatPage from "./views/BeatPage/BeatPage";
 import BeatPlayer from "./views/BeatPlayer/BeatPlayer";
 import DownloadPage from "./views/DownloadPage/DownloadPage";
+import SearchResultsPage from './views/SearchResultsPage/SearchResultsPage';
 import ErrorNotFoundPage from "./views/ErrorNotFoundPage/ErrorNotFoundPage";
 import { AudioContextProvider } from "./utils/AudioContext";
-import { ThemeProvider, CSSReset } from "@chakra-ui/core";
+import { ChakraProvider, CSSReset } from "@chakra-ui/react";
 
 // Auth(SpecificComponent, option, adminRoute)
 // option:
@@ -53,14 +54,14 @@ function App() {
 
   if (!window.localStorage.getItem("cartId")) {
     newCart();
-    createIndex();
+    //createIndex();
   } else {
     getCartInfo(window.localStorage.getItem("cartId"));
-    createIndex();
+    //createIndex();
   }
 
   return (
-    <ThemeProvider>
+    <ChakraProvider>
       <CSSReset />
       <Suspense fallback={(<div>Loading...</div>)}>
        <AudioContextProvider>
@@ -74,6 +75,7 @@ function App() {
             <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
             <Route exact path="/orders" component={Auth(OrdersPage, LOGGED_IN_ONLY, false)} />
             <Route exact path="/download" component={Auth(DownloadPage, PUBLIC_PAGE, false)} />
+            <Route exact path="/beats" component={Auth(SearchResultsPage, PUBLIC_PAGE, false)} />
             <Route component={Auth(ErrorNotFoundPage, PUBLIC_PAGE, false)} />
           </Switch>
         </NavBar>
@@ -81,7 +83,7 @@ function App() {
         <BeatPlayer />
        </AudioContextProvider>
       </Suspense>
-    </ThemeProvider>
+    </ChakraProvider>
   );
 }
 

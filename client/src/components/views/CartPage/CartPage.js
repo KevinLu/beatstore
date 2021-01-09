@@ -11,7 +11,7 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import LoadingView from "../../utils/LoadingView";
 import LicenseText from "../../utils/LicenseText";
 import {Link} from "react-router-dom";
@@ -46,7 +46,7 @@ const EmptyCartView = () => (
     <div>
         <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
             <Heading fontSize="3xl">Your cart is empty</Heading>
-            <Button variantColor="blue" mt={5}>
+            <Button colorScheme="blue" mt={5}>
                 <Link to="/">
                     BROWSE BEATS
                 </Link>
@@ -143,7 +143,7 @@ function CartPage() {
 
     const CartView = () => {
         if (IsLoading) {
-            return <LoadingView isLoading={IsLoading} />
+            return <LoadingView />
         } else if (cart.cart.array.length === 0) {
             return <EmptyCartView />
         } else if (PaidFor) {
@@ -170,7 +170,7 @@ function CartPage() {
                             <Text color="blue.900" fontSize="2xl" fontWeight="700">${GrossAmount - 0}</Text>
                         </Box>
                         <Divider />
-                        <Button variantColor="blue" width="100%" onClick={stripeOnClick} size="lg">Pay ${GrossAmount}</Button>
+                        <Button colorScheme="blue" width="100%" onClick={stripeOnClick} size="lg">Pay ${GrossAmount}</Button>
                     </Box>
                 </Grid>
             );
@@ -223,7 +223,7 @@ function CartPage() {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button variantColor="blue" mr={3} onClick={onClose}>
+                        <Button colorScheme="blue" mr={3} onClick={onClose}>
                             CLOSE
                         </Button>
                     </ModalFooter>

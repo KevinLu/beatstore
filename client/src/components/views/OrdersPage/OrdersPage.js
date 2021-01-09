@@ -24,10 +24,11 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import LoadingView from '../../utils/LoadingView';
 import LicenseText from "../../utils/LicenseText";
+import {FiChevronDown} from "react-icons/fi";
 
 function OrdersPage(props) {
     const [IsLoading, setIsLoading] = useState(true);
@@ -127,7 +128,7 @@ function OrdersPage(props) {
                                 <Link to={"/beat/" + product.url}>
                                     <Image
                                         borderRadius="3px"
-                                        size={{base: "60px", lg: "80px"}}
+                                        boxSize={{base: "60px", lg: "80px"}}
                                         src={product.image}
                                         fallbackSrc="https://via.placeholder.com/80"
                                         cursor="pointer"
@@ -141,7 +142,7 @@ function OrdersPage(props) {
                                 </Stack>
                                 <Box ml="auto">
                                     <Menu>
-                                        <MenuButton as={Button} rightIcon="chevron-down">
+                                        <MenuButton as={Button} rightIcon={<FiChevronDown />}>
                                             Actions
                                         </MenuButton>
                                         <MenuList>
@@ -170,7 +171,7 @@ function OrdersPage(props) {
                         {Orders.length > 0 ?
                             renderOrderItems
                             : IsLoading ?
-                                <LoadingView isLoading={IsLoading} />
+                                <LoadingView />
                                 :
                                 <Text fontSize="lg">No orders found! Check out more beats
                                     <Link to="/">
@@ -190,7 +191,7 @@ function OrdersPage(props) {
                         </ModalBody>
 
                         <ModalFooter>
-                            <Button variantColor="blue" mr={3} onClick={onClose}>
+                            <Button colorScheme="blue" mr={3} onClick={onClose}>
                                 CLOSE
                             </Button>
                         </ModalFooter>

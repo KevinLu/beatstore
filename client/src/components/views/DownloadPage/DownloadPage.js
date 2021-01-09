@@ -11,7 +11,7 @@ import {
     Button,
     Stack,
     useToast
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Axios from 'axios';
@@ -78,7 +78,7 @@ function DownloadPage() {
         if (IsLoading) {
             return (
                 <Box margin="40vh auto">
-                    <LoadingView isLoading={IsLoading} />
+                    <LoadingView />
                     <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
                         <div>
                             Download not working? Contact me at&nbsp;
@@ -104,7 +104,7 @@ function DownloadPage() {
                                 <Box border="1px solid #CBD5E0" rounded="md" p="1.5em">
                                     <Image rounded="md" src={item.artwork[0]} fallbackSrc="https://via.placeholder.com/300" width="300px" />
                                     <Flex align="baseline" mt={2}>
-                                        <Badge variantColor="blue">PREMIUM</Badge>
+                                        <Badge colorScheme="blue">PREMIUM</Badge>
                                         <Text
                                             ml={2}
                                             textTransform="uppercase"
@@ -120,7 +120,7 @@ function DownloadPage() {
                                             {item.title}
                                         </Text>
                                         <Text>{item.description}</Text>
-                                        <Button as="a" href={Items.downloadLinks[index]} mt={2} leftIcon="download" variantColor="blue" variant="solid">
+                                        <Button as="a" href={Items.downloadLinks[index]} mt={2} leftIcon="download" colorScheme="blue" variant="solid">
                                             Download
                                         </Button>
                                     </Stack>
