@@ -143,7 +143,7 @@ function CartPage() {
 
     const CartView = () => {
         if (IsLoading) {
-            return <LoadingView isLoading={IsLoading} />
+            return <LoadingView />
         } else if (cart.cart.array.length === 0) {
             return <EmptyCartView />
         } else if (PaidFor) {

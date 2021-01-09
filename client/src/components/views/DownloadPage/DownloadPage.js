@@ -78,7 +78,7 @@ function DownloadPage() {
         if (IsLoading) {
             return (
                 <Box margin="40vh auto">
-                    <LoadingView isLoading={IsLoading} />
+                    <LoadingView />
                     <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
                         <div>
                             Download not working? Contact me at&nbsp;

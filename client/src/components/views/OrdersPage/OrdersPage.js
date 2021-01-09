@@ -171,7 +171,7 @@ function OrdersPage(props) {
                         {Orders.length > 0 ?
                             renderOrderItems
                             : IsLoading ?
-                                <LoadingView isLoading={IsLoading} />
+                                <LoadingView />
                                 :
                                 <Text fontSize="lg">No orders found! Check out more beats
                                     <Link to="/">

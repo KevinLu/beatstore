@@ -24,6 +24,7 @@ import {
 } from "@chakra-ui/react";
 import {FaHashtag, FaShoppingCart} from 'react-icons/fa';
 import {IoMdDownload} from 'react-icons/io';
+import {set} from 'mongoose';
 
 const ListHeading = ({children, displayBreakpoints}) => (
     <Box w="100%" h="10" display={displayBreakpoints}>
@@ -44,72 +45,88 @@ const secondsToTime = (e) => {
     return m + ':' + s;
 }
 
-let beatsOnScreen = 10;
+const SHOW_INCRMENT = 10;
 let listLength = 0;
+let beatsList = [];
+let firstLoad = true;
+let noMoreBeats = false;
 
 function BeatList(props) {
     const [List, setList] = useState([]);
-    const [BeatsShown, setBeatsShown] = useState(10);
     const [IsLoading, setIsLoading] = useState(true);
+    const [IsLoadingMore, setIsLoadingMore] = useState(false);
     const location = useLocation();
     const toast = useToast();
     const show = props.show;
     const playlist = props.playlist;
 
+    const getBeats = (amount, query) => {
+        setIsLoadingMore(true);
+        let variables = {
+            skip: listLength,
+            limit: amount,
+            searchTerm: query === "ALL" ? "" : query
+        };
+        Axios.post('/api/beat/getBeats', variables)
+            .then(response => {
+                if (response.data.success) {
+                    setIsLoadingMore(false);
+                    if (response.data.count === 0) {
+                        window.removeEventListener('scroll', loadMore);
+                        noMoreBeats = true;
+                    }
+                    let newPlaylist = [];
+                    response.data.beats.forEach((beat, index) => {
+                        newPlaylist[index] = {
+                            _id: beat._id,
+                            title: beat.title,
+                            tags: beat.tags,
+                            producer: beat.producer.username,
+                            price: beat.price,
+                            url: beat.url,
+                            image: beat.artwork[0],
+                            audio: beat.previewAudio[0],
+                            length: beat.length,
+                            bpm: beat.bpm,
+                            isPlaying: false,
+                            isPaused: false,
+                            index: index
+                        };
+                    });
+                    listLength = listLength + newPlaylist.length;
+                    beatsList = [...beatsList, ...newPlaylist];
+                    setList(beatsList);
+                    setIsLoading(false);
+                }
+            });
+    }
+
     const loadMore = () => {
-        if (window.innerHeight + document.documentElement.scrollTop === document.scrollingElement.scrollHeight) {
-            if (listLength > beatsOnScreen) {
-                setBeatsShown(beatsOnScreen + 10);
-                beatsOnScreen = beatsOnScreen + 10;
+        if (firstLoad) {
+            firstLoad = false;
+        } else {
+            // console.log("window.innerHeight", window.innerHeight);
+            // console.log("document.documentElement.scrollTop", document.documentElement.scrollTop);
+            // console.log("document.scrollingElement.scrollHeight", document.scrollingElement.scrollHeight);
+            if (window.innerHeight + document.documentElement.scrollTop === document.scrollingElement.scrollHeight) {
+                getBeats(SHOW_INCRMENT, props.query);
             }
         }
     }
 
     useEffect(() => {
+        if (props.query) {
+            getBeats(props.limit, props.query);
+        }
         // Enable infinite scroll if on search results page
         if (location.pathname === "/beats") {
             window.addEventListener('scroll', loadMore);
         }
-        let isMounted = true;
-        if (props.query) {
-            let variables = {
-                skip: 0,
-                limit: props.limit ? props.limit : 100,
-                searchTerm: props.query === "ALL" ? "" : props.query
-            };
-            Axios.post('/api/beat/getBeats', variables)
-                .then(response => {
-                    if (response.data.success) {
-                        let newPlaylist = [];
-                        response.data.beats.forEach((beat, index) => {
-                            newPlaylist[index] = {
-                                _id: beat._id,
-                                title: beat.title,
-                                tags: beat.tags,
-                                producer: beat.producer.username,
-                                price: beat.price,
-                                url: beat.url,
-                                image: beat.artwork[0],
-                                audio: beat.previewAudio[0],
-                                length: beat.length,
-                                bpm: beat.bpm,
-                                isPlaying: false,
-                                isPaused: false,
-                                index: index
-                            };
-                        });
-                        if (isMounted) {
-                            listLength = newPlaylist.length;
-                            setList(newPlaylist);
-                            setIsLoading(false);
-                        }
-                    }
-                });
-        }
         return () => {
-            isMounted = false;
-            beatsOnScreen = 10;
+            firstLoad = true;
+            noMoreBeats = false;
             listLength = 0;
+            beatsList = [];
             window.removeEventListener('scroll', loadMore);
         };
     }, [props.query]);
@@ -165,61 +182,21 @@ function BeatList(props) {
         });
     }
 
-    // Render the beats in a list
-    const renderListItems = List.slice(0, BeatsShown).map((beat, index) => {
-        return (
-            <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
-                    <Fade in={!IsLoading} unmountOnExit={true}>
-                        <Image
-                            borderRadius="3px"
-                            boxSize="44px"
-                            src={beat.image}
-                            fallbackSrc="https://via.placeholder.com/44"
-                            cursor="pointer"
-                            onClick={() => playAudio(index)} />
-                    </Fade>
-
-                    <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
-
-                    <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{secondsToTime(beat.length)}</ListText>
-
-                    <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{beat.bpm}</ListText>
-
-                    <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mt="0.45em">
-                        {beat.tags.map((tag, i) => (
-                            <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} colorScheme="blue">
-                                <TagLeftIcon as={FaHashtag} boxSize="13px" />
-                                <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
-                            </Tag>
-                        ))}
-                    </Stack>
-
-                    <ButtonGroup spacing={2} ml="auto">
-                        <IconButton
-                            variant="outline"
-                            colorScheme="blue"
-                            aria-label="Free download"
-                            icon={<IoMdDownload />}
-                        />
-
-                        <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
-                            ${beat.price}
-                        </Button>
-                    </ButtonGroup>
-
-                </Grid>
-                {index !== (List.length - 1) ? // adds divider between list items
-                    <Divider mb={2} /> :
-                    <></>
-                }
+    const EmptyState = () => (
+        <Box m="5em 1em 5em 1em" display="flex" justifyContent="center">
+            <Box maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
+                <Heading>No beats found.</Heading>
             </Box>
-        );
-    });
+        </Box>
+    );
 
-    const PageContents = () => {
+    if (IsLoading) {
+        return <LoadingView />;
+    } else if (List.length === 0) {
+        return <EmptyState />;
+    } else {
         return (
-            <Box>
+            <>
                 <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
                     <div></div>
                     <ListHeading displayBreakpoints={{base: "none", md: "initial"}}>TITLE</ListHeading>
@@ -228,27 +205,58 @@ function BeatList(props) {
                     <ListHeading displayBreakpoints={{base: "none", md: "initial"}}>TAGS</ListHeading>
                     <div></div>
                 </Grid>
-                {renderListItems}
-            </Box>
-        );
-    }
+                {List.map((beat, index) => (
+                    <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
+                        <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
+                            <Fade in={!IsLoading} unmountOnExit={true}>
+                                <Image
+                                    borderRadius="3px"
+                                    boxSize="44px"
+                                    src={beat.image}
+                                    fallbackSrc="https://via.placeholder.com/44"
+                                    cursor="pointer"
+                                    onClick={() => playAudio(index)} />
+                            </Fade>
 
-    const EmptyState = () => {
-        return (
-            <Box m="5em 1em 5em 1em" display="flex" justifyContent="center">
-                <Box maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                    <Heading>No beats found.</Heading>
-                </Box>
-            </Box>
-        );
-    }
+                            <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
-    if (IsLoading) {
-        return <LoadingView />;
-    } else if (List.length === 0) {
-        return <EmptyState />;
-    } else {
-        return <PageContents />;
+                            <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{secondsToTime(beat.length)}</ListText>
+
+                            <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{beat.bpm}</ListText>
+
+                            <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mt="0.45em">
+                                {beat.tags.map((tag, i) => (
+                                    <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} colorScheme="blue">
+                                        <TagLeftIcon as={FaHashtag} boxSize="13px" />
+                                        <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                    </Tag>
+                                ))}
+                            </Stack>
+
+                            <ButtonGroup spacing={2} ml="auto">
+                                <IconButton
+                                    variant="outline"
+                                    colorScheme="blue"
+                                    aria-label="Free download"
+                                    icon={<IoMdDownload />}
+                                />
+
+                                <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
+                                    ${beat.price}
+                                </Button>
+                            </ButtonGroup>
+
+                        </Grid>
+                        {index !== (List.length - 1) ? // adds divider between list items
+                            <Divider mb={2} /> :
+                            <></>
+                        }
+                    </Box>
+                ))}
+                {IsLoadingMore ? <LoadingView /> : <></>}
+                {noMoreBeats ? <Text textAlign="center" fontSize="xl" mt={4}>No more beats.</Text> : <></>}
+            </>
+        );
     }
 }
 
