@@ -12,7 +12,7 @@ const initialState = {
     playlist: []
 }
 
-export default function (state = initialState, action) {
+const playlistReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_INDEX:
             return {...state, index: action.payload};
@@ -21,8 +21,10 @@ export default function (state = initialState, action) {
         case SET_PLAYLIST:
             return {...state, playlist: action.payload};
         case SET_PAUSED:
-                return {...state, paused: action.payload};
+            return {...state, paused: action.payload};
         default:
             return state;
     }
 }
+
+export default playlistReducer;

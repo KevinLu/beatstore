@@ -17,14 +17,14 @@ const initialState = {
     cartDetail: []
 }
 
-export default function (state = initialState, action) {
+const cartReducer = (state = initialState, action) => {
     switch (action.type) {
         case CREATE_CART:
             return state;
         case GET_CART:
-            return { success: true, cart: action.payload.cart, cartDetail: [] }
+            return {success: true, cart: action.payload.cart, cartDetail: []}
         case ADD_TO_CART:
-            return { ...state, cart: action.payload }
+            return {...state, cart: action.payload}
         case GET_ITEMS_INFO_CART:
             return {
                 ...state, cartDetail: action.payload
@@ -43,7 +43,7 @@ export default function (state = initialState, action) {
             } else {
                 return {
                     ...state,
-                    cart: { ...state.cart, array: action.payload.cart },
+                    cart: {...state.cart, array: action.payload.cart},
                     cartDetail: action.payload.cartDetail
                 }
             }
@@ -62,7 +62,7 @@ export default function (state = initialState, action) {
             } else {
                 return {
                     ...state,
-                    cart: { ...state.cart, array: action.payload.cart },
+                    cart: {...state.cart, array: action.payload.cart},
                     cartDetail: action.payload.cartDetail
                 }
             }
@@ -70,3 +70,5 @@ export default function (state = initialState, action) {
             return state;
     }
 }
+
+export default cartReducer;
