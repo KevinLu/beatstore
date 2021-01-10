@@ -3,14 +3,14 @@ import {Avatar, Button, MenuButton} from "@chakra-ui/react";
 import {Link} from 'react-router-dom';
 
 const UserIcon = (props) => {
-    const {isLoaded, userData} = props;
+    const {isLoaded, isAuth, isAdmin, image} = props;
 
     if (!isLoaded) {
         return null;
-    } else if (userData.isAuth || userData.role === 1) { // all logged in users have this (including admin)
+    } else if (isAuth || isAdmin) { // all logged in users have this (including admin)
         return (
             <MenuButton display="flex" alignItems="center">
-                <Avatar size="sm" src={userData.image} />
+                <Avatar size="sm" src={image} />
             </MenuButton>
         );
     } else {

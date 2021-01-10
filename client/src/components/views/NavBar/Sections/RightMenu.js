@@ -17,8 +17,15 @@ function RightMenu(props) {
 					<Badge ml="1" colorScheme="green" height="1.6em">{cartLength}</Badge> : null}
 			</Box>
 			<Menu isLazy>
-				<UserIcon isLoaded={userDataIsLoaded} userData={userData} />
-				<UserMenu isAuth={userData.isAuth} isAdmin={userData.role === 1} username={userData.username} />
+				<UserIcon
+					isLoaded={userDataIsLoaded}
+					isAuth={userData.isAuth}
+					isAdmin={userData.role === 1}
+					image={userData.image} />
+				<UserMenu
+					isAuth={userData.isAuth}
+					isAdmin={userData.role === 1}
+					username={userData.username} />
 			</Menu>
 		</Flex>
 	);
