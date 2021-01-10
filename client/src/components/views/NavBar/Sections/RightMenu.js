@@ -1,82 +1,13 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import {
-	Box,
-	Badge,
-	Menu,
-	Flex,
-	MenuList,
-	MenuItem,
-	MenuGroup,
-	MenuDivider
-} from "@chakra-ui/react";
-import axios from 'axios';
-import {USER_SERVER} from '../../../Config';
+import {Box, Badge, Menu, Flex} from "@chakra-ui/react";
 import {withRouter, Link} from 'react-router-dom';
 import {connect} from "react-redux";
 import {FaShoppingCart} from "react-icons/fa";
 import UserIcon from './UserIcon';
-
-function delete_cookie(name) {
-	document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
+import UserMenu from './UserMenu';
 
 function RightMenu(props) {
 	const {userDataIsLoaded, userData, cartIsLoaded, cartLength} = props;
-
-	const logoutHandler = () => {
-		axios.get(`${USER_SERVER}/logout`).then(response => {
-			if (response.data.success) {
-				delete_cookie("w_auth");
-				window.location.reload();
-			}
-		});
-	};
-
-	const UserMenu = () => {
-		if (userData.role === 1) {
-			return (
-				<Box zIndex="3">
-					<MenuList>
-						<MenuGroup color="black" title={userData.username}>
-							<MenuItem color="black">My account</MenuItem>
-							<Link to="/orders">
-								<MenuItem color="black">Orders</MenuItem>
-							</Link>
-						</MenuGroup>
-						<MenuDivider />
-						<MenuGroup color="black" title="Admin">
-							<MenuItem color="black">Dashboard</MenuItem>
-							<Link to="/upload">
-								<MenuItem color="black">Upload</MenuItem>
-							</Link>
-						</MenuGroup>
-						<MenuDivider />
-						<Link onClick={logoutHandler} to="/login">
-							<MenuItem color="black">Logout</MenuItem>
-						</Link>
-					</MenuList>
-				</Box>
-			);
-		} else if (userData.isAuth) {
-			return (
-				<Box zIndex="3">
-					<MenuList>
-						<MenuItem color="black">My account</MenuItem>
-						<Link to="/orders">
-							<MenuItem color="black">Orders</MenuItem>
-						</Link>
-						<MenuDivider />
-						<Link onClick={logoutHandler} to="/login">
-							<MenuItem color="black">Logout</MenuItem>
-						</Link>
-					</MenuList>
-				</Box>
-			);
-		} else {
-			return (<div></div>);
-		}
-	};
 
 	return (
 		<Flex alignItems="center">
@@ -85,9 +16,9 @@ function RightMenu(props) {
 				{cartIsLoaded ?
 					<Badge ml="1" colorScheme="green" height="1.6em">{cartLength}</Badge> : null}
 			</Box>
-			<Menu>
+			<Menu isLazy>
 				<UserIcon isLoaded={userDataIsLoaded} userData={userData} />
-				<UserMenu />
+				<UserMenu isAuth={userData.isAuth} isAdmin={userData.role === 1} username={userData.username} />
 			</Menu>
 		</Flex>
 	);
