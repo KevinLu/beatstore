@@ -10,19 +10,20 @@ const initialState = {
         isAuth: false,
         role: 0,
         error: true
-    }
+    },
+    isLoaded: false
 }
 
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case REGISTER_USER:
-            return {...state, register: action.payload};
+            return {...state, register: action.payload, isLoaded: true};
         case LOGIN_USER:
-            return {...state, loginSucces: action.payload};
+            return {...state, loginSucces: action.payload, isLoaded: true};
         case AUTH_USER:
-            return {...state, userData: action.payload};
+            return {...state, userData: action.payload, isLoaded: true};
         case LOGOUT_USER:
-            return {...state, userData: state};
+            return {...state, userData: state, isLoaded: true};
         default:
             return state;
     }
