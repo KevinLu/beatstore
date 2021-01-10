@@ -276,7 +276,7 @@ function UploadBeatPage(props) {
             </Box>
         </Box>);
     } else {
-        return (<></>);
+        return null;
     }
 }
 

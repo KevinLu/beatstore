@@ -247,13 +247,12 @@ function BeatList(props) {
 
                         </Grid>
                         {index !== (List.length - 1) ? // adds divider between list items
-                            <Divider mb={2} /> :
-                            <></>
+                            <Divider mb={2} /> : null
                         }
                     </Box>
                 ))}
-                {IsLoadingMore ? <LoadingView /> : <></>}
-                {noMoreBeats ? <Text textAlign="center" fontSize="xl" mt={4}>No more beats.</Text> : <></>}
+                {IsLoadingMore ? <LoadingView /> : null}
+                {noMoreBeats ? <Text textAlign="center" fontSize="xl" mt={4}>No more beats.</Text> : null}
             </>
         );
     }

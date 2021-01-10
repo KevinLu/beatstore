@@ -83,7 +83,7 @@ function RightMenu(props) {
 			<Box fontWeight="600" fontSize="lg" mr={6} display="flex">
 				<Link to="/cart"><Box as={FaShoppingCart} /></Link>
 				{cartIsLoaded ?
-					<Badge ml="1" colorScheme="green" height="1.6em">{cartLength}</Badge> : <></>}
+					<Badge ml="1" colorScheme="green" height="1.6em">{cartLength}</Badge> : null}
 			</Box>
 			<Menu>
 				<UserIcon isLoaded={userDataIsLoaded} userData={userData} />

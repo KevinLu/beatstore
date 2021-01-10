@@ -200,7 +200,7 @@ function OrdersPage(props) {
             </div>
         );
     } else {
-        return (<></>);
+        return null;
     }
 }
 

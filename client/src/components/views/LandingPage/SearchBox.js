@@ -176,12 +176,10 @@ function SearchBox(props) {
                                         <Text fontSize="md" fontWeight="600" color="black">Explore all {Beats.length} beats...</Text>
                                     </ListItem>
                                 </SearchResult>
-                            </Link> :
-                            <></>
+                            </Link> : null
                         }
                     </List>
-                </SlideFade> :
-                <></>
+                </SlideFade> : null
             }
         </div>
     )
