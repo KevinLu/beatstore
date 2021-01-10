@@ -51,13 +51,12 @@ let firstLoad = true;
 let noMoreBeats = false;
 
 function BeatList(props) {
+    const {cart, show, playlist} = props;
     const [List, setList] = useState([]);
     const [IsLoading, setIsLoading] = useState(true);
     const [IsLoadingMore, setIsLoadingMore] = useState(false);
     const location = useLocation();
     const toast = useToast();
-    const show = props.show;
-    const playlist = props.playlist;
 
     const getBeats = (amount, query) => {
         setIsLoadingMore(true);
@@ -189,6 +188,15 @@ function BeatList(props) {
         </Box>
     );
 
+    const isBeatInCart = (beatId) => {
+        for (let i = 0; i < cart.length; i++) {
+            if (cart[i].id === beatId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     if (IsLoading) {
         return <LoadingView />;
     } else if (List.length === 0) {
@@ -204,53 +212,61 @@ function BeatList(props) {
                     <ListHeading displayBreakpoints={{base: "none", md: "initial"}}>TAGS</ListHeading>
                     <div></div>
                 </Grid>
-                {List.map((beat, index) => (
-                    <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
-                        <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
-                            <Fade in={!IsLoading} unmountOnExit={true}>
-                                <Image
-                                    borderRadius="3px"
-                                    boxSize="44px"
-                                    src={beat.image}
-                                    fallbackSrc="https://via.placeholder.com/44"
-                                    cursor="pointer"
-                                    onClick={() => playAudio(index)} />
-                            </Fade>
+                {List.map((beat, index) => {
+                    const isInCart = isBeatInCart(beat._id);
+                    return (
+                        <Box key={index} maxWidth={["480px", "768px", "992px", "1166px"]} margin="auto">
+                            <Grid templateColumns={{base: "1fr 3fr 4fr", md: "1fr 4fr 6fr 4fr", lg: "1fr 5fr 1fr 1fr 5fr 3fr"}} gap={6}>
+                                <Fade in={!IsLoading} unmountOnExit={true}>
+                                    <Image
+                                        borderRadius="3px"
+                                        boxSize="44px"
+                                        src={beat.image}
+                                        fallbackSrc="https://via.placeholder.com/44"
+                                        cursor="pointer"
+                                        onClick={() => playAudio(index)} />
+                                </Fade>
 
-                            <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
+                                <ListText><Link to={`/beat/${beat.url}`}>{beat.title}</Link></ListText>
 
-                            <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{secondsToTime(beat.length)}</ListText>
+                                <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{secondsToTime(beat.length)}</ListText>
 
-                            <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{beat.bpm}</ListText>
+                                <ListText displayBreakpoints={{base: "none", lg: "initial"}}>{beat.bpm}</ListText>
 
-                            <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mt="0.45em">
-                                {beat.tags.map((tag, i) => (
-                                    <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} colorScheme="blue">
-                                        <TagLeftIcon as={FaHashtag} boxSize="13px" />
-                                        <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
-                                    </Tag>
-                                ))}
-                            </Stack>
+                                <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mt="0.45em">
+                                    {beat.tags.map((tag, i) => (
+                                        <Tag as={Link} to={`/beats?search_keyword=${tag}`} size="md" key={i} colorScheme="blue">
+                                            <TagLeftIcon as={FaHashtag} boxSize="13px" />
+                                            <TagLabel lineHeight="2em" mt="-0.1em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                        </Tag>
+                                    ))}
+                                </Stack>
 
-                            <ButtonGroup spacing={2} ml="auto">
-                                <IconButton
-                                    variant="outline"
-                                    colorScheme="blue"
-                                    aria-label="Free download"
-                                    icon={<IoMdDownload />}
-                                />
+                                <ButtonGroup spacing={2} ml="auto">
+                                    <IconButton
+                                        variant="outline"
+                                        colorScheme="blue"
+                                        aria-label="Free download"
+                                        icon={<IoMdDownload />}
+                                    />
 
-                                <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(beat._id)}>
-                                    ${beat.price}
-                                </Button>
-                            </ButtonGroup>
+                                    <Button
+                                        leftIcon={isInCart ? null : <FaShoppingCart />}
+                                        colorScheme="blue"
+                                        style={{background: isInCart ? "#63b3ed" : null}}
+                                        variant="solid"
+                                        onClick={() => addToCartHandler(beat._id)}>
+                                        {isInCart ? "IN CART" : `$${beat.price}`}
+                                    </Button>
+                                </ButtonGroup>
 
-                        </Grid>
-                        {index !== (List.length - 1) ? // adds divider between list items
-                            <Divider mb={2} /> : null
-                        }
-                    </Box>
-                ))}
+                            </Grid>
+                            {index !== (List.length - 1) ? // adds divider between list items
+                                <Divider mb={2} /> : null
+                            }
+                        </Box>
+                    );
+                })}
                 {IsLoadingMore ? <LoadingView /> : null}
                 {noMoreBeats ? <Text textAlign="center" fontSize="xl" mt={4}>No more beats.</Text> : null}
             </>
@@ -260,6 +276,7 @@ function BeatList(props) {
 
 const mapStateToProps = (state) => {
     return {
+        cart: state.cart.cart.array,
         show: state.playlist.show,
         playlist: state.playlist.playlist
     }

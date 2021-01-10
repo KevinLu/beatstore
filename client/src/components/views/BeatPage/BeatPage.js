@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, connect} from 'react-redux';
 import Axios from 'axios';
 import {withRouter, Link} from 'react-router-dom';
 import {addToCart} from '../../../_actions/cart_actions';
@@ -9,6 +9,7 @@ import {MdDateRange, MdMusicNote} from 'react-icons/md';
 import {IoMdDownload} from 'react-icons/io';
 
 function BeatPage(props) {
+    const {cartLoaded, cart} = props;
     const beatUrl = props.match.params.beatUrl;
     const [Beat, setBeat] = useState({
         "bpm": 0,
@@ -36,21 +37,34 @@ function BeatPage(props) {
         "__v": 0
     });
     const [BeatLoaded, setBeatLoaded] = useState(false);
+    const [IsInCart, setIsInCart] = useState(false);
     const dispatch = useDispatch();
     const toast = useToast();
     const dateOptions = {year: 'numeric', month: 'long', day: 'numeric'};
 
+    const isBeatInCart = (beatId) => {
+        for (let i = 0; i < cart.length; i++) {
+            if (cart[i].id === beatId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     useEffect(() => {
-        Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
-            .then(response => {
-                if (response.data.length !== 0) { // no beats found
-                    setBeat(response.data[0]); // only set 1 beat
-                    setBeatLoaded(true);
-                } else {
-                    props.history.push("../404");
-                }
-            });
-    }, []);
+        if (cartLoaded) {
+            Axios.get(`/api/beat/beats_by_url?url=${beatUrl}&type=single`)
+                .then(response => {
+                    if (response.data.length !== 0) { // beats are found
+                        setIsInCart(isBeatInCart(response.data[0]._id));
+                        setBeat(response.data[0]); // only set 1 beat
+                        setBeatLoaded(true);
+                    } else {
+                        props.history.push("../404");
+                    }
+                });
+        }
+    }, [cartLoaded]);
 
     const addToCartHandler = (beatId) => {
         dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
@@ -61,6 +75,7 @@ function BeatPage(props) {
             duration: 2000,
             isClosable: true,
         });
+        setIsInCart(true);
     }
 
     return (
@@ -106,8 +121,13 @@ function BeatPage(props) {
 
                     <ButtonGroup spacing={2} margin={{base: "1em auto 0 auto", lg: "1em 0 0 2em"}} display="flex" justifyContent={{base: "center", lg: "left"}}>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
-                            <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(Beat._id)}>
-                                ${Beat.price}
+                            <Button
+                                leftIcon={IsInCart ? null : <FaShoppingCart />}
+                                colorScheme="blue"
+                                style={{background: IsInCart ? "#63b3ed" : null}}
+                                variant="solid"
+                                onClick={() => addToCartHandler(Beat._id)}>
+                                {IsInCart ? "IN CART" : `$${Beat.price}`}
                             </Button>
                         </Skeleton>
                         <Skeleton isLoaded={BeatLoaded} display="inline-block">
@@ -130,4 +150,11 @@ function BeatPage(props) {
     );
 }
 
-export default withRouter(BeatPage)
+const mapStateToProps = (state) => {
+    return {
+        cartLoaded: state.cart.success,
+        cart: state.cart.cart.array
+    }
+}
+
+export default withRouter(connect(mapStateToProps)(BeatPage))
