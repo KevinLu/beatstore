@@ -3,7 +3,6 @@ import {
     Box,
     Flex,
     Grid,
-    GridItem,
     Text,
     FormControl,
     FormLabel,
@@ -15,14 +14,15 @@ import {
     useToast
 } from "@chakra-ui/react";
 import FileUpload from '../../utils/FileUpload';
-import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
-import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
+import Tags from "@yaireo/tagify/dist/react.tagify"; // React-wrapper file
+import "@yaireo/tagify/dist/tagify.css"; // Tagify CSS
 import Axios from 'axios';
 import {MdMusicNote, MdImage} from 'react-icons/md';
 import {FiSliders} from 'react-icons/fi';
 import {FaMusic} from 'react-icons/fa';
 
 function UploadBeatPage(props) {
+    const [IsUploading, setIsUploading] = useState(false);
 
     const [field, setField] = useState({
         title: "",
@@ -37,32 +37,13 @@ function UploadBeatPage(props) {
         setField(prevField => ({
             ...prevField,
             [name]: value
-        }))
+        }));
     }
 
-    const [PreviewAudio, setPreviewAudio] = useState([])
-
-    const updatePreviewAudio = (newPreviewAudio) => {
-        setPreviewAudio(newPreviewAudio)
-    }
-
-    const [PurchaseAudio, setPurchaseAudio] = useState([])
-
-    const updatePurchaseAudio = (newPurchaseAudio) => {
-        setPurchaseAudio(newPurchaseAudio)
-    }
-
-    const [TrackStems, setTrackStems] = useState([])
-
-    const updateTrackStems = (newTrackStems) => {
-        setTrackStems(newTrackStems)
-    }
-
-    const [Artwork, setArtwork] = useState([])
-
-    const updateArtwork = (newArtwork) => {
-        setArtwork(newArtwork)
-    }
+    const [PreviewAudio, setPreviewAudio] = useState([]);
+    const [PurchaseAudio, setPurchaseAudio] = useState([]);
+    const [TrackStems, setTrackStems] = useState([]);
+    const [Artwork, setArtwork] = useState([]);
 
     // Tagify settings object
     const baseTagifySettings = {
@@ -71,14 +52,14 @@ function UploadBeatPage(props) {
         placeholder: "Tag this beat",
     }
 
-    const [BeatTags, setBeatTags] = useState([])
+    const [BeatTags, setBeatTags] = useState([]);
 
     const updateTags = (newBeatTags) => {
-        setBeatTags(newBeatTags)
+        setBeatTags(newBeatTags);
     }
 
     // array to keep track of all the tags on beat
-    var beattags = []
+    var beattags = [];
 
     const tagInvalidCallback = e => {
         toast({
@@ -88,17 +69,17 @@ function UploadBeatPage(props) {
             status: "error",
             duration: 1000,
             isClosable: true,
-        })
+        });
     }
 
     const tagAddCallback = e => {
         beattags[e.detail.index] = e.detail.data.value;
-        updateTags(beattags)
+        updateTags(beattags);
     }
 
     const tagRemoveCallback = e => {
-        beattags.splice(e.detail.index, 1)
-        updateTags(beattags)
+        beattags.splice(e.detail.index, 1);
+        updateTags(beattags);
     }
 
     // callbacks props
@@ -116,9 +97,13 @@ function UploadBeatPage(props) {
     const toast = useToast();
 
     const onSubmit = (event) => {
+        setIsUploading(true);
         event.preventDefault();
 
-        if (!field.title || !field.description || !field.price || !field.bpm || !field.date || !PreviewAudio || !Artwork || !PurchaseAudio) {
+        if (!field.title || !field.description || !field.price || !field.bpm ||
+            !field.date || PreviewAudio.length === 0 || Artwork.length === 0 ||
+            PurchaseAudio.length === 0) {
+            setIsUploading(false);
             return toast({
                 position: "bottom",
                 title: "Empty fields!",
@@ -153,6 +138,7 @@ function UploadBeatPage(props) {
 
             Axios.post('/api/beat/uploadBeat', variables)
                 .then(response => {
+                    setIsUploading(false);
                     if (response.data.success) {
                         toast({
                             position: "bottom",
@@ -161,8 +147,8 @@ function UploadBeatPage(props) {
                             status: "success",
                             duration: 3000,
                             isClosable: true,
-                        })
-                        props.history.push('/')
+                        });
+                        props.history.push('/');
                     } else {
                         toast({
                             position: "bottom",
@@ -171,7 +157,7 @@ function UploadBeatPage(props) {
                             status: "error",
                             duration: 9000,
                             isClosable: true,
-                        })
+                        });
                     }
                 });
         };
@@ -189,7 +175,14 @@ function UploadBeatPage(props) {
                                 <FormLabel>Beat Preview (tagged)</FormLabel>
                                 <Badge colorScheme="green">MP3/WAV</Badge>
                             </Flex>
-                            <FileUpload icon={MdMusicNote} public={true} accept="audio/mpeg, audio/wav" refreshFunction={updatePreviewAudio} />
+                            <FileUpload
+                                icon={MdMusicNote}
+                                public={true}
+                                accept="audio/mpeg, audio/wav"
+                                maxFiles={1}
+                                multiple={false}
+                                fileState={PreviewAudio}
+                                setFileState={setPreviewAudio} />
                         </FormControl>
 
                         <FormControl isRequired>
@@ -197,7 +190,14 @@ function UploadBeatPage(props) {
                                 <FormLabel>Beat for Purchase</FormLabel>
                                 <Badge colorScheme="green">MP3/WAV</Badge>
                             </Flex>
-                            <FileUpload icon={FaMusic} public={false} accept="audio/mpeg, audio/wav" refreshFunction={updatePurchaseAudio} />
+                            <FileUpload
+                                icon={FaMusic}
+                                public={false}
+                                accept="audio/mpeg, audio/wav"
+                                maxFiles={1}
+                                multiple={false}
+                                fileState={PurchaseAudio}
+                                setFileState={setPurchaseAudio} />
                         </FormControl>
 
                         <FormControl>
@@ -205,11 +205,16 @@ function UploadBeatPage(props) {
                                 <FormLabel>Track Stems</FormLabel>
                                 <Badge colorScheme="green">ZIP/RAR</Badge>
                             </Flex>
-                            <FileUpload icon={FiSliders} public={false}
+                            <FileUpload
+                                icon={FiSliders}
+                                public={false}
                                 accept=".rar, application/vnd.rar, application/x-rar-compressed,
                         application/octet-stream, application/zip,
                         application/x-zip-compressed, multipart/x-zip"
-                                refreshFunction={updateTrackStems} />
+                                maxFiles={1}
+                                multiple={false}
+                                fileState={TrackStems}
+                                setFileState={setTrackStems} />
                         </FormControl>
 
                         <FormControl isRequired>
@@ -217,7 +222,13 @@ function UploadBeatPage(props) {
                                 <FormLabel>Artwork</FormLabel>
                                 <Badge colorScheme="green">PNG/JPG/JPEG</Badge>
                             </Flex>
-                            <FileUpload icon={MdImage} public={true} accept="image/jpg, image/png, image/jpeg" refreshFunction={updateArtwork} />
+                            <FileUpload
+                                icon={MdImage}
+                                public={true}
+                                accept="image/jpg, image/png, image/jpeg"
+                                maxFiles={1}
+                                fileState={Artwork}
+                                setFileState={setArtwork} />
                         </FormControl>
                     </Grid>
 
@@ -253,7 +264,14 @@ function UploadBeatPage(props) {
                         settings={settings}
                     />
 
-                    <Button mt={5} colorScheme="blue" onClick={onSubmit}>Upload</Button>
+                    <Button
+                        mt={5}
+                        colorScheme="blue"
+                        isLoading={IsUploading}
+                        loadingText="Uploading"
+                        onClick={onSubmit}>
+                        Upload
+                    </Button>
                 </form>
             </Box>
         </Box>);
@@ -262,4 +280,4 @@ function UploadBeatPage(props) {
     }
 }
 
-export default UploadBeatPage
+export default UploadBeatPage;
