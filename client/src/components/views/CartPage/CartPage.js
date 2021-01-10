@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch, connect} from 'react-redux';
 import {getCartItems, removeFromCart} from '../../../_actions/cart_actions';
 import {
     Box, Grid, Text, Heading, Image, Button, CloseButton, ButtonGroup, Divider,
@@ -10,7 +10,8 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    useDisclosure
+    useDisclosure,
+    useToast
 } from "@chakra-ui/react";
 import LoadingView from "../../utils/LoadingView";
 import LicenseText from "../../utils/LicenseText";
@@ -55,15 +56,14 @@ const EmptyCartView = () => (
     </div>
 );
 
-function CartPage() {
+function CartPage(props) {
+    const {cartIsLoaded, cart, cartDetail} = props;
     const dispatch = useDispatch();
-    const cart = useSelector(state => state.cart);
-    const user = useSelector(state => state.user);
     const [IsLoading, setIsLoading] = useState(true);
     const [GrossAmount, setGrossAmount] = useState(0);
-    const [PaidFor, setPaidFor] = useState(false);
     const [LicenseDetails, setLicenseDetails] = useState({'producer': 'PRODUCER NAME', 'title': 'Beat Title', 'price': "price"});
     const {isOpen, onOpen, onClose} = useDisclosure();
+    const toast = useToast();
 
     const event = new Date(Date.now());
     const dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
@@ -71,22 +71,20 @@ function CartPage() {
     useEffect(() => {
         let cartItems = [];
         setIsLoading(true);
-        if (cart.cart && cart.cart.array) { // if userData exists
-            if (cart.cart.array.length > 0) { // if the cart is not empty
-                cart.cart.array.forEach(item => {
-                    cartItems.push(item.id);
+        if (cart && cart.length > 0) { // if cart exists and not empty
+            cart.forEach(item => {
+                cartItems.push(item.id);
+            });
+            dispatch(getCartItems(cartItems, cart))
+                .then(response => {
+                    if (response.payload.length > 0) {
+                        loadCartInfo(response.payload);
+                    }
                 });
-                dispatch(getCartItems(cartItems, cart.cart.array))
-                    .then(response => {
-                        if (response.payload.length > 0) {
-                            loadCartInfo(response.payload);
-                        }
-                    });
-            } else {
-                setIsLoading(false);
-            }
+        } else {
+            setIsLoading(false);
         }
-    }, [cart.cart.array]);
+    }, [cart]);
 
     const calculateGross = (cart) => {
         let gross = 0;
@@ -108,15 +106,9 @@ function CartPage() {
             });
     }
 
-    const PaidForView = () => (
-        <Box display="flex" justifyContent="center" mt={10}>
-            <Heading>Thank you for your purchase!</Heading>
-        </Box>
-    );
-
     const stripeOnClick = async () => {
         var line_items = [];
-        cart.cartDetail.forEach((item, index) => {
+        cartDetail.forEach((item, index) => {
             line_items[index] = {
                 price: item.stripePriceId,
                 quantity: 1
@@ -136,18 +128,23 @@ function CartPage() {
             // If `redirectToCheckout` fails due to a browser or network
             // error, display the localized error message to your customer
             // using `error.message`.
-        } else {
-            console.log(apiResponse);
+            if (error) {
+                toast({
+                    title: "Account created.",
+                    description: error.message,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                });
+            }
         }
     };
 
     const CartView = () => {
-        if (IsLoading) {
+        if (IsLoading || !cartIsLoaded) {
             return <LoadingView />
-        } else if (cart.cart.array.length === 0) {
+        } else if (cartIsLoaded && cart.length === 0) {
             return <EmptyCartView />
-        } else if (PaidFor) {
-            return <PaidForView />
         } else {
             return (
                 <Grid templateColumns={{base: "1fr", lg: "2.5fr 1fr"}} mt="5em">
@@ -177,7 +174,7 @@ function CartPage() {
         }
     };
 
-    const renderCartItems = cart.cartDetail.map((item, index) => {
+    const renderCartItems = cartDetail.map((item, index) => {
         const details = {'producer': item.producer.username, 'title': item.title, 'price': item.price};
         return (
             <Box key={index} mb="2em">
@@ -189,14 +186,14 @@ function CartPage() {
                     <ListText float={{base: "right", lg: "initial"}} fontSize="xl" fontWeight="700">${item.price}</ListText>
 
                     <ButtonGroup display={{base: "none", lg: "flex"}}>
-                        <Button onClick={()=>{setLicenseDetails(details, onOpen());}}>
+                        <Button onClick={() => {setLicenseDetails(details, onOpen());}}>
                             REVIEW LICENSE
                         </Button>
                         <CloseButton size="lg" onClick={() => removeItemFromCart(item._id)} />
                     </ButtonGroup>
                 </Grid>
                 <ButtonGroup display={{base: "flex", lg: "none"}} justifyContent="space-between" mt="0.5em">
-                    <Button onClick={()=>{setLicenseDetails(details, onOpen());}} size="sm">
+                    <Button onClick={() => {setLicenseDetails(details, onOpen());}} size="sm">
                         REVIEW LICENSE
                     </Button>
                     <CloseButton size="md" onClick={() => removeItemFromCart(item._id)} />
@@ -233,4 +230,12 @@ function CartPage() {
     )
 }
 
-export default CartPage
+const mapStateToProps = (state) => {
+    return {
+        cartIsLoaded: state.cart.success,
+        cart: state.cart.cart.array,
+        cartDetail: state.cart.cartDetail
+    }
+}
+
+export default connect(mapStateToProps)(CartPage);
