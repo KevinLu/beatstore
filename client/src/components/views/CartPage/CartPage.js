@@ -17,7 +17,7 @@ import LoadingView from "../../utils/LoadingView";
 import LicenseText from "../../utils/LicenseText";
 import {Link} from "react-router-dom";
 import Axios from "axios";
-import {loadStripe} from '@stripe/stripe-js';
+import {loadStripe} from '@stripe/stripe-js/pure';
 import {stripePublicKey} from '../../utils/StripeClient';
 
 const stripePromise = loadStripe(stripePublicKey);
