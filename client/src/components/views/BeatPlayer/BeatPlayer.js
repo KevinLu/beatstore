@@ -15,7 +15,7 @@ import BeatPlayerVolumeSlider from './BeatPlayerVolumeSlider';
 const ProgressBarHolder = styled.div``
 
 function BeatPlayer(props) {
-    const audio = useContext(AudioContext);
+    const {audio} = useContext(AudioContext);
 
     const ProgressLengthRef = useRef();
     const {width} = useContainerDimensions(ProgressLengthRef);

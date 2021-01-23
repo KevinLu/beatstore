@@ -7,6 +7,7 @@ import {Box, Flex, Skeleton, Icon, Image, Text, Heading, Button, ButtonGroup, St
 import {FaHashtag, FaShoppingCart, FaStar} from 'react-icons/fa';
 import {MdDateRange, MdMusicNote} from 'react-icons/md';
 import {IoMdDownload} from 'react-icons/io';
+import AudioVisualizer from '../AudioVisualizer/AudioVisualizer';
 
 function BeatPage(props) {
     const {cartLoaded, cart} = props;
@@ -145,6 +146,7 @@ function BeatPage(props) {
                         </Tag>
                     ))}
                 </Stack>
+                <AudioVisualizer />
             </Flex>
         </Box>
     );
