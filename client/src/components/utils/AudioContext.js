@@ -4,9 +4,12 @@ export const AudioContext = React.createContext();
 
 export const AudioContextProvider = (props) => {
     let audio = new Audio();
+    audio.crossOrigin = "anonymous";
+    let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let src = audioCtx.createMediaElementSource(audio);
 
     return (
-        <AudioContext.Provider value={audio}>
+        <AudioContext.Provider value={{audio, audioCtx, src}}>
             {props.children}
         </AudioContext.Provider>
     );
