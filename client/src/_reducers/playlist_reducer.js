@@ -2,7 +2,9 @@ import {
     SET_INDEX,
     SET_SHOW,
     SET_PLAYLIST,
-    SET_PAUSED
+    SET_PAUSED,
+    INC_INDEX,
+    DEC_INDEX,
 } from '../_actions/types';
 
 const initialState = {
@@ -22,6 +24,10 @@ const playlistReducer = (state = initialState, action) => {
             return {...state, playlist: action.payload};
         case SET_PAUSED:
             return {...state, paused: action.payload};
+        case INC_INDEX:
+            return {...state, index: ++state.index};
+        case DEC_INDEX:
+            return {...state, index: --state.index};
         default:
             return state;
     }

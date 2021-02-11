@@ -7,6 +7,7 @@ export const AudioContextProvider = (props) => {
     audio.crossOrigin = "anonymous";
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let src = audioCtx.createMediaElementSource(audio);
+    src.connect(audioCtx.destination);
 
     return (
         <AudioContext.Provider value={{audio, audioCtx, src}}>
