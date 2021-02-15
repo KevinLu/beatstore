@@ -12,3 +12,5 @@ export const SET_INDEX = 'set_index';
 export const SET_SHOW = 'set_show';
 export const SET_PLAYLIST = 'set_playlist';
 export const SET_PAUSED = 'set_paused';
+export const INC_INDEX = 'inc_index';
+export const DEC_INDEX = 'dec_index';

@@ -6,9 +6,7 @@ const bp = ["30em", "48em", "62em", "80em"];
 let startTime = new Date();
 
 function BeatPlayerProgressBar(props) {
-    const CurrentAudio = props.audio;
-    const width = props.width;
-    const ProgressBarHolder = props.holder;
+    const {audio, width, holder, playNextBeat} = props;
     const [SongProgressOffset, setSongProgressOffset] = useState("0%");
     const [SongProgressTime, setSongProgressTime] = useState("0:00");
 
@@ -23,7 +21,7 @@ function BeatPlayerProgressBar(props) {
     background: #3182ce;
     opacity: 0.5;
     transition: height 0.3s, opacity 0.5s ease-in-out;
-    ${ProgressBarHolder}:hover & {
+    ${holder}:hover & {
         height: 10px;
         opacity: 1;
     } 
@@ -40,7 +38,7 @@ function BeatPlayerProgressBar(props) {
     background: #1e4e8c;
     opacity: 0.5;
     transition: height 0.3s, opacity 0.5s ease-in-out;
-    ${ProgressBarHolder}:hover & {
+    ${holder}:hover & {
         height: 10px;
         opacity: 1;
     } 
@@ -60,7 +58,7 @@ function BeatPlayerProgressBar(props) {
     border: 2px solid #ebf8ff;
     opacity: 0;
     transition: 0.3s ease-in-out;
-    ${ProgressBarHolder}:hover & {
+    ${holder}:hover & {
         opacity: 1;
         transform: scale(2);
     }
@@ -76,16 +74,16 @@ function BeatPlayerProgressBar(props) {
     const handleTimeUpdate = () => {
         let newTime = new Date();
         let timeDiff = newTime - startTime;
-        if (timeDiff >= 900) {
+        if (timeDiff >= 500) {
             updateSongProgress();
             startTime = newTime;
         }
     }
 
     const updateSongProgress = () => {
-        var position = CurrentAudio.currentTime / CurrentAudio.duration;
+        var position = audio.currentTime / audio.duration;
         setSongProgressOffset((position * 100) + "%");
-        setSongProgressTime(secondsToTime(CurrentAudio.currentTime));
+        setSongProgressTime(secondsToTime(audio.currentTime));
     }
 
     const clamp = (min, val, max) => {
@@ -93,15 +91,19 @@ function BeatPlayerProgressBar(props) {
     }
 
     const handleSeek = (e) => {
-        var position = CurrentAudio.currentTime / CurrentAudio.duration;
+        var position = audio.currentTime / audio.duration;
         var percent = clamp(0, (e.nativeEvent.clientX - position) / width, 1);
-        CurrentAudio.currentTime = percent * CurrentAudio.duration;
+        audio.currentTime = percent * audio.duration;
         updateSongProgress();
     }
 
     useEffect(() => {
-        CurrentAudio.addEventListener('timeupdate', handleTimeUpdate);
-        return () => {CurrentAudio.removeEventListener('timeupdate', handleTimeUpdate);};
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('ended', playNextBeat);
+        return () => {
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('ended', playNextBeat);
+        };
     }, []);
 
     return (
