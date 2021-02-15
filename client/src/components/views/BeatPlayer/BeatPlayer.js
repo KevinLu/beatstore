@@ -2,7 +2,7 @@ import React, {useContext, useRef, useEffect} from 'react';
 import {useContainerDimensions} from "../../../hooks/custom";
 import {useDispatch, connect} from 'react-redux';
 import {addToCart} from '../../../_actions/cart_actions';
-import {setIndex, setPaused, incIndex, decIndex} from '../../../_actions/playlist_actions';
+import {setPaused, nextBeat, prevBeat} from '../../../_actions/playlist_actions';
 import {Box, Image, IconButton, Text, Stack, ButtonGroup, Button, Slide} from '@chakra-ui/react';
 import {Link} from 'react-router-dom';
 import {AudioContext} from "../../utils/AudioContext";
@@ -16,19 +16,19 @@ const ProgressBarHolder = styled.div``;
 
 function BeatPlayer(props) {
     const {audio} = useContext(AudioContext);
-    const {index, show, paused, playlist} = props;
+    const {index, show, paused, playlist, cart} = props;
 
     const ProgressLengthRef = useRef();
     const {width} = useContainerDimensions(ProgressLengthRef);
 
     const dispatch = useDispatch();
 
-    const addToCartHandler = (beatId) => {
-        dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
+    const isBeatInCart = (beatId) => {
+        return cart.some(beat => beat.id === beatId);
     }
 
-    const setIndexHandler = (i) => {
-        dispatch(setIndex(i));
+    const addToCartHandler = (beatId) => {
+        dispatch(addToCart(beatId, window.localStorage.getItem("cartId")));
     }
 
     const setPausedHandler = (bool) => {
@@ -58,20 +58,12 @@ function BeatPlayer(props) {
         }
     }
 
-    const prevBeat = () => {
-        if (index === 0) { // already the first beat
-            setIndexHandler(playlist.length - 1);
-        } else {
-            dispatch(decIndex(index));
-        }
+    const playPrevBeat = () => {
+        dispatch(prevBeat(index));
     }
 
-    const nextBeat = () => {
-        if (index + 1 === playlist.length) { // already the last beat
-            setIndexHandler(0);
-        } else {
-            dispatch(incIndex(index));
-        }
+    const playNextBeat = () => {
+        dispatch(nextBeat(index));
     }
 
     useEffect(() => {
@@ -81,41 +73,47 @@ function BeatPlayer(props) {
     }, [index, playlist]);
 
     if (show) {
+        const isInCart = isBeatInCart(playlist[index]._id);
         return (
             <Slide in={show} direction="bottom" style={{zIndex: 10}}>
                 <ProgressBarHolder ref={ProgressLengthRef}>
-                <Box  height={{base: "60px", md: "70px"}} bg="blue.900">
-                    <Box position="absolute" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
-                        <IconButton size="sm" isRound aria-label="Previous beat" icon={<FaStepBackward />} onClick={prevBeat} />
-                        <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={paused ? <FaPlay /> : <FaPause />} onClick={playOrPauseAudio} />
-                        <IconButton size="sm" isRound aria-label="Next beat" icon={<FaStepForward />} onClick={nextBeat} />
+                    <Box height={{base: "60px", md: "70px"}} bg="blue.900">
+                        <Box position="absolute" display="flex" alignItems="center" justifyContent="center" m="auto" w="100%" h="100%">
+                            <IconButton size="sm" isRound aria-label="Previous beat" icon={<FaStepBackward />} onClick={playPrevBeat} />
+                            <IconButton ml="10px" mr="10px" isRound aria-label="Play audio" icon={paused ? <FaPlay /> : <FaPause />} onClick={playOrPauseAudio} />
+                            <IconButton size="sm" isRound aria-label="Next beat" icon={<FaStepForward />} onClick={playNextBeat} />
+                        </Box>
+                        <BeatPlayerVolumeSlider audio={audio} />
+                        <Box display="flex" alignItems="center" h="100%">
+                            <Image src={playlist[index].image} boxSize={{base: "0px", sm: "60px", md: "70px"}} />
+                            <Stack spacing={0} ml={5} zIndex="100">
+                                <Text color="white" fontSize="md" fontWeight={{base: "700", md: "600"}}>
+                                    <Link to={`/beat/${playlist[index].url}`}>
+                                        {playlist[index].title}
+                                    </Link>
+                                </Text>
+                                <Text color={{base: "gray.100", md: "white"}} fontSize="md" fontWeight="600">{playlist[index].producer}</Text>
+                            </Stack>
+                            <ButtonGroup spacing={4} ml={{base: "auto", md: 5}} mr={{base: 4, md: 0}}>
+                                <IconButton display={{base: "none", sm: "inline-flex"}} colorScheme="blue" aria-label="Free download" icon={<IoMdDownload />} />
+                                <Button
+                                    leftIcon={isInCart ? null : <FaShoppingCart />}
+                                    colorScheme="blue"
+                                    style={{background: isInCart ? "#63b3ed" : null}}
+                                    variant="solid"
+                                    onClick={() => addToCartHandler(playlist[index]._id)}>
+                                    {isInCart ? "IN CART" : `${playlist[index].price}`}
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
                     </Box>
-                    <BeatPlayerVolumeSlider audio={audio} />
-                    <Box display="flex" alignItems="center" h="100%">
-                        <Image src={playlist[index].image} boxSize={{base: "0px", sm: "60px", md: "70px"}} />
-                        <Stack spacing={0} ml={5} zIndex="100">
-                            <Text color="white" fontSize="md" fontWeight={{base: "700", md: "600"}}>
-                                <Link to={`/beat/${playlist[index].url}`}>
-                                    {playlist[index].title}
-                                </Link>
-                            </Text>
-                            <Text color={{base: "gray.100", md: "white"}} fontSize="md" fontWeight="600">{playlist[index].producer}</Text>
-                        </Stack>
-                        <ButtonGroup spacing={4} ml={{base: "auto", md: 5}} mr={{base: 4, md: 0}}>
-                            <IconButton display={{base: "none", sm: "inline-flex"}} colorScheme="blue" aria-label="Free download" icon={<IoMdDownload />} />
-                            <Button leftIcon={<FaShoppingCart />} colorScheme="blue" variant="solid" onClick={() => addToCartHandler(playlist[index]._id)}>
-                                ${playlist[index].price}
-                            </Button>
-                        </ButtonGroup>
-                    </Box>
-                </Box>
-                <BeatPlayerProgressBar
-                    audio={audio}
-                    width={width}
-                    ProgressLengthRef={ProgressLengthRef}
-                    holder={ProgressBarHolder}
-                    playNextBeat={nextBeat} />
-            </ProgressBarHolder>
+                    <BeatPlayerProgressBar
+                        audio={audio}
+                        width={width}
+                        ProgressLengthRef={ProgressLengthRef}
+                        holder={ProgressBarHolder}
+                        playNextBeat={playNextBeat} />
+                </ProgressBarHolder>
             </Slide>
         );
     } else {
@@ -128,7 +126,8 @@ const mapStateToProps = (state) => {
         show: state.playlist.show,
         index: state.playlist.index,
         paused: state.playlist.paused,
-        playlist: state.playlist.playlist
+        playlist: state.playlist.playlist,
+        cart: state.cart.cart.array,
     }
 }
 

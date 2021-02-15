@@ -3,8 +3,8 @@ import {
     SET_SHOW,
     SET_PLAYLIST,
     SET_PAUSED,
-    INC_INDEX,
-    DEC_INDEX,
+    NEXT_BEAT,
+    PREV_BEAT,
 } from './types';
 
 export function setIndex(index) {
@@ -35,16 +35,16 @@ export function setPaused(bool) {
     }
 }
 
-export function incIndex(index) {
+export function nextBeat(index) {
     return {
-        type: INC_INDEX,
+        type: NEXT_BEAT,
         payload: index
     }
 }
     
-export function decIndex(index) {
+export function prevBeat(index) {
     return {
-        type: DEC_INDEX,
+        type: PREV_BEAT,
         payload: index
     }
 }
