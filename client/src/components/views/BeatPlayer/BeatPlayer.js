@@ -78,7 +78,7 @@ function BeatPlayer(props) {
         if (index !== -1) {
             playAudioInPlaylist(index);
         }
-    }, [index]);
+    }, [index, playlist]);
 
     if (show) {
         return (
