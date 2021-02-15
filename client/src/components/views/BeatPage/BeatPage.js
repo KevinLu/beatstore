@@ -44,12 +44,7 @@ function BeatPage(props) {
     const dateOptions = {year: 'numeric', month: 'long', day: 'numeric'};
 
     const isBeatInCart = (beatId) => {
-        for (let i = 0; i < cart.length; i++) {
-            if (cart[i].id === beatId) {
-                return true;
-            }
-        }
-        return false;
+        return cart.some(beat => beat.id === beatId);
     }
 
     useEffect(() => {
