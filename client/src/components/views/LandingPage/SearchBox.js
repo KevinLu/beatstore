@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
     Text,
     List,
@@ -23,6 +23,7 @@ import {FaHashtag} from 'react-icons/fa';
 import {Link, withRouter} from 'react-router-dom';
 import styled from '@emotion/styled';
 import Axios from 'axios';
+import debounce from '../../utils/debounce';
 
 const SearchResult = styled.div`
   background: white;
@@ -50,7 +51,7 @@ function SearchBox(props) {
                 limit: MAX_SEARCH,
                 searchTerm: event.currentTarget.value
             }
-            getBeats(variables);
+            debounceGetBeats(variables);
             searchTerms = event.currentTarget.value;
         }
     }
@@ -103,6 +104,8 @@ function SearchBox(props) {
                 if (Axios.isCancel(error)) console.log("Search request cancelled.");
             });
     };
+
+    const debounceGetBeats = useCallback(debounce(getBeats, 600), []);
 
     const showSearchResults = Beats.slice(0, MAX_SUGGESTIONS).map((beat, index) => {
         return (

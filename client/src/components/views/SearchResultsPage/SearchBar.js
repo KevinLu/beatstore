@@ -24,11 +24,11 @@ function SearchBar(props) {
         }
     }
 
-    const verify = useCallback(debounce(handleSearch, 600), []);
+    const debounceSearch = useCallback(debounce(handleSearch, 600), []);
 
     useEffect(() => {
         if (props.value !== Value) {
-            verify(Value);
+            debounceSearch(Value);
         }
     }, [Value]);
 
