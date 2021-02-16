@@ -1,18 +1,19 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
     Icon,
     Input,
     InputGroup,
     InputLeftElement
 } from "@chakra-ui/react";
+import debounce from '../../utils/debounce';
 import {IoMdSearch} from 'react-icons/io';
 import {withRouter} from 'react-router-dom';
 
 function SearchBar(props) {
-    const [Value, setValue] = useState("");
+    const [Value, setValue] = useState(props.value);
 
-    const handleChange = (event) => {
-        setValue(event.currentTarget.value);
+    const handleChange = (e) => {
+        setValue(e.currentTarget.value);
     }
 
     const handleSearch = (searchTerms) => {
@@ -23,20 +24,13 @@ function SearchBar(props) {
         }
     }
 
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            if (Value !== props.value) {
-                handleSearch(Value);
-            }
-        }, 600);
-        return () => clearTimeout(timeoutId);
-    }, [Value]);
+    const verify = useCallback(debounce(handleSearch, 600), []);
 
     useEffect(() => {
-        if (props.value && props.value !== "") {
-            setValue(props.value);
+        if (props.value !== Value) {
+            verify(Value);
         }
-    }, [props.value]);
+    }, [Value]);
 
     return (
         <div>
@@ -48,11 +42,12 @@ function SearchBar(props) {
                         color="gray.300" />}
                 />
                 <Input
+                    autoFocus
                     color="black"
                     fontWeight="600"
                     id="search"
                     placeholder={props.placeholder}
-                    value={Value}
+                    defaultValue={props.value}
                     onChange={handleChange}
                     autoComplete="off"
                     aria-autocomplete="none"
