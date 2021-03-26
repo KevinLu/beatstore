@@ -5,9 +5,13 @@ const config = require("../config/key");
 const jwt = require('jsonwebtoken');
 
 const userSchema = mongoose.Schema({
+    fullname: {
+        type: String,
+        maxlength: 80
+    },
     username: {
         type: String,
-        maxlength: 50
+        maxlength: 80
     },
     email: {
         type: String,
@@ -16,7 +20,7 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        minlength: 5
+        minlength: 6
     },
     role: {
         type: Number,
