@@ -7,7 +7,7 @@ import {
     REMOVE_FROM_CART,
     REMOVE_ALL_FROM_CART
 } from './types';
-import { CART_SERVER } from '../components/Config.js';
+import {CART_SERVER} from '../components/Config.js';
 
 export function createCart() {
     const request = axios.post(`${CART_SERVER}/create`)
@@ -21,7 +21,8 @@ export function createCart() {
 
 export function getCart(cartId) {
     const request = axios.get(`${CART_SERVER}/cartById?cartId=${cartId}`)
-        .then(response => response.data);
+        .then(response => response.data)
+        .catch(err => err.response.data);
 
     return {
         type: GET_CART,

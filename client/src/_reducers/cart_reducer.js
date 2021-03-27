@@ -22,7 +22,11 @@ const cartReducer = (state = initialState, action) => {
         case CREATE_CART:
             return state;
         case GET_CART:
-            return {success: true, cart: action.payload.cart, cartDetail: []}
+            if (action.payload.success) {
+                return {success: true, cart: action.payload.cart, cartDetail: []};
+            } else {
+                return {...state, success: false};
+            }
         case ADD_TO_CART:
             return {...state, cart: action.payload}
         case GET_ITEMS_INFO_CART:

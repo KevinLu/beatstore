@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { createCart, getCart } from "../_actions/cart_actions";
-import { setIndex } from "../_actions/playlist_actions";
 import Auth from "../hoc/auth";
 // pages for this product
 import LandingPage from "./views/LandingPage/LandingPage.js";
@@ -37,27 +36,30 @@ function App() {
     dispatch(createCart())
       .then(response => {
         if (response.payload.success) {
-          window.localStorage.setItem("cartId", response.payload.cartId);
+          window.localStorage.setItem("cartId", response.payload.cart._id);
         } else {
-          console.log(response)
+          console.log(response);
         }
+      })
+      .catch(err => {
+        console.log(err);
       });
   }
 
   const getCartInfo = (cartId) => {
-    dispatch(getCart(cartId));
-  }
-
-  const createIndex = () => {
-    dispatch(setIndex(0));
+    dispatch(getCart(cartId))
+      .then(response => {
+        if (!response.payload.success) {
+          // Cart id was not valid, create a new cart
+          newCart();
+        }
+      });
   }
 
   if (!window.localStorage.getItem("cartId")) {
     newCart();
-    //createIndex();
   } else {
     getCartInfo(window.localStorage.getItem("cartId"));
-    //createIndex();
   }
 
   return (
