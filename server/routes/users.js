@@ -13,8 +13,9 @@ router.get("/auth", auth, async (req, res) => {
         try {
             if (!req.user) throw Error('User does not exist');
             return res.status(200).json({
-                _id: req.user._id,
+                success: true,
                 isAuth: true,
+                _id: req.user._id,
                 email: req.user.email,
                 username: req.user.username,
                 fullname: req.user.fullname,
@@ -25,11 +26,13 @@ router.get("/auth", auth, async (req, res) => {
             });
         } catch (e) {
             console.log(e)
-            return res.status(400).json({ msg: e.message });
+            return res.status(400).json({ success: false, isAuth: false, msg: e.message });
         }
     } else {
         return res.status(200).json({
-            isAuth: false
+            success: false,
+            isAuth: false,
+            msg: 'User is not authenticated.'
         });
     }
 });

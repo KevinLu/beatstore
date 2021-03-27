@@ -29,8 +29,8 @@ let auth = (req, res, next) => {
         next();
       });
   } catch (e) {
-    console.log(e)
-    res.status(400).json({ msg: 'Token is not valid' });
+    console.log(e);
+    res.status(400).json({ success: false, isAuth: false, msg: 'Token is not valid.' });
     res.end();
   }
 };
