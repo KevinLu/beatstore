@@ -4,7 +4,9 @@ const saltRounds = 10;
 const config = require("../config/key");
 const jwt = require('jsonwebtoken');
 
-const userSchema = mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const userSchema = Schema({
     fullname: {
         type: String,
         maxlength: 80
@@ -26,7 +28,13 @@ const userSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    image: String
+    image: String,
+    licenses: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'License'
+        }
+    ]
 })
 
 
@@ -77,9 +85,9 @@ userSchema.methods.generateAnonToken = function (cb) {
 
 userSchema.statics.findByToken = function (token, cb) {
     var user = this;
-  
+
     jwt.verify(token, config.jwtSecret, function (err, decode) {
-        user.findOne({ "_id": decode, "token": token }, function (err, user) {
+        user.findOne({"_id": decode, "token": token}, function (err, user) {
             if (err) return cb(err);
             cb(null, user);
         })
@@ -88,4 +96,4 @@ userSchema.statics.findByToken = function (token, cb) {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = { User }
+module.exports = {User}

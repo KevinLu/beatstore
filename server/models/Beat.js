@@ -1,11 +1,24 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const beatSchema = mongoose.Schema({
+const beatSchema = Schema({
     producer: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    licenses: [{
+        license: {
+            type: Schema.Types.ObjectId,
+            ref: 'License'
+        },
+        enabled_for_beat: {
+            type: Boolean,
+            default: true
+        },
+        price_override: {
+            type: Number
+        }
+    }],
     title: {
         type: String,
         maxlength: 80
@@ -60,10 +73,10 @@ const beatSchema = mongoose.Schema({
 })
 
 beatSchema.index(
-    { tags: "text", title: "text" },
-    { default_language: "english" },
-    { weights: { tags: 5, title: 4 } },
-    { name: "TagsAndTitle" }
+    {tags: "text", title: "text"},
+    {default_language: "english"},
+    {weights: {tags: 5, title: 4}},
+    {name: "TagsAndTitle"}
 );
 
 /*beatSchema.index(
@@ -74,4 +87,4 @@ beatSchema.index(
 
 const Beat = mongoose.model('Beat', beatSchema);
 
-module.exports = { Beat }
+module.exports = {Beat}
