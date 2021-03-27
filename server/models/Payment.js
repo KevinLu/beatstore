@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const paymentSchema = mongoose.Schema({
+const paymentSchema = Schema({
     paymentIntent: {
         type: Object
     },

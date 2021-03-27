@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const cartSchema = mongoose.Schema({
+const cartSchema = Schema({
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'User'
