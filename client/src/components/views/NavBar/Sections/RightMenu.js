@@ -36,7 +36,7 @@ const mapStateToProps = (state) => {
 		userDataIsLoaded: state.user.isLoaded,
 		userData: state.user.userData,
 		cartIsLoaded: state.cart.success,
-		cartLength: state.cart.cart.array.length
+		cartLength: state.cart.items.length
 	}
 }
 

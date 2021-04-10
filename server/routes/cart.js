@@ -52,16 +52,16 @@ router.post("/add", (req, res) => { // doesn't have to be logged in
     Cart.findOne({_id: cartId}, (err, cart) => {
         let duplicateItem = false;
 
-        cart.array.forEach((item) => {
-            if (item.id === beatId) { // beat already in cart
+        cart.items.forEach((i) => {
+            if (i.item.toString() === beatId) { // beat already in cart
                 duplicateItem = true;
             }
         });
 
         if (duplicateItem) {
             Cart.findOneAndUpdate(
-                {_id: cartId, "array.id": beatId},
-                {$inc: {"array.$.quantity": 1}},
+                {_id: cartId, "items.item": beatId},
+                {$inc: {"items.$.quantity": 1}},
                 {new: true},
                 (err, cart) => {
                     if (err) {
@@ -75,10 +75,10 @@ router.post("/add", (req, res) => { // doesn't have to be logged in
                 {_id: cartId},
                 {
                     $push: {
-                        array: {
-                            id: beatId,
+                        items: {
+                            item: beatId,
                             quantity: 1,
-                            date: Date.now()
+                            timestamp: Date.now()
                         }
                     }
                 },
@@ -100,14 +100,12 @@ router.post("/remove", (req, res) => {
         {_id: cartId},
         {
             "$pull":
-                {"array": {"id": beatId}}
+                {"items": {"item": beatId}}
         },
         {new: true},
         (err, cartInfo) => {
-            let cart = cartInfo.array;
-            let idArray = cart.map(item => {
-                return item.id;
-            })
+            let cart = cartInfo.items;
+            let idArray = cart.map(i => i.item);
 
             Beat.find({'_id': {$in: idArray}})
                 .populate('producer')
@@ -127,7 +125,7 @@ router.post("/removeAll", (req, res) => {
 
     Cart.findOneAndUpdate(
         {_id: cartId},
-        {"$pull": {"array": {"$exists": true}}},
+        {"$pull": {"items": {"$exists": true}}},
         (err, cartInfo) => {
             if (err) {
                 console.log(err);

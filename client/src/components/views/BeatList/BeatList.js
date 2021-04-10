@@ -189,7 +189,7 @@ function BeatList(props) {
     );
 
     const isBeatInCart = (beatId) => {
-        return cart.some(beat => beat.id === beatId);
+        return cart.some(beat => beat.item === beatId);
     }
 
     if (IsLoading) {
@@ -271,7 +271,7 @@ function BeatList(props) {
 
 const mapStateToProps = (state) => {
     return {
-        cart: state.cart.cart.array,
+        cart: state.cart.items,
         show: state.playlist.show,
         playlist: state.playlist.playlist
     }

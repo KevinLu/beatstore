@@ -60,6 +60,7 @@ function CartPage(props) {
     const {cartIsLoaded, cart, cartDetail} = props;
     const dispatch = useDispatch();
     const [IsLoading, setIsLoading] = useState(true);
+    const [IsCheckoutLoading, setIsCheckoutLoading] = useState(false);
     const [GrossAmount, setGrossAmount] = useState(0);
     const [LicenseDetails, setLicenseDetails] = useState({'producer': 'PRODUCER NAME', 'title': 'Beat Title', 'price': "price"});
     const {isOpen, onOpen, onClose} = useDisclosure();
@@ -72,8 +73,8 @@ function CartPage(props) {
         let cartItems = [];
         setIsLoading(true);
         if (cart && cart.length > 0) { // if cart exists and not empty
-            cart.forEach(item => {
-                cartItems.push(item.id);
+            cart.forEach(i => {
+                cartItems.push(i.item);
             });
             dispatch(getCartItems(cartItems, cart))
                 .then(response => {
@@ -107,36 +108,40 @@ function CartPage(props) {
     }
 
     const stripeOnClick = async () => {
-        var line_items = [];
-        cartDetail.forEach((item, index) => {
-            line_items[index] = {
-                price: item.stripePriceId,
-                quantity: 1
-            }
-        });
-        const variables = {
-            line_items: line_items
-        }
-        const apiResponse = await Axios.post('api/order/createSession', variables);
-        // When the customer clicks on the button, redirect them to Checkout.
-        if (apiResponse.data.success) {
-            const sessionId = apiResponse.data.sessionId;
-            const stripe = await stripePromise;
-            const {error} = await stripe.redirectToCheckout({
-                sessionId,
-            });
-            // If `redirectToCheckout` fails due to a browser or network
-            // error, display the localized error message to your customer
-            // using `error.message`.
-            if (error) {
-                toast({
-                    title: "Account created.",
-                    description: error.message,
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
+        setIsCheckoutLoading(true);
+        const cartId = window.localStorage.getItem("cartId");
+        try {
+            const apiResponse = await Axios.post('api/order/createSession', {cartId});
+            // When the customer clicks on the button, redirect them to Checkout.
+            if (apiResponse.data.success) {
+                const sessionId = apiResponse.data.sessionId;
+                const stripe = await stripePromise;
+                const {error} = await stripe.redirectToCheckout({
+                    sessionId,
                 });
+                setIsCheckoutLoading(false);
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, display the localized error message to your customer
+                // using `error.message`.
+                if (error) {
+                    toast({
+                        title: "Checkout error",
+                        description: error.message,
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    });
+                }
             }
+        } catch (err) {
+            setIsCheckoutLoading(false);
+            toast({
+                title: "Checkout error",
+                description: 'Please try again',
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            });
         }
     };
 
@@ -167,7 +172,7 @@ function CartPage(props) {
                             <Text color="blue.900" fontSize="2xl" fontWeight="700">${GrossAmount - 0}</Text>
                         </Box>
                         <Divider />
-                        <Button colorScheme="blue" width="100%" onClick={stripeOnClick} size="lg">Pay ${GrossAmount}</Button>
+                        <Button isLoading={IsCheckoutLoading} colorScheme="blue" width="100%" onClick={stripeOnClick} size="lg">Pay ${GrossAmount}</Button>
                     </Box>
                 </Grid>
             );
@@ -233,7 +238,7 @@ function CartPage(props) {
 const mapStateToProps = (state) => {
     return {
         cartIsLoaded: state.cart.success,
-        cart: state.cart.cart.array,
+        cart: state.cart.items,
         cartDetail: state.cart.cartDetail
     }
 }

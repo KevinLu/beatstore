@@ -64,12 +64,12 @@ const beatSchema = Schema({
     url: {
         type: String
     },
-    stripeProductId: {
-        type: String
-    },
-    stripePriceId: {
-        type: String
-    }
+    // stripeProductId: {
+    //     type: String
+    // },
+    // stripePriceId: {
+    //     type: String
+    // }
 })
 
 beatSchema.index(

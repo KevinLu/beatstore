@@ -13,14 +13,19 @@ const stripe = require('stripe')(stripeSecret);
 const handleCheckoutSession = (intent) => {
     stripe.checkout.sessions.listLineItems(
         intent.id,
+        // { limit: 100, expand: 'data.price.product' },
         { limit: 100 },
         (err, lineItems) => {
             if (err) console.log(err);
+            
+            let products = JSON.parse(intent.metadata.productIds);
+            // let products = lineItems.data.map(item => item.price.product.metadata.mongo_id);
 
             const data = {
                 user: intent.client_reference_id,
                 checkoutSession: intent,
-                products: lineItems.data
+                lineItems: lineItems.data,
+                products: products,
             };
 
             const order = new Order(data);

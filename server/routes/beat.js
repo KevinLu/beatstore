@@ -58,39 +58,46 @@ router.post("/uploadPrivateFile", (req, res) => {
 router.post("/uploadBeat", auth, (req, res) => {
     const beat = new Beat(req.body);
 
-    // Create a new product on Stripe
-    stripe.products.create(
-        {
-            name: req.body.title,
-            type: 'good',
-            description: req.body.description,
-            metadata: {mongo_id: JSON.parse(JSON.stringify(beat._id))},
-            images: req.body.artwork,
-            shippable: false
-        }, (err, product) => {
-            if (err) return res.status(400).json({success: false, err});
+    // DEPRECATED: Create a new product on Stripe
+    // stripe.products.create(
+    //     {
+    //         name: req.body.title,
+    //         type: 'good',
+    //         description: req.body.description,
+    //         attributes: ['name'],
+    //         metadata: {mongo_id: beat.id},
+    //         images: req.body.artwork,
+    //         shippable: false
+    //     }, (err, product) => {
+    //         if (err) return res.status(400).json({success: false, err});
 
-            stripe.prices.create(
-                {
-                    unit_amount: req.body.price * 100,
-                    currency: 'usd',
-                    product: product.id,
-                    metadata: {mongo_id: JSON.parse(JSON.stringify(beat._id))}
-                }, (err, price) => {
-                    if (err) return res.status(400).json({success: false, err});
+    //         stripe.prices.create(
+    //             {
+    //                 unit_amount: req.body.price * 100,
+    //                 currency: 'usd',
+    //                 product: product.id,
+    //                 metadata: {mongo_id: beat.id}
+    //             }, (err, price) => {
+    //                 if (err) return res.status(400).json({success: false, err});
 
-                    beat.stripeProductId = product.id;
-                    beat.stripePriceId = price.id;
+    //                 beat.stripeProductId = product.id;
+    //                 beat.stripePriceId = price.id;
 
-                    beat.save((err) => { // Save beat into MongoDB
-                        if (err) return res.status(400).json({success: false, err});
+    //                 beat.save((err) => { // Save beat into MongoDB
+    //                     if (err) return res.status(400).json({success: false, err});
 
-                        return res.status(200).json({success: true});
-                    });
-                }
-            );
-        }
-    );
+    //                     return res.status(200).json({success: true});
+    //                 });
+    //             }
+    //         );
+    //     }
+    // );
+
+    beat.save((err) => { // Save beat into MongoDB
+        if (err) return res.status(400).json({success: false, err});
+
+        return res.status(200).json({success: true});
+    });
 });
 
 router.post("/getBeats", (req, res) => { // no need auth
@@ -99,10 +106,12 @@ router.post("/getBeats", (req, res) => { // no need auth
     let limit = req.body.limit ? parseInt(req.body.limit) : 100;
     let skip = parseInt(req.body.skip);
     let terms = req.body.searchTerm;
+    console.log("getBeats: ", terms + " [" + skip + ", " + limit + "]");
 
     if (terms) { // if a search term is specified, only then we look for specific beats
         Beat.find({$text: {$search: terms}})
-            .populate("producer")
+            .populate('producer', 'username -_id')
+            .select(['-purchaseAudio', '-trackStems'])
             .sort([[sortBy, order]])
             .skip(skip)
             .limit(limit)
@@ -112,7 +121,8 @@ router.post("/getBeats", (req, res) => { // no need auth
             });
     } else {
         Beat.find()
-            .populate("producer")
+            .populate('producer', 'username -_id')
+            .select(['-purchaseAudio', '-trackStems'])
             .sort([[sortBy, order]])
             .skip(skip)
             .limit(limit)
@@ -136,7 +146,8 @@ router.get("/beats_by_url", (req, res) => { // no need auth
     }
 
     Beat.find({'url': {$in: beatUrls}})
-        .populate('producer')
+        .populate('producer', 'username -_id')
+        .select(['-purchaseAudio', '-trackStems'])
         .exec((err, beat) => {
             if (err) return res.status(400).send(err);
             return res.status(200).send(beat);
@@ -156,7 +167,8 @@ router.get("/beats_by_id", (req, res) => { // no need auth
     }
 
     Beat.find({'_id': {$in: beatIds}})
-        .populate('producer')
+        .populate('producer', 'username -_id')
+        .select(['-purchaseAudio', '-trackStems'])
         .exec((err, beat) => {
             if (err) return res.status(400).send(err);
             return res.status(200).send(beat);

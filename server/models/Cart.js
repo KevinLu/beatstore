@@ -6,12 +6,20 @@ const cartSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
-    array: {
-        type: Array,
-        default: []
-    }
+    items: [{
+        item: {
+            type: Schema.Types.ObjectId,
+            ref: 'Beat'
+        },
+        quantity: {
+            type: Number
+        },
+        timestamp: {
+            type: Date
+        }
+    }]
 })
 
 const Cart = mongoose.model('Cart', cartSchema);
 
-module.exports = { Cart }
+module.exports = {Cart}

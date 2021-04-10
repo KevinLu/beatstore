@@ -9,11 +9,8 @@ import {
 
 const initialState = {
     success: false,
-    cart: {
-        array: [],
-        _id: "",
-        _v: 0
-    },
+    cartId: "",
+    items: [],
     cartDetail: []
 }
 
@@ -23,12 +20,17 @@ const cartReducer = (state = initialState, action) => {
             return state;
         case GET_CART:
             if (action.payload.success) {
-                return {success: true, cart: action.payload.cart, cartDetail: []};
+                return {
+                    success: true,
+                    cartId: action.payload.cart._id,
+                    items: action.payload.cart.items,
+                    cartDetail: [],
+                };
             } else {
                 return {...state, success: false};
             }
         case ADD_TO_CART:
-            return {...state, cart: action.payload}
+            return {...state, items: action.payload.items}
         case GET_ITEMS_INFO_CART:
             return {
                 ...state, cartDetail: action.payload
@@ -37,11 +39,7 @@ const cartReducer = (state = initialState, action) => {
             if (Object.keys(action.payload.cart).length === 0) {
                 return {
                     ...state,
-                    cart: {
-                        array: [],
-                        _id: "",
-                        _v: 0
-                    },
+                    items: [],
                     cartDetail: action.payload.cartDetail
                 }
             } else {
@@ -52,21 +50,16 @@ const cartReducer = (state = initialState, action) => {
                 }
             }
         case REMOVE_ALL_FROM_CART:
-            console.log(action)
             if (Object.keys(action.payload.cart).length === 0) {
                 return {
                     ...state,
-                    cart: {
-                        array: [],
-                        _id: "",
-                        _v: 0
-                    },
+                    items: [],
                     cartDetail: action.payload.cartDetail
                 }
             } else {
                 return {
                     ...state,
-                    cart: {...state.cart, array: action.payload.cart},
+                    cart: {...state.cart, items: action.payload.cart},
                     cartDetail: action.payload.cartDetail
                 }
             }

@@ -24,7 +24,7 @@ function BeatPlayer(props) {
     const dispatch = useDispatch();
 
     const isBeatInCart = (beatId) => {
-        return cart.some(beat => beat.id === beatId);
+        return cart.some(beat => beat.item === beatId);
     }
 
     const addToCartHandler = (beatId) => {
@@ -127,7 +127,7 @@ const mapStateToProps = (state) => {
         index: state.playlist.index,
         paused: state.playlist.paused,
         playlist: state.playlist.playlist,
-        cart: state.cart.cart.array,
+        cart: state.cart.items,
     }
 }
 

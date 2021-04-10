@@ -44,7 +44,7 @@ function BeatPage(props) {
     const dateOptions = {year: 'numeric', month: 'long', day: 'numeric'};
 
     const isBeatInCart = (beatId) => {
-        return cart.some(beat => beat.id === beatId);
+        return cart.some(beat => beat.item === beatId);
     }
 
     useEffect(() => {
@@ -150,7 +150,7 @@ function BeatPage(props) {
 const mapStateToProps = (state) => {
     return {
         cartLoaded: state.cart.success,
-        cart: state.cart.cart.array
+        cart: state.cart.items,
     }
 }
 

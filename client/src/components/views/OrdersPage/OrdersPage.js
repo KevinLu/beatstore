@@ -107,7 +107,7 @@ function OrdersPage(props) {
     }
 
     const renderOrderItems = Orders.map((order, index) => {
-        var orderTotal = 0;
+        var orderTotal = order.checkoutSession.amount_total;
         var currency = "USD"; // Default currency is USD as set in Stripe
         var paymentIntent = order.checkoutSession.payment_intent;
         var orderDate = new Date(order.date).toLocaleString('en-US', dateOptions);
@@ -116,11 +116,7 @@ function OrdersPage(props) {
             <Box key={index} border="1px solid" borderColor="gray.200" borderRadius="4px" mb={4} p={4}>
                 <Heading as="h4" size="md" fontWeight="600" mb={4}>ORDER DATE: {order.date.substring(0, 10)}</Heading>
                 {order.products.map((product, index) => {
-                    orderTotal += product.amount_total;
-                    // This will break if items are in different currencies
-                    // -> shouldn't happen (?) because currency is set in Stripe
-                    currency = product.currency.toUpperCase();
-                    const details = {'producer': product.producer.username, 'title': product.title, 'price': product.amount_total / 100, 'date': orderDate};
+                    const details = {'producer': product.producer.username, 'title': product.title, 'price': product.price, 'date': orderDate};
 
                     return (
                         <div key={index}>
@@ -129,7 +125,7 @@ function OrdersPage(props) {
                                     <Image
                                         borderRadius="3px"
                                         boxSize={{base: "60px", lg: "80px"}}
-                                        src={product.image}
+                                        src={product.artwork[0]}
                                         fallbackSrc="https://via.placeholder.com/80"
                                         cursor="pointer"
                                     />
@@ -138,7 +134,7 @@ function OrdersPage(props) {
                                     <Link to={"/beat/" + product.url}>
                                         <Heading as="h3" size="md" fontWeight="400">{product.description}</Heading>
                                     </Link>
-                                    <Text fontSize="md" fontWeight="400" mt={2}>${product.amount_total / 100} {product.currency.toUpperCase()}</Text>
+                                    <Text fontSize="md" fontWeight="400" mt={2}>${product.price} {currency}</Text>
                                 </Stack>
                                 <Box ml="auto">
                                     <Menu isLazy>
@@ -146,7 +142,7 @@ function OrdersPage(props) {
                                             Actions
                                         </MenuButton>
                                         <MenuList>
-                                            <MenuItem onClick={() => downloadBeat(product.price.metadata.mongo_id)}>Download</MenuItem>
+                                            <MenuItem onClick={() => downloadBeat(product._id)}>Download</MenuItem>
                                             <MenuItem onClick={()=>{setLicenseDetails(details, onOpen());}}>View License</MenuItem>
                                             <MenuItem onClick={() => viewReceipt(paymentIntent)}>View Receipt</MenuItem>
                                         </MenuList>
