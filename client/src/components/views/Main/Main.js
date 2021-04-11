@@ -9,6 +9,8 @@ import OrdersPage from "../OrdersPage/OrdersPage";
 import DashboardPage from "../DashboardPage/DashboardPage";
 import CartPage from "../CartPage/CartPage";
 import BeatPage from "../BeatPage/BeatPage";
+import DownloadPage from "../DownloadPage/DownloadPage";
+import SearchResultsPage from "../SearchResultsPage/SearchResultsPage";
 import ErrorNotFoundPage from "../ErrorNotFoundPage/ErrorNotFoundPage";
 
 // Auth(SpecificComponent, option, adminRoute)
@@ -30,7 +32,9 @@ function Main() {
             <Route exact path="/beat/:beatUrl" component={Auth(BeatPage, PUBLIC_PAGE, false)} />
             <Route exact path="/cart" component={Auth(CartPage, PUBLIC_PAGE, false)} />
             <Route exact path="/orders" component={Auth(OrdersPage, LOGGED_IN_ONLY, false)} />
-            <Route exact path='/dashboard' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
+            <Route exact path="/download" component={Auth(DownloadPage, PUBLIC_PAGE, false)} />
+            <Route exact path="/beats" component={Auth(SearchResultsPage, PUBLIC_PAGE, false)} />
+            <Route exact path="/dashboard" component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
             <Route exact path='/dashboard/beats' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
             <Route exact path='/dashboard/licenses' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />
             <Route exact path='/dashboard/settings' component={Auth(DashboardPage, LOGGED_IN_ONLY, true)} />

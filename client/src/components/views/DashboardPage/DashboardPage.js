@@ -1,7 +1,7 @@
 import React from 'react';
 import Sidebar from './sections/Sidebar';
 import DashboardContent from './sections/DashboardContent';
-import { Flex } from '@chakra-ui/core';
+import { Flex } from '@chakra-ui/react';
 
 function DashboardPage(props) {
     return (

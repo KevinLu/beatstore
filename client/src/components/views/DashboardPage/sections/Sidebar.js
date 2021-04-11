@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Text, Box, Tooltip } from '@chakra-ui/core';
+import { Text, Box, Tooltip } from '@chakra-ui/react';
 import { IoIosPaper } from 'react-icons/io';
 import { MdSettings, MdDashboard } from 'react-icons/md';
 import { FaMusic } from 'react-icons/fa';
