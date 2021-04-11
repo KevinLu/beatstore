@@ -4,8 +4,8 @@
   "description": "a marketplace to sell your music",
   "main": "index.js",
   "engine": {
-    "node": "10.16.0",
-    "npm": "6.9.0"
+    "node": "^14.16.1",
+    "npm": ">=6.9.0"
   },
   "scripts": {
     "start": "node server/index.js",
