@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { auth } from '../_actions/user_actions';
 import { useSelector, useDispatch } from "react-redux";
-import { Redirect } from 'react-router-dom';
 
 // Auth(SpecificComponent, option, adminRoute)
 // option:
@@ -16,6 +15,7 @@ const PUBLIC_ONLY = 2; // includes anonymous users
 export default function (SpecificComponent, option, adminRoute) {
     function AuthenticationCheck(props) {
 
+        const [IsLoading, setIsLoading] = useState(true);
         let user = useSelector(state => state.user);
         const dispatch = useDispatch();
 
@@ -43,10 +43,18 @@ export default function (SpecificComponent, option, adminRoute) {
                         }
                     }
                 }
+                setIsLoading(false);
             })
 
         }, [])
 
+        /*if (IsLoading) {
+            return (
+                <Flex height="100vh" alignItems="center" justifyContent="center">
+                    <LoadingView isLoading={IsLoading} />
+                </Flex>
+            )
+        }*/
         return (
             <SpecificComponent {...props} user={user} />
         )
