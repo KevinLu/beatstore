@@ -117,68 +117,36 @@ router.get("/getSession", async (req, res) => {
 router.get("/getOrderStatus", async (req, res) => {
     try {
         const session_id = req.query.session_id;
-        const session = await stripe.checkout.sessions.retrieve(session_id);
-        const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
+        if (!session_id) throw Error('Session id is not present in request.');
 
-        if (paymentIntent.status === "succeeded") {
-            try {
-                const lineItems = await stripe.checkout.sessions.listLineItems(session_id, { limit: 100 });
+        const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
+        const productIds = JSON.parse(checkoutSession.metadata.productIds);
+        const paymentIntent = await stripe.paymentIntents.retrieve(checkoutSession.payment_intent);
 
-                if (lineItems.data) {
-                    var objectIds = [];
-                    lineItems.data.map((item, i) => {
-                        objectIds[i] = mongoose.Types.ObjectId(item.price.metadata.mongo_id);
-                    });
+        const products = await Beat.find({'_id': { $in: productIds }})
+                                   .select(['-producer', '-licenses', '-_id', '-__v', '-bpm', '-length', '-date'])
+                                   .exec();
+        const expiry = 7200; // link expiry in seconds
+        let downloadLinks = [];
 
-                    Beat.find({
-                        '_id': { $in: objectIds }
-                    }, function (err, docs) {
-                        if (err) {
-                            return res.status(400).send({
-                                success: false,
-                                err
-                            });
-                        } else {
-                            const expiry = 7200; // link expiry in seconds
-                            var downloadLinks = [];
-
-                            docs.forEach((doc, index) => {
-                                var audioUrl = doc.purchaseAudio[0];
-                                var processedLink = decodeURIComponent(audioUrl.substr(audioUrl.lastIndexOf('/') + 1)).normalize('NFD');
-                                downloadLinks[index] = generateSignedUrl(processedLink, expiry);
-                            });
-                            
-                            return res.status(200).json({
-                                success: true,
-                                orderStatus: paymentIntent.status,
-                                lineItems: docs,
-                                downloadLinks: downloadLinks
-                            });
-                        }
-                    });
-                } else {
-                    return res.status(200).json({
-                        success: true,
-                        orderStatus: paymentIntent.status,
-                        lineItems: lineItems
-                    });
-                }
-            } catch (err) {
-                return res.status(400).send({
-                    success: false,
-                    err
-                });
-            }
-        } else {
-            return res.status(200).json({
-                success: true,
-                orderStatus: paymentIntent.status
-            });
-        }
-    } catch (err) {
+        products.forEach(doc => {
+            var audioUrl = doc.purchaseAudio[0];
+            var processedLink = decodeURIComponent(audioUrl.substr(audioUrl.lastIndexOf('/') + 1)).normalize('NFD');
+            downloadLinks.push(generateSignedUrl(processedLink, expiry));
+        });
+        
+        return res.status(200).json({
+            success: true,
+            orderStatus: paymentIntent.status,
+            products: products,
+            downloadLinks: downloadLinks
+        });
+    } catch (e) {
+        console.log(e);
         return res.status(400).send({
             success: false,
-            err
+            orderStatus: paymentIntent?.status ?? 'pending',
+            msg: e.message
         });
     }
 });

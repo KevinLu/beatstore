@@ -96,12 +96,12 @@ function DownloadPage() {
         return (
             <Box margin="40vh auto">
                 <Text fontSize="4xl" mt="1em" mb="1em" d="flex" justifyContent="center">
-                    Oh snap... something went wrong.
+                    Oh snap... 🤯 something went wrong.
                 </Text>
                 <NotWorkingText />
             </Box>
         );
-    } else if (Items.lineItems) {
+    } else if (Items.products) {
         return (
             <div>
                 <Box mt={2} textAlign="center" lineHeight="short" d="flex" flexDir="column" justifyContent="center" mt="3em">
@@ -112,7 +112,7 @@ function DownloadPage() {
                         Please save this link if you want to download your files again.
                     </Text>
                 </Box>
-                {Items.lineItems.map((item, index) => {
+                {Items.products.map((item, index) => {
                     return (
                         <Box key={index} width="300px" m="auto" mt="5em" mb="5em">
                             <Box border="1px solid #CBD5E0" rounded="md" p="1.5em">
