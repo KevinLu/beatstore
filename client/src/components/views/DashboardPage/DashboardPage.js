@@ -5,7 +5,7 @@ import { Flex } from '@chakra-ui/react';
 
 function DashboardPage(props) {
     return (
-        <Flex>
+        <Flex h="calc(100vh - 64px)">
             <Sidebar />
             <DashboardContent />
         </Flex>

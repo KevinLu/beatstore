@@ -22,7 +22,7 @@ const NavItem = ({ title, icon }) => {
                 w={{ base: "auto", md: "170px", lg: "220px" }}
                 textAlign={{ base: "left", md: "center" }}
                 backgroundColor={isActive ? 'blue.50' : ''}
-                mb="16px"
+                mb={{ base: 0, sm: "16px" }}
                 display="flex"
                 justifyContent="stretch"
                 alignItems="center"
