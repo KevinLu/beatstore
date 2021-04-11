@@ -24,6 +24,13 @@ const NotWorkingText = () => (
     </Text>
 );
 
+const RefreshText = () => (
+    <Text fontSize="xl" mt="1em" mb="1em" d="flex" justifyContent="center">
+        Still not working? Contact me at&nbsp;
+        <Link textAlign="center" color="blue.500" href="mailto:prodglace@gmail.com">prodglace@gmail.com</Link>
+    </Text>
+);
+
 function DownloadPage() {
     const dispatch = useDispatch();
     const location = useLocation();
@@ -33,6 +40,7 @@ function DownloadPage() {
     const [Items, setItems] = useState([]);
     const [IsLoading, setIsLoading] = useState(true);
     const [IsError, setIsError] = useState(false);
+    const [IsPendingPayment, setIsPendingPayment] = useState(false);
 
     const removeAllItemsFromCart = () => {
         dispatch(removeAllFromCart(window.localStorage.getItem("cartId")))
@@ -56,11 +64,11 @@ function DownloadPage() {
                         setItems(response.data);
                         removeAllItemsFromCart();
                     } else {
-                        setIsError(true);
+                        setIsPendingPayment(true);
                         toast({
                             title: "Payment not yet received.",
                             description: "We haven't received your payment yet, please check back later.",
-                            status: "error",
+                            status: "warning",
                             duration: 9000,
                             isClosable: true,
                         });
@@ -89,7 +97,7 @@ function DownloadPage() {
         return (
             <Box margin="40vh auto">
                 <LoadingView />
-                <NotWorkingText />
+                <RefreshText />
             </Box>
         );
     } else if (IsError) {
@@ -99,6 +107,15 @@ function DownloadPage() {
                     Oh snap... 🤯 something went wrong.
                 </Text>
                 <NotWorkingText />
+            </Box>
+        );
+    } else if (IsPendingPayment) {
+        return (
+            <Box margin="40vh auto">
+                <Text fontSize="4xl" mt="1em" mb="1em" d="flex" justifyContent="center">
+                    Hold tight! 🤞 Awaiting payment confirmation.
+                </Text>
+                <RefreshText />
             </Box>
         );
     } else if (Items.products) {

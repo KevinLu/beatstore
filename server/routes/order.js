@@ -121,7 +121,14 @@ router.get("/getOrderStatus", async (req, res) => {
 
         const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
         const productIds = JSON.parse(checkoutSession.metadata.productIds);
+        // See: https://stripe.com/docs/payments/intents#intent-statuses
         const paymentIntent = await stripe.paymentIntents.retrieve(checkoutSession.payment_intent);
+        if (paymentIntent && paymentIntent.status !== 'succeeded') {
+            return res.status(200).send({
+                success: true,
+                orderStatus: paymentIntent.status,
+            });
+        }
 
         const products = await Beat.find({'_id': { $in: productIds }})
                                    .select(['-producer', '-licenses', '-_id', '-__v', '-bpm', '-length', '-date'])
@@ -145,7 +152,6 @@ router.get("/getOrderStatus", async (req, res) => {
         console.log(e);
         return res.status(400).send({
             success: false,
-            orderStatus: paymentIntent?.status ?? 'pending',
             msg: e.message
         });
     }
