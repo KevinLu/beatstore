@@ -14,3 +14,9 @@ export const SET_PLAYLIST = 'set_playlist';
 export const SET_PAUSED = 'set_paused';
 export const NEXT_BEAT = 'next_beat';
 export const PREV_BEAT = 'prev_beat';
+
+export const GET_USER_LICENSES = 'get_user_licenses';
+export const CREATE_LICENSE = 'create_license';
+export const DELETE_LICENSE = 'delete_license';
+export const TOGGLE_LICENSE_ACTIVATION = 'toggle_license';
+export const UPDATE_LICENSE = 'update_license';

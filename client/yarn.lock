@@ -1792,6 +1792,11 @@
     "minimatch" "^3.0.4"
     "strip-json-comments" "^3.1.1"
 
+"@fontsource/inter@^4.2.2":
+  "integrity" "sha512-lvR1PQe+8FTTd3YRW84KGcgUR8leZ7S3aY+51MQ90MQHI0VQe3cDH6T6jjs1qTm+wPmWfdSVjN8ugvNZpGUnvA=="
+  "resolved" "https://registry.npmjs.org/@fontsource/inter/-/inter-4.2.2.tgz"
+  "version" "4.2.2"
+
 "@hapi/address@2.x.x":
   "integrity" "sha512-mV6T0IYqb0xL1UALPFplXYQmR0twnXG0M6jUswpquqT2sD12BOiCiLy3EvMp/Fy7s3DZElC4/aPjEjo2jeZpvw=="
   "resolved" "https://registry.npmjs.org/@hapi/address/-/address-2.0.0.tgz"

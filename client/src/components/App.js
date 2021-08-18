@@ -10,6 +10,16 @@ import Footer from "./views/Footer/Footer";
 import BeatPlayer from "./views/BeatPlayer/BeatPlayer";
 import { AudioContextProvider } from "./utils/AudioContext";
 import { ChakraProvider, CSSReset } from "@chakra-ui/react";
+import "@fontsource/inter/100.css";
+import "@fontsource/inter/200.css";
+import "@fontsource/inter/300.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/inter/800.css";
+import "@fontsource/inter/900.css";
+import theme from "./theme";
 
 // Auth(SpecificComponent, option, adminRoute)
 // option:
@@ -55,7 +65,7 @@ function App() {
   }
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <CSSReset />
       <Suspense fallback={(<div>Loading...</div>)}>
        <AudioContextProvider>
