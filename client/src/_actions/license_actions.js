@@ -49,11 +49,11 @@ export function updateLicense(licenseId, licenseInfo) {
 }
 
 export function toggleLicenseActivation(licenseId) {
-  const licenses = axios.put(`${LICENSE_SERVER}/toggle?id=${licenseId}`)
+  const request = axios.put(`${LICENSE_SERVER}/toggle?id=${licenseId}`)
     .then(response => response.data);
 
   return {
     type: TOGGLE_LICENSE_ACTIVATION,
-    payload: licenses
+    payload: request
   }
 }

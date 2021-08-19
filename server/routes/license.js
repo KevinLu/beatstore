@@ -51,7 +51,8 @@ router.post("/create", auth, async (req, res) => {
 
             return res.status(201).json({
                 success: true,
-                license: savedLicense
+                license: savedLicense,
+                licenseId,
             });
 
         } catch (e) {
@@ -89,7 +90,8 @@ router.get("/getById", async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            license: foundLicense
+            license: foundLicense,
+            licenseId,
         });
     } catch (e) {
         console.log(e);
@@ -165,7 +167,8 @@ router.put("/update", auth, async (req, res) => {
 
             return res.status(200).json({
                 success: true,
-                license: updatedLicense
+                license: updatedLicense,
+                licenseId,
             });
         } catch (e) {
             console.log(e);
@@ -207,7 +210,8 @@ router.put("/update", auth, async (req, res) => {
             }
 
             return res.status(200).json({
-                success: true
+                success: true,
+                licenseId,
             });
         } catch (e) {
             return res.status(400).json({success: false, msg: e.message});
@@ -250,7 +254,7 @@ router.delete("/delete", auth, async (req, res) => {
 
             return res.status(200).json({
                 success: true,
-                licenseId: licenseId,
+                licenseId,
             });
         } catch (e) {
             console.log(e);

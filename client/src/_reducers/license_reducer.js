@@ -24,17 +24,9 @@ const licenseReducer = (state = initialState, action) => {
       const updatedLicenseId = action.payload.licenseId;
       return {...state, licenses: state.licenses.map(lic => lic._id === updatedLicenseId ? {...lic, enabled: !lic.enabled} : lic)};
     case UPDATE_LICENSE:
-      const licenseToUpdate = action.payload.license._id;
       return {
         ...state,
-        licenses: state.licenses.forEach(lic => {
-          if (lic._id === licenseToUpdate) {
-            return action.payload.license;
-          } else {
-            return lic;
-          }
-        }),
-        isLoaded: true
+        licenses: state.licenses.map(lic => lic._id === action.payload.licenseId ? action.payload.license : lic)
       };
     default:
       return state;

@@ -1,4 +1,6 @@
 import React, {useEffect} from 'react';
+import {useDispatch} from 'react-redux';
+import {updateLicense} from '../../../../_actions/license_actions';
 import {
   Button,
   Modal,
@@ -22,6 +24,7 @@ import {
   HStack,
   Switch,
   SimpleGrid,
+  useToast,
 } from '@chakra-ui/react';
 import {useForm, Controller} from "react-hook-form";
 
@@ -39,6 +42,8 @@ function EditLicense(props) {
     formState: {errors, isSubmitting},
     reset,
   } = useForm();
+  const dispatch = useDispatch();
+  const toast = useToast();
 
   useEffect(() => {
     reset(null);
@@ -46,11 +51,24 @@ function EditLicense(props) {
 
   function onSubmit(values) {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log('values', values);
-        resolve();
-        onClose();
-      }, 1000);
+      dispatch(updateLicense(license._id, values))
+        .then(res => {
+          if (res.payload.success) {
+            resolve();
+            onClose();
+          } else {
+            throw Error("Encountered an error while updating license!");
+          }
+        })
+        .catch(err => {
+          toast({
+            title: "Could not update license.",
+            description: err.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        })
     });
   }
 
@@ -76,19 +94,26 @@ function EditLicense(props) {
                 <SimpleGrid columns={[1, null, 2]} spacing={4}>
                   <FormControl isInvalid={errors.price}>
                     <FormLabel htmlFor="price">Default price</FormLabel>
-                    <NumberInput id="price" defaultValue={license.price}
-                      precision={2}
-                      step={0.01}
-                      min={1}
-                      max={10000}>
-                      <NumberInputField {...register("price", {
-                        required: "Price is required",
-                      })} />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
+                    <Controller
+                      control={control}
+                      name="price"
+                      defaultValue={license.price}
+                      render={({field: {onChange, value, ref}}) => (
+                        <NumberInput id="price"
+                          onChange={onChange}
+                          ref={ref}
+                          value={value}
+                          precision={2}
+                          step={0.01}
+                          min={1}
+                          max={999999}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )} />
                     <FormErrorMessage>
                       {errors.price && errors.price.message}
                     </FormErrorMessage>
@@ -96,19 +121,26 @@ function EditLicense(props) {
                   </FormControl>
                   <FormControl isInvalid={errors.min_offer_price}>
                     <FormLabel htmlFor="min_offer_price">Minimum offer price</FormLabel>
-                    <NumberInput id="min_offer_price" defaultValue={license.min_offer_price}
-                      precision={2}
-                      step={0.01}
-                      min={0}
-                      max={10000}>
-                      <NumberInputField {...register("min_offer_price", {
-                        required: "Cannot be blank",
-                      })} />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
+                    <Controller
+                      control={control}
+                      name="min_offer_price"
+                      defaultValue={license.min_offer_price}
+                      render={({field: {onChange, value, ref}}) => (
+                        <NumberInput id="min_offer_price"
+                          onChange={onChange}
+                          ref={ref}
+                          value={value}
+                          precision={2}
+                          step={0.01}
+                          min={1}
+                          max={999999}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )} />
                     <FormErrorMessage>
                       {errors.min_offer_price && errors.min_offer_price.message}
                     </FormErrorMessage>
@@ -266,7 +298,7 @@ function EditLicense(props) {
                       aria-label="Allow for profit performances toggle"
                       aria-labelledby="allow_for_profit_performances_label"
                       id="allow_for_profit_performances"
-                      defaultValue={license.allow_for_profit_performances} />
+                      defaultChecked={license.allow_for_profit_performances} />
                   </FormControl>
 
                 </SimpleGrid>
