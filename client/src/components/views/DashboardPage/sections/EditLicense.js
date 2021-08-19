@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   Button,
   Modal,
@@ -19,170 +19,266 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Checkbox,
-  CheckboxGroup,
   HStack,
   Switch,
   SimpleGrid,
 } from '@chakra-ui/react';
+import {useForm, Controller} from "react-hook-form";
+
+const fileTypes = [{file: "included_mp3", text: "MP3 (tagged)"},
+{file: "mp3_untagged", text: "MP3 (untagged)"},
+{file: "included_wav", text: "WAV"},
+{file: "included_stems", text: "Stems"}];
 
 function EditLicense(props) {
   const {isOpen, onClose, license} = props;
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: {errors, isSubmitting},
+    reset,
+  } = useForm();
+
+  useEffect(() => {
+    reset(null);
+  }, [isOpen]);
+
+  function onSubmit(values) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('values', values);
+        resolve();
+        onClose();
+      }, 1000);
+    });
+  }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside" closeOnEsc={false} closeOnOverlayClick={false} size="6xl">
+    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} size="6xl">
       <ModalOverlay />
       {license == null ? <>Loading..</> :
         <ModalContent>
           <ModalHeader>Edit License</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <SimpleGrid columns={1} spacing={4}>
-              <FormControl id="name">
-                <FormLabel>License Name</FormLabel>
-                <Input defaultValue={license.name} />
-              </FormControl>
-              <SimpleGrid columns={[1, null, 2]} spacing={4}>
-                <FormControl id="price">
-                  <FormLabel>Default price</FormLabel>
-                  <NumberInput defaultValue={license.price} precision={2} step={0.01} min={1} max={10000}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Prices are in <b>USD</b></FormHelperText>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalBody>
+              <SimpleGrid columns={1} spacing={4}>
+                <FormControl isInvalid={errors.name}>
+                  <FormLabel htmlFor="name">License Name</FormLabel>
+                  <Input id="name" defaultValue={license.name} {...register("name", {
+                    required: "License name is required",
+                  })} />
+                  <FormErrorMessage>
+                    {errors.name && errors.name.message}
+                  </FormErrorMessage>
                 </FormControl>
-                <FormControl id="min_offer_price">
-                  <FormLabel>Minimum offer price</FormLabel>
-                  <NumberInput defaultValue={license.min_offer_price} precision={2} step={0.01} min={0} max={10000}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>0</b> to disable offers</FormHelperText>
-                </FormControl>
-              </SimpleGrid>
+                <SimpleGrid columns={[1, null, 2]} spacing={4}>
+                  <FormControl isInvalid={errors.price}>
+                    <FormLabel htmlFor="price">Default price</FormLabel>
+                    <NumberInput id="price" defaultValue={license.price}
+                      precision={2}
+                      step={0.01}
+                      min={1}
+                      max={10000}>
+                      <NumberInputField {...register("price", {
+                        required: "Price is required",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.price && errors.price.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Prices are in <b>USD</b></FormHelperText>
+                  </FormControl>
+                  <FormControl isInvalid={errors.min_offer_price}>
+                    <FormLabel htmlFor="min_offer_price">Minimum offer price</FormLabel>
+                    <NumberInput id="min_offer_price" defaultValue={license.min_offer_price}
+                      precision={2}
+                      step={0.01}
+                      min={0}
+                      max={10000}>
+                      <NumberInputField {...register("min_offer_price", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.min_offer_price && errors.min_offer_price.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>0</b> to disable offers</FormHelperText>
+                  </FormControl>
+                </SimpleGrid>
 
-              <FormControl as="fieldset" id="files_included">
-                <FormLabel as="legend">Files included</FormLabel>
-                <CheckboxGroup defaultValue={[license.included_mp3 && "included_mp3", license.mp3_untagged && "mp3_untagged",
-                license.included_wav && "included_wav", license.included_stems && "included_stems"]}>
+                <FormControl id="files_included" as="fieldset">
+                  <FormLabel as="legend">Files included</FormLabel>
                   <HStack>
-                    <Checkbox value="included_mp3" isDisabled>MP3 Tagged</Checkbox>
-                    <Checkbox value="mp3_untagged">MP3 Untagged</Checkbox>
-                    <Checkbox value="included_wav">WAV</Checkbox>
-                    <Checkbox value="included_stems">Stems</Checkbox>
+                    {fileTypes.map(({file, text}) => (
+                      <Controller
+                        control={control}
+                        name={file}
+                        key={file}
+                        defaultValue={license[file]}
+                        render={({field: {onChange, value, ref}}) => (
+                          <Checkbox
+                            onChange={onChange}
+                            ref={ref}
+                            isChecked={value}
+                            isDisabled={file === 'included_mp3' ? true : false}>
+                            {text}
+                          </Checkbox>
+                        )} />
+                    ))}
                   </HStack>
-                </CheckboxGroup>
-              </FormControl>
-              <SimpleGrid columns={[1, null, 2]} spacing={4}>
-                <FormControl id="audio_streams">
-                  <FormLabel>Audio streams</FormLabel>
-                  <NumberInput defaultValue={license.audio_streams} step={1000} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                 </FormControl>
+                <SimpleGrid columns={[1, null, 2]} spacing={4}>
+                  <FormControl isInvalid={errors.audio_streams}>
+                    <FormLabel htmlFor="audio_streams">Audio streams</FormLabel>
+                    <NumberInput id="audio_streams" defaultValue={license.audio_streams} step={1000} min={-1} max={99999999}>
+                      <NumberInputField {...register("audio_streams", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.audio_streams && errors.audio_streams.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl id="distribution_copies">
-                  <FormLabel>Distribution copies</FormLabel>
-                  <NumberInput defaultValue={license.distribution_copies} step={1000} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
-                </FormControl>
+                  <FormControl isInvalid={errors.distribution_copies}>
+                    <FormLabel htmlFor="distribution_copies">Distribution copies</FormLabel>
+                    <NumberInput id="distribution_copies" defaultValue={license.distribution_copies} step={1000} min={-1} max={99999999}>
+                      <NumberInputField {...register("distribution_copies", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.distribution_copies && errors.distribution_copies.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl id="free_downloads">
-                  <FormLabel>Free downloads</FormLabel>
-                  <NumberInput defaultValue={license.free_downloads} step={1000} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
-                </FormControl>
+                  <FormControl isInvalid={errors.free_downloads}>
+                    <FormLabel htmlFor="free_downloads">Free downloads</FormLabel>
+                    <NumberInput id="free_downloads" defaultValue={license.free_downloads} step={1000} min={-1} max={99999999}>
+                      <NumberInputField {...register("free_downloads", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.free_downloads && errors.free_downloads.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl id="music_videos">
-                  <FormLabel>Music videos</FormLabel>
-                  <NumberInput defaultValue={license.music_videos} step={1000} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
-                </FormControl>
+                  <FormControl isInvalid={errors.music_videos}>
+                    <FormLabel htmlFor="music_videos">Music videos</FormLabel>
+                    <NumberInput id="music_videos" defaultValue={license.music_videos} step={1000} min={-1} max={99999999}>
+                      <NumberInputField {...register("music_videos", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.music_videos && errors.music_videos.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl id="music_video_streams">
-                  <FormLabel>Music video streams</FormLabel>
-                  <NumberInput defaultValue={license.music_video_streams} step={1000} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
-                </FormControl>
+                  <FormControl isInvalid={errors.music_video_streams}>
+                    <FormLabel htmlFor="music_video_streams">Music video streams</FormLabel>
+                    <NumberInput id="music_video_streams" defaultValue={license.music_video_streams} step={1000} min={-1} max={99999999}>
+                      <NumberInputField {...register("music_video_streams", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.music_video_streams && errors.music_video_streams.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl id="radio_stations">
-                  <FormLabel>Radio stations</FormLabel>
-                  <NumberInput defaultValue={license.radio_stations} step={10} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
-                </FormControl>
+                  <FormControl isInvalid={errors.radio_stations}>
+                    <FormLabel htmlFor="radio_stations">Radio stations</FormLabel>
+                    <NumberInput id="radio_stations" defaultValue={license.radio_stations} step={10} min={-1} max={99999999}>
+                      <NumberInputField {...register("radio_stations", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.radio_stations && errors.radio_stations.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl id="non_profit_performances">
-                  <FormLabel>Number of not for profit performances</FormLabel>
-                  <NumberInput defaultValue={license.non_profit_performances} step={1000} min={-1} max={99999999}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
-                </FormControl>
+                  <FormControl isInvalid={errors.non_profit_performances}>
+                    <FormLabel htmlFor="non_profit_performances">Number of not for profit performances</FormLabel>
+                    <NumberInput id="non_profit_performances" defaultValue={license.non_profit_performances} step={1000} min={-1} max={99999999}>
+                      <NumberInputField {...register("non_profit_performances", {
+                        required: "Cannot be blank",
+                      })} />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                    <FormErrorMessage>
+                      {errors.non_profit_performances && errors.non_profit_performances.message}
+                    </FormErrorMessage>
+                    <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
+                  </FormControl>
 
-                <FormControl display="flex" alignItems="center">
-                  <FormLabel id="allow_for_profit_performances_label" htmlFor="allow_for_profit_performances" mb="0">
-                    Allow for profit performances?
-                  </FormLabel>
-                  <Switch
-                    aria-label="Allow for profit performances toggle"
-                    aria-labelledby="allow_for_profit_performances_label"
-                    id="allow_for_profit_performances"
-                    defaultValue={license.allow_for_profit_performances} />
-                </FormControl>
+                  <FormControl display="flex" alignItems="center" isInvalid={errors.allow_for_profit_performances}>
+                    <FormLabel id="allow_for_profit_performances_label" htmlFor="allow_for_profit_performances" mb="0">
+                      Allow for profit performances?
+                    </FormLabel>
+                    <Switch
+                      {...register("allow_for_profit_performances")}
+                      aria-label="Allow for profit performances toggle"
+                      aria-labelledby="allow_for_profit_performances_label"
+                      id="allow_for_profit_performances"
+                      defaultValue={license.allow_for_profit_performances} />
+                  </FormControl>
 
+                </SimpleGrid>
               </SimpleGrid>
-            </SimpleGrid>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Save
-            </Button>
-            <Button onClick={onClose}>Cancel</Button>
-          </ModalFooter>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} isLoading={isSubmitting} type="submit">
+                Save
+              </Button>
+              <Button onClick={onClose}>Cancel</Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       }
     </Modal>
