@@ -39,7 +39,7 @@ router.post("/create", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User is not authenticated.');
-            if (req.user.role === 0) throw Error('User does not have permission to perform this action.');
+            if (req.user.role !== 1) throw Error('User does not have permission to perform this action.');
 
             const license = new License(req.body);
 
@@ -113,7 +113,7 @@ router.get("/getById", async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User is not authenticated.');
-            if (req.user.role === 0) throw Error('User does not have permission to perform this action.');
+            if (req.user.role !== 1) throw Error('User does not have permission to perform this action.');
 
             const licenses = await License.find({ '_id': { $in: req.user.licenses } }).select('-__v');
     
@@ -149,7 +149,7 @@ router.put("/update", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User is not authenticated.');
-            if (req.user.role === 0) throw Error('User does not have permission to perform this action.');
+            if (req.user.role !== 1) throw Error('User does not have permission to perform this action.');
             const licenseId = req.query.id;
             if (!licenseId) throw Error('License id is not present in request url.');
 
@@ -199,7 +199,7 @@ router.put("/update", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User is not authenticated.');
-            if (req.user.role === 0) throw Error('User does not have permission to perform this action.');
+            if (req.user.role !== 1) throw Error('User does not have permission to perform this action.');
             const licenseId = req.query.id;
             if (!licenseId) throw Error('License id is not present in request url.');
 
@@ -239,7 +239,7 @@ router.delete("/delete", auth, async (req, res) => {
     if (req.isAuth) {
         try {
             if (!req.user) throw Error('User is not authenticated.');
-            if (req.user.role === 0) throw Error('User does not have permission to perform this action.');
+            if (req.user.role !== 1) throw Error('User does not have permission to perform this action.');
             const licenseId = req.query.id;
             if (!licenseId) throw Error('License id is not present in request url.');
 

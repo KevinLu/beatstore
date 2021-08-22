@@ -32,7 +32,7 @@ export default function (SpecificComponent, option, adminRoute) {
                         console.log("non logged in users only")
                     }
                 } else { //Loggined in Status
-                    if (adminRoute && response.payload.role === 0) { // page is admin only, but user is not admin
+                    if (adminRoute && response.payload.role !== 1) { // page is admin only, but user is not admin
                         window.location.href = '/';
                         return null;
                     }
