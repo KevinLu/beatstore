@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {updateLicense} from '../../../../_actions/license_actions';
+import {updateLicense, deleteLicense} from '../../../../_actions/license_actions';
 import {
   Button,
   Modal,
@@ -44,12 +44,13 @@ function EditLicense(props) {
   } = useForm();
   const dispatch = useDispatch();
   const toast = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     reset(null);
   }, [isOpen]);
 
-  function onSubmit(values) {
+  const onSubmit = (values) => {
     return new Promise((resolve) => {
       dispatch(updateLicense(license._id, values))
         .then(res => {
@@ -72,6 +73,21 @@ function EditLicense(props) {
     });
   }
 
+  const delLicense = () => {
+    setIsDeleting(true);
+    dispatch(deleteLicense(license._id))
+      .then(res => {
+        if (res.payload.success) {
+          setIsDeleting(false);
+          onClose();
+        }
+      }).catch(err => {
+        setIsDeleting(false);
+        onClose();
+        console.log(err);
+      });
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} size="6xl">
       <ModalOverlay />
@@ -82,7 +98,7 @@ function EditLicense(props) {
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalBody>
               <SimpleGrid columns={1} spacing={4}>
-                <FormControl isInvalid={errors.name}>
+                <FormControl isInvalid={errors.name} isDisabled={isDeleting}>
                   <FormLabel htmlFor="name">License Name</FormLabel>
                   <Input id="name" defaultValue={license.name} {...register("name", {
                     required: "License name is required",
@@ -92,7 +108,7 @@ function EditLicense(props) {
                   </FormErrorMessage>
                 </FormControl>
                 <SimpleGrid columns={[1, null, 2]} spacing={4}>
-                  <FormControl isInvalid={errors.price}>
+                  <FormControl isInvalid={errors.price} isDisabled={isDeleting}>
                     <FormLabel htmlFor="price">Default price</FormLabel>
                     <Controller
                       control={control}
@@ -119,7 +135,7 @@ function EditLicense(props) {
                     </FormErrorMessage>
                     <FormHelperText>Prices are in <b>USD</b></FormHelperText>
                   </FormControl>
-                  <FormControl isInvalid={errors.min_offer_price}>
+                  <FormControl isInvalid={errors.min_offer_price} isDisabled={isDeleting}>
                     <FormLabel htmlFor="min_offer_price">Minimum offer price</FormLabel>
                     <Controller
                       control={control}
@@ -148,7 +164,7 @@ function EditLicense(props) {
                   </FormControl>
                 </SimpleGrid>
 
-                <FormControl id="files_included" as="fieldset">
+                <FormControl id="files_included" as="fieldset" isDisabled={isDeleting}>
                   <FormLabel as="legend">Files included</FormLabel>
                   <HStack>
                     {fileTypes.map(({file, text}) => (
@@ -162,7 +178,7 @@ function EditLicense(props) {
                             onChange={onChange}
                             ref={ref}
                             isChecked={value}
-                            isDisabled={file === 'included_mp3' ? true : false}>
+                            isDisabled={(file === 'included_mp3' ? true : false) || isDeleting}>
                             {text}
                           </Checkbox>
                         )} />
@@ -170,7 +186,7 @@ function EditLicense(props) {
                   </HStack>
                 </FormControl>
                 <SimpleGrid columns={[1, null, 2]} spacing={4}>
-                  <FormControl isInvalid={errors.audio_streams}>
+                  <FormControl isInvalid={errors.audio_streams} isDisabled={isDeleting}>
                     <FormLabel htmlFor="audio_streams">Audio streams</FormLabel>
                     <NumberInput id="audio_streams" defaultValue={license.audio_streams} step={1000} min={-1} max={99999999}>
                       <NumberInputField {...register("audio_streams", {
@@ -187,7 +203,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl isInvalid={errors.distribution_copies}>
+                  <FormControl isInvalid={errors.distribution_copies} isDisabled={isDeleting}>
                     <FormLabel htmlFor="distribution_copies">Distribution copies</FormLabel>
                     <NumberInput id="distribution_copies" defaultValue={license.distribution_copies} step={1000} min={-1} max={99999999}>
                       <NumberInputField {...register("distribution_copies", {
@@ -204,7 +220,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl isInvalid={errors.free_downloads}>
+                  <FormControl isInvalid={errors.free_downloads} isDisabled={isDeleting}>
                     <FormLabel htmlFor="free_downloads">Free downloads</FormLabel>
                     <NumberInput id="free_downloads" defaultValue={license.free_downloads} step={1000} min={-1} max={99999999}>
                       <NumberInputField {...register("free_downloads", {
@@ -221,7 +237,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl isInvalid={errors.music_videos}>
+                  <FormControl isInvalid={errors.music_videos} isDisabled={isDeleting}>
                     <FormLabel htmlFor="music_videos">Music videos</FormLabel>
                     <NumberInput id="music_videos" defaultValue={license.music_videos} step={1000} min={-1} max={99999999}>
                       <NumberInputField {...register("music_videos", {
@@ -238,7 +254,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl isInvalid={errors.music_video_streams}>
+                  <FormControl isInvalid={errors.music_video_streams} isDisabled={isDeleting}>
                     <FormLabel htmlFor="music_video_streams">Music video streams</FormLabel>
                     <NumberInput id="music_video_streams" defaultValue={license.music_video_streams} step={1000} min={-1} max={99999999}>
                       <NumberInputField {...register("music_video_streams", {
@@ -255,7 +271,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl isInvalid={errors.radio_stations}>
+                  <FormControl isInvalid={errors.radio_stations} isDisabled={isDeleting}>
                     <FormLabel htmlFor="radio_stations">Radio stations</FormLabel>
                     <NumberInput id="radio_stations" defaultValue={license.radio_stations} step={10} min={-1} max={99999999}>
                       <NumberInputField {...register("radio_stations", {
@@ -272,7 +288,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl isInvalid={errors.non_profit_performances}>
+                  <FormControl isInvalid={errors.non_profit_performances} isDisabled={isDeleting}>
                     <FormLabel htmlFor="non_profit_performances">Number of not for profit performances</FormLabel>
                     <NumberInput id="non_profit_performances" defaultValue={license.non_profit_performances} step={1000} min={-1} max={99999999}>
                       <NumberInputField {...register("non_profit_performances", {
@@ -289,7 +305,7 @@ function EditLicense(props) {
                     <FormHelperText>Enter <b>-1</b> for unlimited</FormHelperText>
                   </FormControl>
 
-                  <FormControl display="flex" alignItems="center" isInvalid={errors.allow_for_profit_performances}>
+                  <FormControl display="flex" alignItems="center" isInvalid={errors.allow_for_profit_performances} isDisabled={isDeleting}>
                     <FormLabel id="allow_for_profit_performances_label" htmlFor="allow_for_profit_performances" mb="0">
                       Allow for profit performances?
                     </FormLabel>
@@ -298,17 +314,21 @@ function EditLicense(props) {
                       aria-label="Allow for profit performances toggle"
                       aria-labelledby="allow_for_profit_performances_label"
                       id="allow_for_profit_performances"
-                      defaultChecked={license.allow_for_profit_performances} />
+                      defaultChecked={license.allow_for_profit_performances}
+                      isDisabled={isDeleting} />
                   </FormControl>
 
                 </SimpleGrid>
               </SimpleGrid>
             </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} isLoading={isSubmitting} type="submit">
-                Save
-              </Button>
-              <Button onClick={onClose}>Cancel</Button>
+            <ModalFooter justifyContent="space-between">
+              <Button colorScheme="red" onClick={delLicense} isLoading={isDeleting} isDisabled={isSubmitting}>Delete</Button>
+              <HStack>
+                <Button colorScheme="blue" isLoading={isSubmitting} isDisabled={isDeleting} type="submit">
+                  Save
+                </Button>
+                <Button onClick={onClose} isDisabled={isDeleting || isSubmitting}>Cancel</Button>
+              </HStack>
             </ModalFooter>
           </form>
         }

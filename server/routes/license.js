@@ -52,7 +52,7 @@ router.post("/create", auth, async (req, res) => {
             return res.status(201).json({
                 success: true,
                 license: savedLicense,
-                licenseId,
+                licenseId: savedLicense._id,
             });
 
         } catch (e) {
@@ -115,7 +115,7 @@ router.get("/getById", async (req, res) => {
             if (!req.user) throw Error('User is not authenticated.');
             if (req.user.role !== 1) throw Error('User does not have permission to perform this action.');
 
-            const licenses = await License.find({ '_id': { $in: req.user.licenses } }).select('-__v');
+            const licenses = await License.find({ '_id': { $in: req.user.licenses }, 'deleted': false }).select('-__v');
     
             return res.status(200).json({
                 success: true,
@@ -225,7 +225,7 @@ router.put("/update", auth, async (req, res) => {
 });
 
 /**
- * Route for deleting licenses.
+ * Route for deleting licenses. Sets the deleted field to true.
  * Takes a query param id: document id for license.
  * @name DELETE/delete
  * @function
@@ -243,14 +243,22 @@ router.delete("/delete", auth, async (req, res) => {
             const licenseId = req.query.id;
             if (!licenseId) throw Error('License id is not present in request url.');
 
-            const deletionResult = await License.deleteOne({_id: licenseId});
+            // SOFT delete, in case license is in use by any beats
+            const updatedLicense = await License.findOneAndUpdate({_id: licenseId}, [{$set: {deleted: true}}]).exec();
 
-            if (deletionResult.deletedCount === 0) {
-                throw Error('License not found or cannot be deleted.');
+            if (updatedLicense == null || updatedLicense.ok === 0) {
+                throw Error('Cannot find a license by that id.');
             }
+
+            // HARD delete
+            // const deletionResult = await License.deleteOne({_id: licenseId});
+
+            // if (deletionResult.deletedCount === 0) {
+            //     throw Error('License not found or cannot be deleted.');
+            // }
             
-            const userId = req.user._id;
-            await User.updateOne({_id: userId}, {$pull: {licenses: licenseId}});
+            // const userId = req.user._id;
+            // await User.updateOne({_id: userId}, {$pull: {licenses: licenseId}});
 
             return res.status(200).json({
                 success: true,

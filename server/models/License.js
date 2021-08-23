@@ -31,6 +31,11 @@ const licenseSchema = Schema({
         default: false,
         required: true
     },
+    deleted: {
+        type: Boolean,
+        default: false, // soft delete
+        required: true
+    },
     // File info
     included_mp3: {
         type: Boolean,
