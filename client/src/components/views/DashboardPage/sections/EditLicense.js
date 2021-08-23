@@ -75,10 +75,10 @@ function EditLicense(props) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} size="6xl">
       <ModalOverlay />
-      {license == null ? <>Loading..</> :
-        <ModalContent>
-          <ModalHeader>Edit License</ModalHeader>
-          <ModalCloseButton />
+      <ModalContent>
+        <ModalHeader>Edit License</ModalHeader>
+        <ModalCloseButton />
+        {license == null ? <>Loading..</> :
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalBody>
               <SimpleGrid columns={1} spacing={4}>
@@ -311,8 +311,9 @@ function EditLicense(props) {
               <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           </form>
-        </ModalContent>
-      }
+        }
+      </ModalContent>
+
     </Modal>
   );
 }

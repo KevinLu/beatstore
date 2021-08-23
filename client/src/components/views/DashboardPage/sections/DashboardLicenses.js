@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useDispatch, connect} from 'react-redux';
-import {getUserLicenses, toggleLicenseActivation} from '../../../../_actions/license_actions';
+import {getUserLicenses, toggleLicenseActivation, createLicense} from '../../../../_actions/license_actions';
 import {
   Box, Flex, SimpleGrid, Badge, Heading, Stack, Text, Button, Breadcrumb,
   BreadcrumbItem,
@@ -11,38 +11,106 @@ import {
   StatNumber,
   useDisclosure,
 } from '@chakra-ui/react';
-import {MdChevronRight, MdEdit} from 'react-icons/md';
+import {MdChevronRight, MdEdit, MdAdd} from 'react-icons/md';
 import LoadingView from '../../../utils/LoadingView';
 import ErrorView from '../../../utils/ErrorView';
 import EditLicense from './EditLicense';
 
-const EmptyState = () => (
-  <Stack
-    margin="auto"
-    justifyContent="center"
-    alignItems="center"
-    spacing={4}
-    p={16}
-  >
-    <Heading size="xl">You haven't created any licenses.</Heading>
-    <Text fontSize="lg">Welcome 👋 Let's create your first license.</Text>
-    <Button colorScheme="blue">New License</Button>
-  </Stack>
-);
+const emptyLicense = {
+  "name": "New License",
+  "price": 100,
+  "min_offer_price": 0,
+  "enabled": false,
+  "included_mp3": true,
+  "mp3_untagged": true,
+  "included_wav": false,
+  "included_stems": false,
+  "audio_streams": 10000,
+  "distribution_copies": 10000,
+  "free_downloads": 10000,
+  "music_videos": 1,
+  "music_video_streams": 10000,
+  "radio_stations": 1,
+  "allow_for_profit_performances": true,
+  "non_profit_performances": -1,
+};
 
-const BreadCrumbs = () => (
-  <Breadcrumb spacing="8px" separator={<MdChevronRight color="gray.500" />}>
-    <BreadcrumbItem>
-      <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-    </BreadcrumbItem>
+const EmptyState = () => {
+  const dispatch = useDispatch();
+  const [newLicenseLoading, setNewLicenseLoading] = useState(false);
 
-    <BreadcrumbItem isCurrentPage>
-      <BreadcrumbLink href="#">Licenses</BreadcrumbLink>
-    </BreadcrumbItem>
-  </Breadcrumb>
-);
+  const createNewLicense = () => {
+    setNewLicenseLoading(true);
+    dispatch(createLicense(emptyLicense))
+      .then(response => {
+        if (response.payload.success) {
+          setNewLicenseLoading(false);
+        }
+      })
+      .catch(err => {
+        setNewLicenseLoading(false);
+        console.log(err);
+      });
+  }
 
-const LicenseCard = (license, onOpen, setEditLicenseId) => {
+  return (
+    <Stack
+      margin="auto"
+      justifyContent="center"
+      alignItems="center"
+      spacing={4}
+      p={16}
+    >
+      <Heading size="xl">You haven't created any licenses.</Heading>
+      <Text fontSize="lg">Let's create your first license.</Text>
+      <Button colorScheme="blue"
+        isLoading={newLicenseLoading}
+        onClick={createNewLicense}>
+        New License
+      </Button>
+    </Stack>
+  );
+};
+
+const Header = () => {
+  const dispatch = useDispatch();
+  const [newLicenseLoading, setNewLicenseLoading] = useState(false);
+
+  const createNewLicense = () => {
+    setNewLicenseLoading(true);
+    dispatch(createLicense(emptyLicense))
+      .then(response => {
+        if (response.payload.success) {
+          setNewLicenseLoading(false);
+        }
+      })
+      .catch(err => {
+        setNewLicenseLoading(false);
+        console.log(err);
+      });
+  }
+
+  return (
+    <Flex justifyContent="space-between" alignItems="center">
+      <Breadcrumb spacing="8px" separator={<MdChevronRight color="gray.500" />}>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
+        </BreadcrumbItem>
+
+        <BreadcrumbItem isCurrentPage>
+          <BreadcrumbLink href="#">Licenses</BreadcrumbLink>
+        </BreadcrumbItem>
+      </Breadcrumb>
+      <Button leftIcon={<MdAdd />}
+        isLoading={newLicenseLoading}
+        onClick={createNewLicense}>
+        New License
+      </Button>
+    </Flex>
+  );
+};
+
+const LicenseCard = (license, onOpen, setEditLicense) => {
   const dispatch = useDispatch();
 
   const toggleStatus = () => {
@@ -50,7 +118,7 @@ const LicenseCard = (license, onOpen, setEditLicenseId) => {
   }
 
   const openEditModal = () => {
-    setEditLicenseId(license._id);
+    setEditLicense(license);
     onOpen();
   }
 
@@ -74,11 +142,11 @@ const LicenseCard = (license, onOpen, setEditLicenseId) => {
           {license.included_wav ?
             <Badge variant="solid" colorScheme="pink">
               WAV
-          </Badge> : null}
+            </Badge> : null}
           {license.included_stems ?
             <Badge variant="solid" colorScheme="purple">
               Stems
-          </Badge> : null}
+            </Badge> : null}
         </Stack>
       </Stack>
 
@@ -101,10 +169,10 @@ const LicenseCard = (license, onOpen, setEditLicenseId) => {
 function DashboardLicenses(props) {
   const {licenses} = props;
   const dispatch = useDispatch();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const [licensesLoading, setLicensesLoading] = useState(true);
   const [licensesError, setLicensesError] = useState(false);
-  const [editLicenseId, setEditLicenseId] = useState(null);
+  const [editLicense, setEditLicense] = useState(null);
 
   useEffect(() => {
     dispatch(getUserLicenses())
@@ -133,12 +201,12 @@ function DashboardLicenses(props) {
     return (
       <>
         <Box p={4} w="100%">
-          <BreadCrumbs />
+          <Header onOpen={onOpen} setEditLicense={setEditLicense} />
           <SimpleGrid columns={[1, 1, 1, 1, 2, 3]} spacing={4} mt={4}>
-            {licenses.map(license => LicenseCard(license, onOpen, setEditLicenseId))}
+            {licenses.map(license => LicenseCard(license, onOpen, setEditLicense))}
           </SimpleGrid>
         </Box>
-        <EditLicense isOpen={isOpen} onClose={onClose} license={licenses.find(lic => lic._id === editLicenseId)} />
+        <EditLicense isOpen={isOpen} onClose={onClose} license={editLicense} />
       </>
     );
   }
