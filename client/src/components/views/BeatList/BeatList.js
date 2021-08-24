@@ -32,7 +32,7 @@ const ListHeading = ({children, displayBreakpoints}) => (
 );
 
 const ListText = ({children, displayBreakpoints}) => (
-    <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints}>
+    <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
         <Text fontWeight="600" fontSize="md" color="black">{children}</Text>
     </Box>
 );
