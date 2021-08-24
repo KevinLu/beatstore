@@ -5,6 +5,7 @@ import {
   DELETE_LICENSE,
   TOGGLE_LICENSE_ACTIVATION,
   UPDATE_LICENSE,
+  GET_ENABLED_LICENSES,
 } from '../_actions/types';
 import {LICENSE_SERVER} from '../components/Config';
 
@@ -14,6 +15,16 @@ export function getUserLicenses() {
 
   return {
     type: GET_USER_LICENSES,
+    payload: request
+  }
+}
+
+export function getEnabledLicenses() {
+  const request = axios.get(`${LICENSE_SERVER}/public`)
+    .then(response => response.data);
+
+  return {
+    type: GET_ENABLED_LICENSES,
     payload: request
   }
 }

@@ -13,6 +13,9 @@
  */
 const express = require('express');
 
+// Import admin user id
+const { adminUserId } = require('../config/key');
+
 /**
  * Express router to mount license related functions on.
  * @type {object}
@@ -131,6 +134,34 @@ router.get("/getById", async (req, res) => {
             success: false,
             msg: 'User is not authenticated.'
         });
+    }
+});
+
+/**
+ * Route for getting all public (enabled) licenses
+ * @name GET/public
+ * @function
+ * @memberof module:routers/license~licenseRouter
+ * @inner
+ * @param {string} path - Express path
+ * @param {middleware} auth - Auth middleware
+ * @param {callback} cb - Callback function
+ */
+ router.get("/public", auth, async (req, res) => {
+    try {
+        const user = await User.findById(adminUserId, {licenses: 1}).populate('licenses', '-__v', {'deleted': false, 'enabled': true});
+
+        if (user === null) {
+            throw Error('Error fetching licenses.');
+        }
+
+        return res.status(200).json({
+            success: true,
+            licenses: user.licenses
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(400).json({success: false, msg: e.message});
     }
 });
 

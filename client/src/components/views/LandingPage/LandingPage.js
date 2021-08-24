@@ -3,6 +3,7 @@ import SearchBox from './SearchBox';
 import {Link} from 'react-router-dom';
 import {Box, Button} from "@chakra-ui/react";
 import BeatList from '../BeatList/BeatList';
+import Licenses from '../Licenses/Licenses';
 import AudioVisualizer from '../AudioVisualizer/AudioVisualizer';
 
 function LandingPage() {
@@ -20,9 +21,10 @@ function LandingPage() {
                 <Search />
                 <AudioVisualizer />
                 <BeatList query="ALL" limit={10} />
-                <Box display="flex" justifyContent="center" mt={10}>
+                <Box display="flex" justifyContent="center" my={10}>
                     <Button as={Link} to="/beats" colorScheme="blue">BROWSE ALL</Button>
                 </Box>
+                <Licenses />
             </Box>
         </Box>
     );

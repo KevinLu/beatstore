@@ -4,10 +4,12 @@ import {
   DELETE_LICENSE,
   TOGGLE_LICENSE_ACTIVATION,
   UPDATE_LICENSE,
+  GET_ENABLED_LICENSES,
 } from '../_actions/types';
 
 const initialState = {
   licenses: [],
+  publicLicenses: [],
   isLoaded: false
 }
 
@@ -15,6 +17,8 @@ const licenseReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_USER_LICENSES:
       return {...state, licenses: action.payload.licenses, isLoaded: true};
+    case GET_ENABLED_LICENSES:
+      return {...state, publicLicenses: action.payload.licenses, isLoaded: true};
     case CREATE_LICENSE:
       return {...state, licenses: [...state.licenses, action.payload.license], isLoaded: true};
     case DELETE_LICENSE:
