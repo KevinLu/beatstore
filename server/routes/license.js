@@ -249,6 +249,9 @@ router.delete("/delete", auth, async (req, res) => {
             if (updatedLicense == null || updatedLicense.ok === 0) {
                 throw Error('Cannot find a license by that id.');
             }
+            
+            const userId = req.user._id;
+            await User.updateOne({_id: userId}, {$pull: {licenses: licenseId}});
 
             // HARD delete
             // const deletionResult = await License.deleteOne({_id: licenseId});
