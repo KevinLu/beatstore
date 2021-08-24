@@ -23,7 +23,7 @@ function Licenses() {
   return (
     <>
       <Heading size="lg" textAlign="center" mb={8}>Licensing Info</Heading>
-      <SimpleGrid minChildWidth="120px" spacing={4}>
+      <SimpleGrid minChildWidth="200px" spacing={8}>
         {licenses.map(lic => <LicenseCard license={lic} />)}
       </SimpleGrid>
     </>
