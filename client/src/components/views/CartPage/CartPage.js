@@ -29,7 +29,7 @@ const ListHeading = ({children, displayBreakpoints, float}) => (
 );
 
 const ListText = ({children, displayBreakpoints, fontSize, fontWeight, float}) => (
-    <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints}>
+    <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
         <Text float={float} fontWeight={fontWeight} fontSize={fontSize} color="black">{children}</Text>
     </Box>
 );
@@ -152,7 +152,7 @@ function CartPage(props) {
             return <EmptyCartView />
         } else {
             return (
-                <Grid templateColumns={{base: "1fr", lg: "2.5fr 1fr"}} mt="5em">
+                <Grid gridTemplateColumns={["1fr", null, null, "2fr 1fr"]} mt={4}>
                     <div>
                         <CartHeading />
                         {renderCartItems}
@@ -179,7 +179,7 @@ function CartPage(props) {
         }
     };
 
-    const renderCartItems = cartDetail.map((item, index) => {
+    const renderCartItems = cartDetail?.map((item, index) => {
         const details = {'producer': item.producer.username, 'title': item.title, 'price': item.price};
         return (
             <Box key={index} mb="2em">
