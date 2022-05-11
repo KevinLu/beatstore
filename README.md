@@ -18,6 +18,14 @@ module.exports = {
     s3PrivateBucket: ''
 }
 ```
+
+Also, create a file called `StripeClient.js` in `/client/src/components/utils/` with the following contents:
+```
+module.exports = {
+    stripePublicKey: 'YOUR PUBLIC KEY FROM STRIPE HERE'
+}
+```
+
 |Property|Description|
 |---|---|
 |mongoURI|MongoDB URI|
