@@ -22,6 +22,7 @@ import {
     Divider,
     Fade
 } from "@chakra-ui/react";
+import AddToCartButton from '../../utils/AddToCartButton';
 import {FaHashtag, FaShoppingCart} from 'react-icons/fa';
 import {IoMdDownload} from 'react-icons/io';
 
@@ -33,7 +34,7 @@ const ListHeading = ({children, displayBreakpoints}) => (
 
 const ListText = ({children, displayBreakpoints}) => (
     <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
-        <Text fontWeight="600" fontSize="md" color="black">{children}</Text>
+        <Text fontWeight="600" fontSize="md">{children}</Text>
     </Box>
 );
 
@@ -86,6 +87,7 @@ function BeatList(props) {
                             audio: beat.previewAudio[0],
                             length: beat.length,
                             bpm: beat.bpm,
+                            licenses: beat.licenses,
                             isPlaying: false,
                             isPaused: false,
                             index: index
@@ -245,14 +247,18 @@ function BeatList(props) {
                                         icon={<IoMdDownload />}
                                     />
 
-                                    <Button
+                                    {/* <Button
                                         leftIcon={isInCart ? null : <FaShoppingCart />}
                                         colorScheme="blue"
                                         style={{background: isInCart ? "#63b3ed" : null}}
                                         variant="solid"
                                         onClick={() => addToCartHandler(beat._id)}>
                                         {isInCart ? "IN CART" : `$${beat.price}`}
-                                    </Button>
+                                    </Button> */}
+                                    <AddToCartButton
+                                        isInCart={isInCart}
+                                        price={beat.price}
+                                        licenses={beat.licenses} />
                                 </ButtonGroup>
 
                             </Grid>

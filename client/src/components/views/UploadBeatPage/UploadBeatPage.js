@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getEnabledLicenses } from '../../../_actions/license_actions';
 import {
     Box,
     Flex,
@@ -11,6 +13,9 @@ import {
     Input,
     Textarea,
     Button,
+    Checkbox,
+    CheckboxGroup,
+    HStack,
     useToast
 } from "@chakra-ui/react";
 import FileUpload from '../../utils/FileUpload';
@@ -23,12 +28,19 @@ import {FaMusic} from 'react-icons/fa';
 
 function UploadBeatPage(props) {
     const [IsUploading, setIsUploading] = useState(false);
+    const dispatch = useDispatch();
+    const licenses = useSelector(state => state.license.publicLicenses);
+
+    useEffect(() => {
+        dispatch(getEnabledLicenses());
+    }, []);
 
     const [field, setField] = useState({
         title: "",
         description: "",
         bpm: 0,
         price: 0,
+        licenses: [],
         date: new Date()
     });
 
@@ -37,6 +49,13 @@ function UploadBeatPage(props) {
         setField(prevField => ({
             ...prevField,
             [name]: value
+        }));
+    }
+
+    const handleLicenseCheckbox = e => {
+        setField(prevField => ({
+            ...prevField,
+            licenses: e
         }));
     }
 
@@ -101,8 +120,8 @@ function UploadBeatPage(props) {
         event.preventDefault();
 
         if (!field.title || !field.description || !field.price || !field.bpm ||
-            !field.date || PreviewAudio.length === 0 || Artwork.length === 0 ||
-            PurchaseAudio.length === 0) {
+            !field.licenses || !field.date || PreviewAudio.length === 0 ||
+            Artwork.length === 0 || PurchaseAudio.length === 0) {
             setIsUploading(false);
             return toast({
                 position: "bottom",
@@ -127,6 +146,7 @@ function UploadBeatPage(props) {
                 bpm: field.bpm,
                 length: ad.duration,
                 price: field.price,
+                licenses: field.licenses,
                 date: field.date,
                 previewAudio: PreviewAudio,
                 purchaseAudio: PurchaseAudio,
@@ -252,6 +272,17 @@ function UploadBeatPage(props) {
                     <FormControl isRequired mt={5}>
                         <FormLabel>Price (USD)</FormLabel>
                         <Input onChange={onChangeHandler} value={field.price} name="price" type="number" step="0.01" />
+                    </FormControl>
+
+                    <FormControl isRequired mt={5}>
+                        <FormLabel>Attached licenses</FormLabel>
+                        <CheckboxGroup onChange={handleLicenseCheckbox} value={field.licenses} name="attached_licenses">
+                            <HStack>
+                                {licenses?.map(lic => (
+                                    <Checkbox value={lic._id} id={lic._id}>{lic.name}</Checkbox>
+                                ))}
+                            </HStack>
+                        </CheckboxGroup>
                     </FormControl>
 
                     <FormControl isRequired mt={5}>

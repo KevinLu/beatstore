@@ -16,21 +16,15 @@ import {
     Stack,
     Flex,
     useToast,
+    useColorModeValue,
     SlideFade
 } from "@chakra-ui/react";
 import {IoMdMusicalNote, IoIosMore, IoMdSearch} from 'react-icons/io';
 import {FaHashtag} from 'react-icons/fa';
 import {Link, withRouter} from 'react-router-dom';
-import styled from '@emotion/styled';
 import Axios from 'axios';
 import debounce from '../../utils/debounce';
 
-const SearchResult = styled.div`
-  background: white;
-  &:hover {
-    background: #EDF2F7;
-  }
-`
 const CancelToken = Axios.CancelToken;
 let source = CancelToken.source();
 let MAX_SUGGESTIONS = 3;
@@ -43,6 +37,9 @@ function SearchBox(props) {
     const [Beats, setBeats] = useState([]);
     const [SearchFocused, setSearchFocused] = useState(false);
     const toast = useToast();
+
+    const ListItemColor = useColorModeValue('white', 'gray.700');
+    const ListItemBorderColor = useColorModeValue('gray.100', 'gray.600');
 
     const handleChange = (event) => {
         if (event.currentTarget.value !== "") {
@@ -110,39 +107,37 @@ function SearchBox(props) {
     const showSearchResults = Beats.slice(0, MAX_SUGGESTIONS).map((beat, index) => {
         return (
             <Link to={`/beat/${beat.url}`} key={index}>
-                <SearchResult>
-                    <ListItem display="flex" pt={3} pb={3} justifyContent="space-between">
-                        <Flex ml={3}>
-                            <ListIcon as={IoMdMusicalNote} color="blue.500" boxSize="25px" />
-                            <Text fontSize="md" fontWeight="600" color="black">{beat.title}</Text>
-                        </Flex>
-                        {/* SHOW ALL TAGS IN SEARCH RESULT ON DESKTOP */}
-                        <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mr={3}>
-                            {beat.tags.map((tag, i) => (
-                                <Tag size="md" key={i} colorScheme="blue">
-                                    <TagLeftIcon as={FaHashtag} boxSize="13px" />
-                                    <TagLabel lineHeight="2em" mt="-0.14em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>
-                                        {tag}
-                                    </TagLabel>
-                                </Tag>
-                            ))}
-                        </Stack>
-                        {/* TODO: enable this? SHOW ONLY 1 RELEVANT TAG ON MOBILE */}
-                        {/* <Stack spacing={2} isInline display={{base: "initial", md: "none"}} mr={3}>
-                                {beat.tags.map((tag, i) => {
-                                    console.log(searchTerms.includes(tag));
-                                    if (searchTerms.includes(tag)) {
-                                        return (
-                                            <Tag size="md" key={i} colorScheme="blue">
-                                                <TagLeftIcon as={FaHashtag} boxSize="13px" />
-                                                <TagLabel lineHeight="2em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
-                                            </Tag>
-                                        )
-                                    }
-                                })}
-                            </Stack> */}
-                    </ListItem>
-                </SearchResult>
+                <ListItem display="flex" bgColor={ListItemColor} pt={3} pb={3} justifyContent="space-between">
+                    <Flex ml={3}>
+                        <ListIcon as={IoMdMusicalNote} color="blue.500" boxSize="25px" />
+                        <Text fontSize="md" fontWeight="600">{beat.title}</Text>
+                    </Flex>
+                    {/* SHOW ALL TAGS IN SEARCH RESULT ON DESKTOP */}
+                    <Stack spacing={2} isInline display={{base: "none", md: "initial"}} mr={3}>
+                        {beat.tags.map((tag, i) => (
+                            <Tag size="md" key={i} colorScheme="blue">
+                                <TagLeftIcon as={FaHashtag} boxSize="13px" />
+                                <TagLabel lineHeight="2em" mt="-0.14em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>
+                                    {tag}
+                                </TagLabel>
+                            </Tag>
+                        ))}
+                    </Stack>
+                    {/* TODO: enable this? SHOW ONLY 1 RELEVANT TAG ON MOBILE */}
+                    {/* <Stack spacing={2} isInline display={{base: "initial", md: "none"}} mr={3}>
+                            {beat.tags.map((tag, i) => {
+                                console.log(searchTerms.includes(tag));
+                                if (searchTerms.includes(tag)) {
+                                    return (
+                                        <Tag size="md" key={i} colorScheme="blue">
+                                            <TagLeftIcon as={FaHashtag} boxSize="13px" />
+                                            <TagLabel lineHeight="2em" maxWidth={{base: "5ch", md: "6ch", lg: "8ch"}}>{tag}</TagLabel>
+                                        </Tag>
+                                    )
+                                }
+                            })}
+                        </Stack> */}
+                </ListItem>
             </Link>
         );
     });
@@ -153,7 +148,6 @@ function SearchBox(props) {
                 <InputLeftElement fontSize="1.75em" pointerEvents="none" children={<Icon as={IoMdSearch} color="gray.300" />} />
                 <Input onFocus={handleFocus}
                     onBlur={handleBlur}
-                    color="black"
                     fontWeight="600"
                     id="search"
                     placeholder={props.placeholder}
@@ -169,16 +163,14 @@ function SearchBox(props) {
             </InputGroup>
             {Beats.length !== 0 ?
                 <SlideFade in={SearchFocused} offsetY="20px">
-                    <List boxShadow="md" mt={2} border="1px solid" borderRadius="0.25rem" borderColor="gray.200" position="absolute" width={props.width}>
+                    <List boxShadow="md" mt={2} bgColor={ListItemColor} border="1px solid" borderRadius="0.25rem" borderColor={ListItemBorderColor} position="absolute" width={props.width}>
                         {showSearchResults}
                         {Beats.length > MAX_SUGGESTIONS ?
                             <Link to={`/beats?search_keyword=${searchTerms}`} key="last">
-                                <SearchResult>
-                                    <ListItem display="flex" p={3}>
-                                        <ListIcon as={IoIosMore} color="blue.800" boxSize="25px" />
-                                        <Text fontSize="md" fontWeight="600" color="black">Explore all {Beats.length} beats...</Text>
-                                    </ListItem>
-                                </SearchResult>
+                                <ListItem display="flex" p={3} bgColor={ListItemColor}>
+                                    <ListIcon as={IoIosMore} color="blue.800" boxSize="25px" />
+                                    <Text fontSize="md" fontWeight="600">Explore all {Beats.length} beats...</Text>
+                                </ListItem>
                             </Link> : null
                         }
                     </List>

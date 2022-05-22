@@ -129,9 +129,7 @@ const LicenseCard = (license, onOpen, setEditLicense) => {
       p={4}
       justifyContent="space-between"
       border="1px"
-      borderColor="gray.100"
-      borderRadius="4px"
-      backgroundColor="gray.50">
+      borderRadius="4px">
       <Stack>
         <Heading size="md">{license.name}</Heading>
         <Stack direction="row">

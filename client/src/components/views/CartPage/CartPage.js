@@ -30,7 +30,7 @@ const ListHeading = ({children, displayBreakpoints, float}) => (
 
 const ListText = ({children, displayBreakpoints, fontSize, fontWeight, float}) => (
     <Box w="100%" h="10" mt="0.6em" display={displayBreakpoints} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
-        <Text float={float} fontWeight={fontWeight} fontSize={fontSize} color="black">{children}</Text>
+        <Text float={float} fontWeight={fontWeight} fontSize={fontSize}>{children}</Text>
     </Box>
 );
 
@@ -159,12 +159,12 @@ function CartPage(props) {
                     </div>
                     <Box mt={{base: "2em", lg: "0"}}>
                         <Box display="flex" justifyContent="space-between">
-                            <Text color="black" fontSize="lg" fontWeight="600">Gross</Text>
-                            <Text color="black" fontSize="lg" fontWeight="600">${GrossAmount}</Text>
+                            <Text fontSize="lg" fontWeight="600">Gross</Text>
+                            <Text fontSize="lg" fontWeight="600">${GrossAmount}</Text>
                         </Box>
                         <Box display="flex" justifyContent="space-between">
-                            <Text color="black" fontSize="lg" fontWeight="600">Discount</Text>
-                            <Text color="black" fontSize="lg" fontWeight="600">-${0}</Text>
+                            <Text fontSize="lg" fontWeight="600">Discount</Text>
+                            <Text fontSize="lg" fontWeight="600">-${0}</Text>
                         </Box>
                         <Divider />
                         <Box display="flex" justifyContent="space-between">

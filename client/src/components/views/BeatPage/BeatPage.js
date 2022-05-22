@@ -87,7 +87,7 @@ function BeatPage(props) {
                         <div>
                             <Skeleton boxSize="15px" isLoaded={BeatLoaded} display="inline">
                                 <Icon as={FaStar} color="orange.400" mr={1} />
-                                <Text fontSize="md" fontWeight="600" color="black" display="inline" verticalAlign="middle">{Beat.producer.username}</Text>
+                                <Text fontSize="md" fontWeight="600" display="inline" verticalAlign="middle">{Beat.producer.username}</Text>
                             </Skeleton>
                         </div>
                     </Stack>
@@ -107,7 +107,6 @@ function BeatPage(props) {
                         <Text
                             textAlign={{base: "center", lg: "initial"}}
                             fontSize="md"
-                            color="black"
                             overflow="hidden"
                             maxW="85ch"
                             style={{display: "-webkit-box", WebkitLineClamp: 3, textOverflow: "ellipsis", WebkitBoxOrient: "vertical"}}>

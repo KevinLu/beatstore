@@ -24,24 +24,24 @@ function UserMenu(props) {
         return (
             <Box zIndex="3">
                 <MenuList>
-                    <MenuGroup color="black" title={username}>
-                        <MenuItem color="black">My account</MenuItem>
+                    <MenuGroup title={username}>
+                        <MenuItem>My account</MenuItem>
                         <Link to="/orders">
-                            <MenuItem color="black">Orders</MenuItem>
+                            <MenuItem>Orders</MenuItem>
                         </Link>
                     </MenuGroup>
                     <MenuDivider />
-                    <MenuGroup color="black" title="Admin">
+                    <MenuGroup title="Admin">
                         <Link to="/dashboard">
-                            <MenuItem color="black">Dashboard</MenuItem>
+                            <MenuItem>Dashboard</MenuItem>
                         </Link>
                         <Link to="/upload">
-                            <MenuItem color="black">Upload</MenuItem>
+                            <MenuItem>Upload</MenuItem>
                         </Link>
                     </MenuGroup>
                     <MenuDivider />
                     <Link onClick={logoutHandler} to="/login">
-                        <MenuItem color="black">Logout</MenuItem>
+                        <MenuItem>Logout</MenuItem>
                     </Link>
                 </MenuList>
             </Box>
@@ -50,13 +50,13 @@ function UserMenu(props) {
         return (
             <Box zIndex="3">
                 <MenuList>
-                    <MenuItem color="black">My account</MenuItem>
+                    <MenuItem>My account</MenuItem>
                     <Link to="/orders">
-                        <MenuItem color="black">Orders</MenuItem>
+                        <MenuItem>Orders</MenuItem>
                     </Link>
                     <MenuDivider />
                     <Link onClick={logoutHandler} to="/login">
-                        <MenuItem color="black">Logout</MenuItem>
+                        <MenuItem>Logout</MenuItem>
                     </Link>
                 </MenuList>
             </Box>

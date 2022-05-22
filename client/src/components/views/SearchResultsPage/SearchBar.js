@@ -43,7 +43,6 @@ function SearchBar(props) {
                 />
                 <Input
                     autoFocus
-                    color="black"
                     fontWeight="600"
                     id="search"
                     placeholder={props.placeholder}

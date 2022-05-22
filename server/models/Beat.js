@@ -16,8 +16,10 @@ const beatSchema = Schema({
             default: true
         },
         price_override: {
-            type: Number
-        }
+            type: Number,
+            default: 0
+        },
+        _id: false,
     }],
     title: {
         type: String,

@@ -12,7 +12,7 @@ function RightMenu(props) {
 	return (
 		<Flex alignItems="center">
 			<Box fontWeight="600" fontSize="lg" mr={6} display="flex">
-				<Link to="/cart"><Box as={FaShoppingCart} /></Link>
+				<Link to="/cart"><Box as={FaShoppingCart} color="white" /></Link>
 				{cartIsLoaded ?
 					<Badge ml="1" colorScheme="green" height="1.6em">{cartLength}</Badge> : null}
 			</Box>

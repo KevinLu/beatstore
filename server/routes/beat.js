@@ -9,7 +9,7 @@ const singleUploadPrivate = uploadPrivate.single('file');
 const {Beat} = require("../models/Beat");
 const {auth} = require("../middleware/auth");
 const {stripeSecret} = require("../config/key");
-const stripe = require('stripe')(stripeSecret);
+const mongoose = require('mongoose');
 
 //=================================
 //             Beat
@@ -56,7 +56,9 @@ router.post("/uploadPrivateFile", (req, res) => {
 });
 
 router.post("/uploadBeat", auth, (req, res) => {
-    const beat = new Beat(req.body);
+    let beatToBeCreated = req.body;
+    beatToBeCreated.licenses = beatToBeCreated.licenses.map(id => ({license: id}));
+    const beat = new Beat(beatToBeCreated);
 
     // DEPRECATED: Create a new product on Stripe
     // stripe.products.create(
@@ -111,6 +113,7 @@ router.post("/getBeats", (req, res) => { // no need auth
     if (terms) { // if a search term is specified, only then we look for specific beats
         Beat.find({$text: {$search: terms}})
             .populate('producer', 'username -_id')
+            .populate({path: 'licenses.license', model: 'License'})
             .select(['-purchaseAudio', '-trackStems'])
             .sort([[sortBy, order]])
             .skip(skip)
@@ -122,6 +125,7 @@ router.post("/getBeats", (req, res) => { // no need auth
     } else {
         Beat.find()
             .populate('producer', 'username -_id')
+            .populate({path: 'licenses.license', model: 'License'})
             .select(['-purchaseAudio', '-trackStems'])
             .sort([[sortBy, order]])
             .skip(skip)
