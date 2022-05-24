@@ -38,7 +38,11 @@ router.get("/auth", auth, async (req, res) => {
 });
 
 router.post("/register", (req, res) => {
-
+    if (req.body == undefined) {
+        return res.json({ success: false, err });
+    }
+    // prevent users from setting their role on registration
+    delete req.body.role;
     const user = new User(req.body);
 
     user.save((err, doc) => {

@@ -13,16 +13,19 @@ const userSchema = Schema({
     },
     username: {
         type: String,
-        maxlength: 80
+        maxlength: 80,
+        required: true,
     },
     email: {
         type: String,
         trim: true,
-        unique: 1
+        unique: 1,
+        required: true,
     },
     password: {
         type: String,
-        minlength: 6
+        minlength: 6,
+        required: true,
     },
     role: {
         type: Number,
