@@ -33,7 +33,7 @@
     "multer-s3": "^2.9.0",
     "multiparty": "^4.2.2",
     "saslprep": "^1.0.3",
-    "sharp": "^0.27.1",
+    "sharp": "^0.30.5",
     "stripe": "^8.135.0",
     "supports-color": "^7.2.0"
   },
